@@ -5,14 +5,14 @@
 //! below this crate knows about egui, so the frontend can be replaced.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
-/// Trama as craft-update knows it, with its 128 px icon and accent colour: the update
-/// prompt shows both, and an AppImage's menu entry gets the icon.
+/// Trama's releases, for the in-app updater (`nodalia-update`, shared by the Nodalia apps).
 #[cfg(not(target_arch = "wasm32"))]
-pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
-    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/dev.danielmiguelt.Trama.png")),
-    accent: Some([0x02, 0xda, 0x96]),
-    ..craft_update::suite::TRAMA
-};
+pub const UPDATE_APP: nodalia_update::App =
+    nodalia_update::App { name: "Trama", repo: "getnodalia/trama", bundle: "Trama.app", version: env!("CARGO_PKG_VERSION"), edition: None };
+
+/// Trama's accent (sRGB), for the update windows' main button.
+#[cfg(not(target_arch = "wasm32"))]
+pub const UPDATE_ACCENT: [u8; 3] = [0x8b, 0x2f, 0xd6];
 
 pub mod a11y;
 pub mod bidi;

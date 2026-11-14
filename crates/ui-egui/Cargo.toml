@@ -9,6 +9,7 @@ description = "Trama egui frontend (the Figma-style UI: canvas, toolbar, layers,
 workspace = true
 
 [dependencies]
+nodalia-theme = { workspace = true, features = ["creator"] }
 craft-ui = { workspace = true }
 trama-geom = { workspace = true }
 trama-color = { workspace = true }
@@ -40,4 +41,4 @@ wat = { workspace = true }
 egui = { workspace = true, features = ["default_fonts", "monochrome_emoji_fonts"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-craft-update = { workspace = true }
+nodalia-update = { workspace = true }

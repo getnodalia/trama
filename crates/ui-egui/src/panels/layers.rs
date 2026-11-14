@@ -84,13 +84,13 @@ pub fn rail(app: &mut FigApp, ui: &mut Ui) {
     let t = Tokens::get(ui.ctx());
     let r = ui.max_rect();
     let mut y = r.min.y + 8.0;
-    // Main menu (logo).
+    // Main menu: NDL's hamburger.
     let lr = Rect::from_center_size(pos2(r.center().x, y + 16.0), vec2(36.0, 32.0));
     let lresp = ui.interact(lr, ui.scope_id().with("rail_menu"), Sense::click()).tip(tr("Main menu"));
     if lresp.hovered() || app.ui.main_menu {
         ui.painter().rect_filled(lr, CornerRadius::same(6), t.hover);
     }
-    icons::paint(ui.painter(), Rect::from_center_size(lr.center(), vec2(18.0, 18.0)), Icon::Logo, t.icon);
+    icons::paint(ui.painter(), Rect::from_center_size(lr.center(), vec2(18.0, 18.0)), Icon::Menu, t.icon);
     if lresp.clicked() {
         app.ui.main_menu = !app.ui.main_menu;
     }

@@ -118,7 +118,8 @@ fn encode(doc: &Document, pix: &trama_render::Pixmap, e: &str) -> CliResult<Vec<
 pub fn write_doc(doc: &Document, page: NodeId, out: &str) -> CliResult<()> {
     let e = ext(out);
     let bytes = match e.as_str() {
-        "trama" => {
+        "trama" | "figcraft" => {
+            // rebrand: keep (files saved before the rename)
             let thumb = trama_engine::cmd::file::thumbnail(doc);
             trama_format::save_bytes(doc, thumb.as_deref()).map_err(|e| CliError::Failed(e.to_string()))?
         }
@@ -462,7 +463,7 @@ pub fn run_script(script: &str, input: Option<&str>, out: Option<&str>) -> CliRe
     if let Some(out) = out {
         let ds = s.ds().map_err(|e| CliError::Failed(e.to_string()))?;
         refuse_dropping_images_from_script(input.map(|input| (input, input_images_left_out)), ds, out)?;
-        if ext(out) == "trama" {
+        if trama_format::is_native_extension(&ext(out)) {
             // Through the engine, so the version history is kept.
             write(out, &trama_engine::cmd::file::file_bytes_at(ds, out).map_err(|e| CliError::Failed(e.to_string()))?)?;
         } else {
@@ -477,7 +478,7 @@ pub fn run_script(script: &str, input: Option<&str>, out: Option<&str>) -> CliRe
 /// `trama.connect.json`) says, and save it in place unless `dry_run`. Prints what was linked;
 /// entries that were skipped are warnings on stderr, and linking nothing fails (exit code 1).
 pub fn connect_publish(file: &str, mappings: &str, dry_run: bool) -> CliResult<ExitCode> {
-    if ext(file) != "trama" {
+    if !trama_format::is_native_extension(&ext(file)) {
         return Err(CliError::Usage(format!("{file}: connect publish saves code links in a .trama file")));
     }
     let mut s = Session::empty();

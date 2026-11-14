@@ -28,7 +28,7 @@ impl FigApp {
                         return;
                     }
                 }
-            } else if !p.extension().and_then(OsStr::to_str).is_some_and(|e| e.eq_ignore_ascii_case("figcraft") || e.eq_ignore_ascii_case("fig")) {
+            } else if !p.extension().and_then(OsStr::to_str).is_some_and(|e| trama_format::is_native_extension(e) || e.eq_ignore_ascii_case("fig")) {
                 app.toast(i18n::tr("Use the .trama or .fig extension."));
                 return;
             }
@@ -84,7 +84,7 @@ impl FigApp {
         let exts: &[&str] = if place {
             &["png", "jpg", "jpeg", "webp", "gif", "tif", "tiff"]
         } else {
-            &["penpot", "svg", "png", "jpg", "jpeg", "webp", "gif", "tif", "tiff", "trama", "fig", "jam", "sketch"]
+            &["penpot", "svg", "png", "jpg", "jpeg", "webp", "gif", "tif", "tiff", "trama", "figcraft", "fig", "jam", "sketch"] // rebrand: keep (files saved before the rename)
         };
         let title = if place { i18n::tr("Place image") } else { i18n::tr("Import") };
         self.pick_file(title, exts, true, |app, file| {
@@ -310,5 +310,5 @@ impl FigApp {
 
 /// A `.trama` file name: the document format a Save writes (a `.fig` is an export copy).
 fn is_document_file(name: &str) -> bool {
-    Path::new(name).extension().and_then(OsStr::to_str).is_some_and(|e| e.eq_ignore_ascii_case("figcraft"))
+    Path::new(name).extension().and_then(OsStr::to_str).is_some_and(trama_format::is_native_extension)
 }

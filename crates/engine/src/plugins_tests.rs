@@ -367,6 +367,16 @@ impl Drop for TempDir {
 }
 
 #[test]
+fn a_plugin_folder_made_before_the_rename_imports_through_its_old_manifest_name() {
+    let dir = TempDir(std::env::temp_dir().join(format!("trama-plugin-legacy-{}", std::process::id())));
+    std::fs::create_dir_all(&dir.0).unwrap();
+    std::fs::write(dir.0.join("plugin.wasm"), script(&[], OnRefusal::Fail, "")).unwrap();
+    std::fs::write(dir.0.join(crate::plugins::LEGACY_MANIFEST), manifest("org.test.legacy", "read", &[]).to_string()).unwrap();
+    let mut s = Session::new();
+    assert_eq!(ex(&mut s, "plugin.import", json!({"path": dir.0.to_string_lossy()}))["id"], "org.test.legacy");
+}
+
+#[test]
 fn development_plugins_load_from_a_manifest_and_reload_their_module() {
     let dir = TempDir(std::env::temp_dir().join(format!("trama-plugin-dev-{}", std::process::id())));
     std::fs::create_dir_all(&dir.0).unwrap();

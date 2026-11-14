@@ -95,6 +95,7 @@
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe" Name="FriendlyAppName" Value="Trama" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe\shell\open\command" Value="&quot;[#TramaExe]&quot; &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe\SupportedTypes" Name=".trama" Value="" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe\SupportedTypes" Name=".figcraft" Value="" Type="string" /> <!-- rebrand: keep (saved before the rename) -->
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe\SupportedTypes" Name=".svg" Value="" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe\SupportedTypes" Name=".png" Value="" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\trama.exe\SupportedTypes" Name=".jpg" Value="" Type="string" />

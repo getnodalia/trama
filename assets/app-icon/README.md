@@ -1,41 +1,44 @@
 # Trama app icon
 
-A **chameleon**: an engraving portrait in profile with a curled tail, in the Nodalia apps'
-owl-template framing (full-bleed field, head and body filling the tile, body running off the edges).
+A **swatch of plain-weave cloth** on a purple tile: three amber weft threads across (the *trama*,
+the weft, that gives the app its name) and three white warp threads down, each crossing
+alternating over and under. Threads laid on a grid, as an interface is.
 
 ## Palette
 
-Exactly three colours:
-
 | Colour | Hex | Used for |
 |---|---|---|
-| Ink | `#0b0b0c` | line work and contours |
-| Paper | `#efe9dc` | the figure |
-| Trama green (app colour) | `#02da96` | the full-bleed field |
+| Trama purple, top | `#9A45E2` | the tile's gradient |
+| Trama purple, bottom | `#7A26C9` | the tile's gradient |
+| Amber | `#FFC24D` | the weft |
+| White | `#FFFFFF` | the warp |
+
+The tile follows Colloid: a soft vertical gradient, a lit top edge and a shaded bottom edge. No
+letters, no raster images: every shape is a plain SVG rectangle or path.
 
 ## Geometry
 
-A 512-unit tile (`viewBox="0 0 512 512"`), rounded square with `rx=112`, no border. The macOS
-renders pad it onto Apple's 824/1024 icon grid; Windows and Linux use the tile edge to edge, with
-its rounded corners, like the other Nodalia apps.
+- `trama.svg`: the master, a 512-unit tile (`viewBox="0 0 512 512"`) edge to edge, corner radius
+  112. The macOS renders pad it onto Apple's 824/1024 icon grid; Windows uses it as it is.
+- `trama-linux.svg`: the Colloid grid used by the Linux icon theme and nodalix-icon-theme, a 224
+  tile at 16 on a 256 canvas, corner radius 51.5, with a soft shadow below.
 
-## Provenance
-
-The owner's original engraving-style drawing (1500 px, keyed to the palette), supplied for
-Trama and vectorised. The source
-image is not kept in this repo. License: see `LICENSE.txt`.
+Both come from `scripts/icon-svg.py`, which draws the weave on the 224 grid.
 
 ## Files
 
-- `trama.svg`: canonical master (traced at 1500 px, the source's size).
-- `trama-small.svg`: lighter trace (traced at 1024 px); also the hicolor scalable icon.
 - `trama-<size>.png` (16–1024): renders on the macOS grid; `packaging/macos/package.sh` builds
   the `.icns` from them.
 - `trama.ico`: Windows icon, 16–256 px, embedded in the `.exe` by `apps/trama/build.rs`.
 - `hicolor/<size>/apps/dev.danielmiguelt.Trama.png` (16–512) and `hicolor/scalable/...svg`:
-  Linux icon theme; the 256 px one is also the runtime window icon off macOS.
+  Linux icon theme (from `trama-linux.svg`); the 256 px one is also the runtime window icon off
+  macOS.
 
 ## Regenerate
 
-Replace `trama.svg` (and `trama-small.svg`), then run `cargo xtask icon`. It needs `resvg`
-(`cargo install resvg`).
+`python3 scripts/icon-svg.py assets/app-icon`, then `cargo xtask icon` (needs `resvg`:
+`cargo install resvg`).
+
+## Provenance
+
+Original work made for Trama by Nodalia. Licence: see `LICENSE.txt`.

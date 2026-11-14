@@ -89,7 +89,7 @@ pub(crate) fn open(s: &mut Session, p: &Value) -> Result<Value> {
     let on_disk = crate::library::stat(&path).ok();
     let (loaded, rest) = load_path(&path, variables.as_ref())?;
     remember(s, &path);
-    let native = !rest && matches!(ext(&path).as_str(), "trama" | "json");
+    let native = !rest && (trama_format::is_native_extension(&ext(&path)) || ext(&path) == "json");
     let warnings = rest || matches!(ext(&path).as_str(), "svg" | "penpot");
     // A native file that lost something (a damaged image, say): the app says so, not only the result.
     if (native || warnings) && !loaded.issues.is_empty() {
@@ -185,7 +185,8 @@ pub(super) fn import(s: &mut Session, p: &Value) -> Result<Value> {
             }
             Ok(out)
         }
-        "trama" | "json" | "fig" | "jam" | "sketch" | "penpot" => {
+        "trama" | "figcraft" | "json" | "fig" | "jam" | "sketch" | "penpot" => {
+            // rebrand: keep (files saved before the rename)
             let resolver = path.as_deref().map(rest_images);
             let images: trama_format::rest::ImageResolver = match &resolver {
                 Some(r) => r,

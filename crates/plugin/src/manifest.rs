@@ -7,6 +7,9 @@ use serde_json::{Map, Value};
 
 /// The manifest's file name.
 pub const MANIFEST_FILE: &str = "trama-plugin.json";
+/// The manifest's file name in plugins made before the app was named Trama: a folder without a
+/// [`MANIFEST_FILE`] is read through this one.
+pub const LEGACY_MANIFEST: &str = "figcraft-plugin.json";
 /// The plugin API version this build implements (`api` in the manifest).
 pub const API_VERSION: u32 = 6;
 /// Largest manifest read.

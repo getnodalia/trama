@@ -41,6 +41,15 @@ use sha2::Digest;
 use trama_doc::{Document, ImageData};
 
 pub const EXTENSION: &str = "trama";
+/// Extensions Trama's own documents were saved under before the app had its name: they open, and
+/// save, like `.trama` files (the contents are the same format).
+pub const OLDER_EXTENSIONS: &[&str] = &["figcraft"]; // rebrand: keep
+
+/// Whether `ext` (any case, no dot) names Trama's own document format: `.trama`, or an
+/// [`OLDER_EXTENSIONS`] one.
+pub fn is_native_extension(ext: &str) -> bool {
+    ext.eq_ignore_ascii_case(EXTENSION) || OLDER_EXTENSIONS.iter().any(|old| ext.eq_ignore_ascii_case(old))
+}
 pub const FORMAT: &str = "figcraft";
 pub const VERSION: u32 = 1;
 /// Largest archive member we read (guards against zip bombs).

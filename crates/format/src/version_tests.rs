@@ -150,3 +150,14 @@ fn saving_refuses_bad_version_ids() {
     assert_eq!(v.name.chars().count(), MAX_VERSION_NAME);
     assert_eq!(v.description.chars().count(), MAX_VERSION_DESCRIPTION);
 }
+
+#[test]
+fn documents_saved_under_the_old_extension_are_native_files() {
+    for ext in ["trama", "TRAMA", "figcraft", "FigCraft"] {
+        // rebrand: keep
+        assert!(is_native_extension(ext), "{ext}");
+    }
+    for ext in ["fig", "json", "", "tramas"] {
+        assert!(!is_native_extension(ext), "{ext}");
+    }
+}

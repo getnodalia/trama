@@ -1,7 +1,7 @@
-//! The app icon: rasterises the master `assets/app-icon/trama.svg` (the chameleon, see
-//! `assets/app-icon/README.md`) with the `resvg` CLI (`cargo install resvg`). Writes
-//! trama-<size>.png (macOS grid), the hicolor theme and trama.ico. The outputs are
-//! committed, so building and packaging never need `resvg`.
+//! The app icon: rasterises the master `assets/app-icon/trama.svg` (the woven swatch, see
+//! `assets/app-icon/README.md`) and its Colloid-grid Linux version `trama-linux.svg` with the
+//! `resvg` CLI (`cargo install resvg`). Writes trama-<size>.png (macOS grid), trama.ico and the
+//! hicolor theme. The outputs are committed, so building and packaging never need `resvg`.
 
 use std::path::Path;
 use std::process::Command;
@@ -30,8 +30,9 @@ pub fn generate(root: &Path) -> bool {
         return false;
     }
     let tmp = root.join("target/icon");
-    // Windows and Linux show the tile edge to edge, rounded corners and all: the master as it is.
-    let (mac, tile) = (tmp.join("mac.svg"), dir.join("trama.svg"));
+    // Windows shows the tile edge to edge, rounded corners and all: the master as it is. Linux
+    // uses the Colloid grid (a 224 tile on a 256 canvas with its shadow), like the icon theme.
+    let (mac, tile, linux) = (tmp.join("mac.svg"), dir.join("trama.svg"), dir.join("trama-linux.svg"));
     let mut ok = std::fs::create_dir_all(&tmp).is_ok() && std::fs::write(&mac, master.replacen(VIEW_BOX, MAC_VIEW_BOX, 1)).is_ok();
     if !ok {
         eprintln!("icon: cannot write {}", tmp.display());
@@ -42,7 +43,7 @@ pub fn generate(root: &Path) -> bool {
         if size <= 512 {
             let hd = dir.join(format!("hicolor/{size}x{size}/apps"));
             let _ = std::fs::create_dir_all(&hd);
-            ok &= render(&tile, size, &hd.join("dev.danielmiguelt.Trama.png"));
+            ok &= render(&linux, size, &hd.join("dev.danielmiguelt.Trama.png"));
         }
     }
     // Windows .ico (PNG-compressed entries).
@@ -70,12 +71,11 @@ pub fn generate(root: &Path) -> bool {
     let ico_path = dir.join("trama.ico");
     let _ = std::fs::remove_file(&ico_path);
     ok &= std::fs::write(&ico_path, ico).is_ok();
-    // The lighter trace keeps the scalable theme icon cheap to render.
     let sd = dir.join("hicolor/scalable/apps");
     let _ = std::fs::create_dir_all(&sd);
     let target = sd.join("dev.danielmiguelt.Trama.svg");
     let _ = std::fs::remove_file(&target);
-    ok &= std::fs::copy(dir.join("trama-small.svg"), &target).is_ok();
+    ok &= std::fs::copy(&linux, &target).is_ok();
     eprintln!("icon: wrote {}", dir.display());
     ok
 }

@@ -1,13 +1,16 @@
 # Releasing Trama
 
-Every push to the `release` branch runs `.github/workflows/release.yml`. The workflow builds
-installers for macOS, Windows, Linux and the web, plus a FreeBSD tarball and the collaboration
-server for Linux, then creates or updates a **draft** GitHub Release named `Trama v<version>`.
-Nobody sees a draft until a maintainer publishes it.
+Releases are automatic. A pull request that sets `[workspace.package] version` in the root
+`Cargo.toml` to a release version (no `-dev`) and adds its notes in
+`docs/release-notes/vX.Y.Z.md` (format in [that folder's README](release-notes/README.md); the
+**Release notes are written** check runs `scripts/check-release-notes.sh`) is all a release
+takes. Once it merges, `release-auto.yml` tags the merge through Foundation's `release-tag`
+workflow, builds the packages with this repository's `release-linux.yml`, `release-macos.yml` and
+`release-windows.yml`, and Foundation's `release-publish` publishes the release with those notes.
+Nobody pushes a tag by hand. Afterwards `main` goes back to the next `-dev` version.
 
-This is Trama's copy of the shared [release playbook](release-playbook.md) (Lienzo is the
-reference implementation). User-facing names say **Trama**. Files, binaries and ids stay
-lowercase (`trama-<version>-<platform>-<arch>.<ext>`, `dev.danielmiguelt.Trama`).
+User-facing names say **Trama**. Files, binaries and ids stay lowercase
+(`trama-<version>-<platform>-<arch>.<ext>`, `dev.danielmiguelt.Trama`).
 
 ## Trama's names
 
@@ -15,7 +18,7 @@ lowercase (`trama-<version>-<platform>-<arch>.<ext>`, `dev.danielmiguelt.Trama`)
 |---|---|
 | Display name | Trama |
 | Packages / binaries | `trama` (app), `trama-cli` (headless CLI), `trama-web` (browser) |
-| Bundle / app id | `dev.danielmiguelt.Trama` (CLI signing identifier `dev.danielmiguelt.Trama-cli`) |
+| Bundle / app id | `dev.danielmiguelt.Trama` |
 | Native document | `.trama`, MIME `application/x-trama`, UTI `dev.danielmiguelt.Trama.document` |
 | Also opens | `.svg`, `.png`, `.jpg`/`.jpeg` ("Open with", never the default app) |
 | WiX UpgradeCode | `33A433A8-CFE1-4969-ACAD-171AAB11DE3E` (fixed forever; never reuse it in another app) |
@@ -23,48 +26,32 @@ lowercase (`trama-<version>-<platform>-<arch>.<ext>`, `dev.danielmiguelt.Trama`)
 
 ## Cutting a release
 
-1. **Bump the version** on `main`. It lives only in `[workspace.package] version` in the root
-   `Cargo.toml`:
+1. **Bump the version** in a pull request:
 
    ```sh
-   cargo run -p xtask -- version              # prints the current version, e.g. 0.1.0
-   cargo run -p xtask -- version set 0.2.0    # or 0.2.0-rc.1; updates Cargo.toml and Cargo.lock
+   cargo xtask version              # prints the current version, e.g. 0.1.0-dev
+   cargo xtask version set 0.1.0    # or 0.1.0-rc.1; updates Cargo.toml and Cargo.lock
    ```
 
-   (`cargo xtask …` is the same once `.cargo/config.toml` has the `xtask = "run -p xtask --"`
-   alias.) Commit `Cargo.toml` + `Cargo.lock`.
-2. **Fast-forward `release` to `main`** and push (release managers only; the ruleset enforces it).
-   The workflow starts by itself.
-3. **Wait for the draft** (`Trama v0.2.0`, tagged `v0.2.0` on the pushed commit) with every
-   artifact and `SHA256SUMS.txt`. Notes are generated from the merged PRs.
-4. **Check it.** Any `::warning::` in the job summaries means a signing secret was missing and
-   that artifact is unsigned: fix the secret and re-run, don't publish.
-5. **Publish** the draft. Versions with a pre-release suffix (`-rc.1`) are marked pre-release.
+2. **Write the notes** in `docs/release-notes/v0.1.0.md`, from the merged pull requests.
+3. **Merge** once the required checks pass. The release builds and publishes itself; a version
+   with a pre-release suffix (`-rc.1`) is marked pre-release.
+4. **Set `main` back** to the next `-dev` version (`cargo xtask version set 0.1.1-dev`).
 
-Pushing to `release` again before publishing rebuilds the same draft and replaces its assets.
-After the draft is published, the workflow refuses to touch that version again, so bump first.
-
-**Dry runs:** `gh workflow run release.yml --ref <branch> -f version=0.2.0-rc.1` builds every
-unsigned platform (Linux, Flatpak, FreeBSD, Web, the server) on any branch. Only the macOS,
-Windows and draft-release jobs declare `environment: release`; off the `release` branch the
-environment refuses them (0 steps) and no release is created. The `version` input is applied with
-`xtask version set` before building, so the binaries report it too.
+A failed build leaves the tag on a draft; re-running the failed job finishes it.
 
 ## The default server
 
-Share ▸ Online uses the server in Preferences, which starts as the public one built into the app
-(`trama_engine::live::DEFAULT_SERVER`). Distributions that would rather not ship that default
-set `TRAMA_DEFAULT_SERVER` when building: to their own server's address (`wss://host/`), or to
-nothing for a build with no default, where online sharing stays off until the user enters a
-server (sharing on the local network works either way):
+Share ▸ Online uses the collaboration server set in Preferences. Trama ships **without** a
+default server (`trama_engine::live::DEFAULT_SERVER` is empty), so online sharing stays off until
+the user enters one; sharing on the local network works either way. A distribution that runs its
+own server can build it in with `TRAMA_DEFAULT_SERVER`:
 
 ```sh
-TRAMA_DEFAULT_SERVER= cargo build --release -p trama          # no default server
 TRAMA_DEFAULT_SERVER=wss://design.example.org/ cargo build --release -p trama
 ```
 
-The release workflow leaves it unset. The public server's terms are in
-[`online-sharing-terms.md`](online-sharing-terms.md).
+How to run a server is in [`server.md`](server.md). The release workflows leave it unset.
 
 ## The default font
 
@@ -84,81 +71,57 @@ faces that are. The release workflow leaves it unset.
 
 ## What gets built
 
+Every job runs on a standard GitHub-hosted runner, at no cost.
+
 | Platform | Artifacts | Built on |
 |---|---|---|
-| macOS 11+ (universal) | `trama-<v>-macos-universal.dmg`, `trama-cli-<v>-macos-universal.zip` | `macos-15-xlarge` |
-| Windows 10+ x64 / x86 / arm64 | `trama-<v>-windows-<arch>.msi`, `trama-<v>-windows-<arch>-portable.zip` | `windows-latest` (arm64 cross-compiled) |
-| Linux x86_64 / aarch64 | `trama-<v>-linux-<arch>.{AppImage,AppImage.zsync,deb,rpm,tar.gz,flatpak}` | `ubuntu-22.04` / `ubuntu-22.04-arm` (Flatpak: 24.04) |
-| Linux riscv64 | `trama-<v>-linux-riscv64.tar.gz` (CLI smoke-tested under QEMU; needs glibc ≥ 2.39) | cross-compiled on `ubuntu-24.04` against ports.ubuntu.com riscv64 libraries |
-| FreeBSD 14 x86_64 | `trama-<v>-freebsd-x86_64.tar.gz` | FreeBSD 14.3 VM on `ubuntu-latest` |
-| Web | `trama-web-<v>.zip` (static site; [`packaging/web/README.md`](../packaging/web/README.md)) | `ubuntu-latest` |
-| Server, Linux x86_64 / aarch64 | `trama-server-<v>-linux-<arch>.tar.gz` (the collaboration server; [`server.md`](server.md)) | `ubuntu-22.04` / `ubuntu-22.04-arm` |
+| Linux x86_64 | `trama-<v>-linux-x86_64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}` | `ubuntu-22.04` |
+| macOS 11+ (universal) | `trama-<v>-macos-universal.dmg`, unsigned | `macos-15` |
+| Windows 10+ x64 | `trama-<v>-windows-x64.msi`, `trama-<v>-windows-x64-portable.zip`, unsigned | `windows-2025` |
 
-`trama-cli` ships in every desktop package (and its own macOS zip) when `apps/trama-cli`
-is in the workspace: `packaging/env.sh` sets `BINS`/`HAS_CLI` from that, and `package.ps1`,
-`trama.wxs` (`HasCli`), `nfpm.yaml` (`#cli` lines) and the Flatpak bundle follow it.
+Each workflow checks what it built before attaching it: the AppImage must start on bare Ubuntu,
+Debian, Fedora and Arch images, and the portable Windows build must report its version.
+`trama-cli` ships inside every desktop package. `trama --version` prints the version and, in CI
+builds, the commit (`TRAMA_BUILD_SHA`, read by `apps/trama/build.rs`).
 
-`trama --version` prints the version and, in CI builds, the commit (`TRAMA_BUILD_SHA`,
-read by `apps/trama/build.rs`).
+The collaboration server (`apps/trama-server`, [`server.md`](server.md)) and the web build
+(`apps/trama-web`) are not release artifacts yet; build them from source as described below.
 
-**The collaboration server** (`apps/trama-server`, binary `trama-server`, see
-[`server.md`](server.md)) is built by the `server` job with `packaging/server/package.sh`: a
-headless binary, so not part of `BINS` (which every desktop package installs) and no installer,
-desktop file or fonts. Its archive holds the binary, the licences, `server.md` and the deployment
-examples from `packaging/server/` (systemd unit, Caddyfile, nginx; the Dockerfile builds from
-the sources). Linux only for now; elsewhere operators build it with
-`cargo build --release -p trama-server`.
-
-**Fonts.** Every build job, the web one included (`web-craft-fonts`), checks out
-[craft-fonts](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main) at `craft-fonts-ref` (in `release.yml`) and
-builds with `CRAFT_FONTS_DIR` and `CRAFT_FONTS_REQUIRED=1`, so releases embed its fonts and fail
-rather than ship without them. The browser has no system fonts, so a web build without craft-fonts
-can't draw text.
-`crates/text/build.rs` reads both `fonts/manifest.txt` and `fonts/latin-manifest.txt`, so the pin
-must combine the Latin presentation catalog and the current core UI faces. Required web builds
-validate the emitted Inter Regular/SemiBold and Noto Sans Georgian Regular faces after filtering;
-a missing required face, style or asset fails the required web build. Excluded Adobe rows
-are skipped before resolving their asset paths.
-Native builds retain the permitted Latin presentation faces. Source Sans 3 and Source Serif 4
-are filtered on every target under Trama's asset policy. The web build keeps its smaller
-allowlist: Inter, Noto Sans Georgian and Archivo SemiBold when supplied. A distribution whose
-users write another script adds the manifest families it needs, comma-separated, with
-`TRAMA_WEB_FONTS` (`TRAMA_WEB_FONTS="Noto Sans Thai" trunk build --release`); a named family
-the build doesn't embed gets a warning, and each one adds its size to the wasm, which must stay
-under the size gate in `packaging/web/package.sh`. Packages carry each embedded font's licence as `OFL-<family>.txt`
-(`copy_font_licences` in `packaging/env.sh`; `Contents/Resources/Licenses` in the macOS app).
+**Fonts.** Each release job checks out
+[craft-fonts](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main) at a pinned
+commit and builds with `CRAFT_FONTS_DIR` and `CRAFT_FONTS_REQUIRED=1`, so releases embed its
+fonts and fail rather than ship without them. Packages carry each embedded font's licence as
+`OFL-<family>.txt` (`copy_font_licences` in `packaging/env.sh`; `Contents/Resources/Licenses` in
+the macOS app). Source Sans 3 and Source Serif 4 are filtered out on every target under Trama's
+asset policy.
 
 ### macOS
 
 `packaging/macos/package.sh [--arch universal|aarch64|x86_64]` builds both Apple targets with
 `MACOSX_DEPLOYMENT_TARGET=11.0`, joins them with `lipo` and assembles `Trama.app`
-(`Contents/MacOS/Trama`, `Contents/Resources/Trama.icns`, `Info.plist` from
-`Info.plist.in`). The `.icns` is generated at packaging time with `iconutil` from the committed
-`assets/app-icon/trama-<size>.png` (made by `cargo xtask icon`); it is never committed.
-Signing goes inside-out with the hardened runtime and a timestamp (empty entitlements), then the
-app is notarized and stapled, put on a DMG with an `Applications` link (`hdiutil makehybrid` +
-`convert`), and the DMG is signed, notarized and stapled. The CLI is signed with the same
-identity and notarized as a zip. `packaging/macos/verify.sh` checks the artifacts as shipped
-(strict with secrets, warnings without).
+(`Contents/MacOS/Trama`, `Contents/Resources/Trama.icns`, `Info.plist` from `Info.plist.in`).
+The `.icns` is generated at packaging time with `iconutil` from the committed
+`assets/app-icon/trama-<size>.png` (made by `cargo xtask icon`). The app gets an ad-hoc
+signature and is neither signed with a Developer ID nor notarized: on first launch, macOS asks
+the user to open it from the context menu (or System Settings ▸ Privacy & Security).
 
-Locally (no certificates: ad-hoc signature, no notarization):
+The DMG opens on Trama's own install window: the background and the window layout
+(`packaging/macos/dmg/`, made by its `generate.py` from Nodalia's shared DMG template) place the
+app and the `Applications` link.
 
 ```sh
 packaging/macos/package.sh --arch aarch64     # quick, host-only; omit --arch for universal
-packaging/macos/verify.sh --arch aarch64
 hdiutil attach -nobrowse -readonly dist/release/trama-*-macos-aarch64.dmg   # inspect, then detach
 ```
 
 ### Windows
 
 `packaging/windows/package.ps1 -Arch x64|x86|arm64` builds with `+crt-static` (no VC++
-redistributable), checks each exe's PE machine and subsystem (app GUI, CLI console), signs the
-exes, builds the MSI with WiX v5 (`trama.wxs`: per-machine, Start Menu shortcut, owner of
-`.trama`, "Open with" for SVG/PNG/JPEG, App Paths, setup wizard with art drawn from the app
-icon), validates ICE50, signs the MSI and zips a portable build. `sign.ps1` uses a `.pfx`
-(`WINDOWS_CERTIFICATE*`) or Azure Trusted Signing (`AZURE_*`), else warns and leaves files
-unsigned. `apps/trama/build.rs` embeds the icon and version info with `winresource`.
-`.github/workflows/windows-arm64.yml` installs the arm64 MSI on real ARM64 hardware nightly.
+redistributable), checks each exe's PE machine and subsystem (app GUI, CLI console), builds the
+MSI with WiX v5 (`trama.wxs`: per-machine, Start Menu shortcut, owner of `.trama`, "Open with"
+for SVG/PNG/JPEG, App Paths, setup wizard with art drawn from the app icon), validates ICE50 and
+zips a portable build. The files are unsigned, so SmartScreen may warn on first run.
+`apps/trama/build.rs` embeds the icon and version info with `winresource`.
 
 Locally on Windows: `dotnet tool install -g wix --version 5.0.2`,
 `wix extension add -g WixToolset.UI.wixext/5.0.2 WixToolset.Util.wixext/5.0.2`, then
@@ -169,29 +132,18 @@ Locally on Windows: `dotnet tool install -g wix --version 5.0.2`,
 `packaging/linux/package.sh [--formats "appimage deb rpm tar"]` stages one FHS tree (binaries,
 `dev.danielmiguelt.Trama.desktop`, hicolor icons 16–512 px, AppStream metainfo, a
 shared-mime-info file for `.trama`) and builds every format from it: `.tar.gz`; `.deb` and
-`.rpm` with [nfpm](https://nfpm.goreleaser.com/) (`nfpm.yaml` lists the dlopen'd runtime
-libraries as dependencies); and an `.AppImage` with update information and a `.zsync`, whose
-`AppRun` registers the desktop entry and icons on launch so Wayland docks show the right icon
-(`TRAMA_NO_DESKTOP_INTEGRATION=1` opts out; covered by `apprun-test.sh`) and runs the bundled
-`trama-cli` for `Trama.AppImage cli <args>`.
-`flatpak-bundle.sh` repackages the tarball into a `.flatpak` with
-`flatpak/dev.danielmiguelt.Trama.bundle.yml` (freedesktop 26.08). `flatpak/dev.danielmiguelt.Trama.yml`
-is the from-source manifest for a Flathub submission (not built in CI; vendor crates with
-`flatpak-cargo-generator.py` first). Both manifests keep the same runtime and `finish-args`
-(packaging-lint checks). Binaries are built on Ubuntu 22.04 and need glibc ≥ 2.35.
-The `linux-riscv64` job cross-compiles with `CROSS_ARCH`/`CROSS_TARGET`/`CROSS_COMPILE` and
-`EMULATOR=qemu-riscv64` and packages only the tarball (`--formats tar`).
+`.rpm` with [nfpm](https://nfpm.goreleaser.com/); and an `.AppImage` with update information and
+a `.zsync`, whose `AppRun` registers the desktop entry and icons on launch so Wayland docks show
+the right icon (`TRAMA_NO_DESKTOP_INTEGRATION=1` opts out; covered by `apprun-test.sh`) and runs
+the bundled `trama-cli` for `Trama.AppImage cli <args>`. Binaries are built on Ubuntu 22.04 and
+need glibc ≥ 2.35. `packaging/linux/flatpak/` keeps the manifests for a future Flathub
+submission; they are not built in CI.
 
 ### FreeBSD
 
-The `freebsd` job runs `packaging/freebsd/package.sh` in a FreeBSD 14.3 VM
-(`vmactions/freebsd-vm`, pinned by commit) and writes a `/usr/local`-style tarball.
+`packaging/freebsd/package.sh` writes a `/usr/local`-style tarball, and
 `packaging/freebsd/package.sh --dry-run` checks the layout on any OS with stub binaries
-(packaging-lint runs it). `.github/workflows/freebsd.yml` builds, tests and packages nightly.
-
-```sh
-tar -xzf trama-<v>-freebsd-x86_64.tar.gz --strip-components 1 -C /usr/local
-```
+(packaging-lint runs it). `.github/workflows/freebsd.yml` builds and tests on FreeBSD.
 
 ### Web
 
@@ -209,22 +161,13 @@ LTO, one codegen unit; `data-cargo-profile` in `apps/trama-web/index.html`) and 
 interpreter and collaboration code landed) with the desktop `release` profile; 0.3.1 17.2 MiB
 with `web-release`. The desktop builds keep `release`.
 
-## Secrets
-
-All signing secrets are **`release`-environment secrets** (deployment branches: `release` only),
-never repo or org secrets. Names (identical in every app): `APPLE_CERTIFICATE`,
-`APPLE_CERTIFICATE_PASSWORD`, `KEYCHAIN_PASSWORD`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID`,
-`WINDOWS_CERTIFICATE`, `WINDOWS_CERTIFICATE_PASSWORD`, `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`,
-`AZURE_CLIENT_SECRET`, `AZURE_SIGNING_ENDPOINT`, `AZURE_SIGNING_ACCOUNT`, `AZURE_CERT_PROFILE`.
-Each is optional: a missing one gives an unsigned artifact and a `::warning::`. An org admin
-provisions the environment, ruleset and secrets, and
-adds the repo to the org's Default runner group so `macos-15-xlarge` can pick up the job.
-
 ## Checks
 
-- `.github/workflows/ci.yml` (PRs and `main`, Linux only): fmt, clippy `-D warnings`, tests,
-  layering, asset attribution, wasm32 check. No macOS in CI (playbook).
-- `.github/workflows/packaging-lint.yml` (changes to `packaging/` or workflows): actionlint,
-  shellcheck, the AppRun test, a PowerShell parse, the MSI icon check, the FreeBSD dry run, a
-  grep for other products' names, xmllint, `desktop-file-validate`, `appstreamcli validate` and
-  the Flatpak manifest agreement check.
+- `.github/workflows/ci.yml` (pull requests and `main`): Foundation's Rust gate (fmt, clippy
+  `-D warnings`, tests, layering, asset attribution, wasm32 and the example plugins), the
+  licence allowlist (`cargo deny check licenses` against `deny.toml`), git dependencies only
+  from getnodalia, and no upstream names (`python3 scripts/rebrand.py check`).
+- `.github/workflows/packaging-lint.yml` (changes to `packaging/` or workflows): shellcheck, the
+  AppRun test, a PowerShell parse, the FreeBSD dry run, xmllint, `desktop-file-validate` and
+  `appstreamcli validate`.
+- `.github/workflows/release-notes.yml`: a release version needs its notes.

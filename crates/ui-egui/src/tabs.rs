@@ -697,7 +697,33 @@ pub fn live_lost(app: &FigApp, uid: u64) -> bool {
 }
 
 /// Minimise, maximise/restore and close at the right end of the title bar; returns their width.
+/// NDL's round controls everywhere but Windows, which keeps its own caption buttons.
 fn window_buttons(app: &mut FigApp, ui: &mut Ui, bar: Rect) -> f32 {
+    if cfg!(target_os = "windows") { windows_caption_buttons(app, ui, bar) } else { nodalia_window_buttons(app, ui, bar) }
+}
+
+/// NDL's round window controls (`nodalia_theme::window_controls`), kept a little from the edge.
+fn nodalia_window_buttons(app: &mut FigApp, ui: &mut Ui, bar: Rect) -> f32 {
+    use nodalia_theme::window_controls::{Action, Labels, WIDTH, show};
+    let t = Tokens::get(ui.ctx());
+    let mode = if t.dark { nodalia_theme::Mode::Dark } else { nodalia_theme::Mode::Light };
+    let palette = mode.palette_with(crate::theme::TRAMA);
+    let (max, focused) = ui.input(|i| (i.viewport().maximized.unwrap_or(false), i.viewport().focused.unwrap_or(true)));
+    let margin = 8.0;
+    let rect = Rect::from_min_max(pos2(bar.max.x - WIDTH - margin, bar.min.y), pos2(bar.max.x - margin, bar.max.y));
+    let labels = Labels { minimize: tr("Minimize"), maximize: tr("Maximize"), restore: tr("Restore"), close: tr("Close") };
+    match show(ui, rect, &palette, mode, focused, max, labels) {
+        Some(Action::Minimize) => ui.ctx().send_viewport_cmd(egui::ViewportCommand::Minimized(true)),
+        Some(Action::Maximize) => ui.ctx().send_viewport_cmd(egui::ViewportCommand::Maximized(true)),
+        Some(Action::Restore) => ui.ctx().send_viewport_cmd(egui::ViewportCommand::Maximized(false)),
+        Some(Action::Close) => crate::windows::request_close(app, ui.ctx()),
+        None => {}
+    }
+    WIDTH + 2.0 * margin
+}
+
+/// Windows' own caption buttons: square, the close one red under the pointer.
+fn windows_caption_buttons(app: &mut FigApp, ui: &mut Ui, bar: Rect) -> f32 {
     const W: f32 = 46.0;
     let t = Tokens::get(ui.ctx());
     let max = ui.input(|i| i.viewport().maximized.unwrap_or(false));

@@ -178,7 +178,8 @@ impl Invite {
             return Err(NOT.into());
         }
         let (scheme, rest) = link.split_once("://").ok_or(NOT)?;
-        let (server, query) = if scheme.eq_ignore_ascii_case("figcraft") {
+        let (server, query) = if scheme.eq_ignore_ascii_case("trama") || scheme.eq_ignore_ascii_case("figcraft") {
+            // rebrand: keep (files saved before the rename)
             let (path, query) = rest.split_once('?').unwrap_or((rest, ""));
             if !path.trim_end_matches('/').eq_ignore_ascii_case("join") {
                 return Err(NOT.into());

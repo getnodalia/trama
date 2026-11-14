@@ -17,7 +17,7 @@ use crate::cmd::{CommandSpec, find_command};
 use crate::params::{get, num, string};
 use crate::{EngineError, Result, Session, bad, spec};
 
-pub use trama_plugin::{Access, MANIFEST_FILE, Manifest, Panel, Param, ParamKind};
+pub use trama_plugin::{Access, LEGACY_MANIFEST, MANIFEST_FILE, Manifest, Panel, Param, ParamKind};
 
 /// What one plugin may keep in its settings (keys and JSON values, in bytes), and its longest key.
 const MAX_SETTINGS_BYTES: usize = 64 * 1024;
@@ -383,7 +383,7 @@ pub(crate) fn read_file(path: &std::path::Path, max: usize) -> Result<Vec<u8>> {
 fn load_from_disk(cmd: &str, path: &str) -> Result<(Manifest, String, Vec<u8>)> {
     let mut file = std::path::PathBuf::from(crate::library::absolute_path(path.trim()));
     if crate::file_access::is_dir(&file) {
-        file.push(MANIFEST_FILE);
+        file = manifest_in(&file);
     }
     let text = read_file(&file, trama_plugin::manifest::MAX_MANIFEST_BYTES)?;
     let text = String::from_utf8(text).map_err(|_| bad(cmd, "the manifest isn't UTF-8 text"))?;
@@ -395,6 +395,15 @@ fn load_from_disk(cmd: &str, path: &str) -> Result<(Manifest, String, Vec<u8>)> 
 #[cfg(target_arch = "wasm32")]
 fn load_from_disk(cmd: &str, _path: &str) -> Result<(Manifest, String, Vec<u8>)> {
     Err(bad(cmd, "there are no files in the browser: pass `manifest` and `wasm` (base64)"))
+}
+
+/// The manifest file in plugin folder `dir`: `trama-plugin.json`, or the file name plugins made
+/// before the rename use when only that one is there.
+#[cfg(not(target_arch = "wasm32"))]
+pub(crate) fn manifest_in(dir: &std::path::Path) -> std::path::PathBuf {
+    let current = dir.join(MANIFEST_FILE);
+    let legacy = dir.join(LEGACY_MANIFEST);
+    if !crate::file_access::exists(&current) && crate::file_access::exists(&legacy) { legacy } else { current }
 }
 
 /// The module a manifest at `manifest_file` names.

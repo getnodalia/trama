@@ -1,13 +1,15 @@
-//! Software updates, background check at startup, and startup prompt modal.
+//! Software updates: Help ▸ Check for Updates, the check at start, and their windows.
+//!
+//! The flow and the windows are `nodalia-update`'s, shared with the other Nodalia apps: it replaces
+//! an AppImage or `Trama.app`, installs the MSI on Windows, and points other installs at the
+//! release page. This file is what is Trama's own: when an update may close the app.
 
 use crate::FigApp;
 
 #[cfg(target_arch = "wasm32")]
 use crate::i18n::tr;
 #[cfg(not(target_arch = "wasm32"))]
-use craft_update::updater::{Action, Status, Updater};
-#[cfg(not(target_arch = "wasm32"))]
-use craft_update::{CheckResultDialog, CheckResultResponse};
+use nodalia_update::egui::{Action, Updater};
 
 pub(crate) struct Runtime {
     #[cfg(not(target_arch = "wasm32"))]
@@ -32,7 +34,7 @@ impl Default for Runtime {
     fn default() -> Self {
         Self {
             #[cfg(not(target_arch = "wasm32"))]
-            updater: Updater::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")),
+            updater: Updater::new(crate::UPDATE_APP).with_accent(crate::UPDATE_ACCENT),
             #[cfg(not(target_arch = "wasm32"))]
             startup_check: false,
             #[cfg(not(target_arch = "wasm32"))]
@@ -52,13 +54,6 @@ impl FigApp {
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_startup_update_check(&mut self, on: bool) {
         self.updates_rt.startup_check = on;
-    }
-
-    /// Start the install of an update that waits for the app to close. The desktop app calls this
-    /// when it exits, before it ends the process; later calls do nothing.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn start_pending_update(&mut self) {
-        self.updates_rt.updater.start_pending_update();
     }
 }
 
@@ -87,41 +82,39 @@ pub(crate) fn tick(app: &mut FigApp, ctx: &egui::Context) {
         } else if rt.startup_check {
             rt.updater.check_at_start(ctx);
         }
-        rt.updater.tick(ctx);
+        let action = rt.updater.poll();
+        act(ctx, action);
     }
     #[cfg(target_arch = "wasm32")]
     let _ = (app, ctx);
 }
 
-/// Whether the check result window shows: for every status but idle (a requested check, and the
-/// first start after an update, which reports that it installed or why it failed), and never over
-/// the startup prompt.
 #[cfg(not(target_arch = "wasm32"))]
-fn result_window_shows(status: &Status, prompt_open: bool) -> bool {
-    !prompt_open && !matches!(status, Status::Idle)
+fn act(ctx: &egui::Context, action: Action) {
+    match action {
+        Action::OpenUrl(url) => ctx.open_url(egui::OpenUrl::new_tab(url)),
+        // The new version is starting, or a helper waits for this process to end. The install only
+        // ran once nothing was unsaved, so the root window's guarded close goes through; exit anyway
+        // if it has not closed soon.
+        Action::Exit => {
+            ctx.send_viewport_cmd_to(egui::ViewportId::ROOT, egui::ViewportCommand::Close);
+            std::thread::spawn(|| {
+                std::thread::sleep(std::time::Duration::from_secs(5));
+                std::process::exit(0);
+            });
+        }
+        Action::None => {}
+    }
 }
 
 pub(crate) fn show(app: &mut FigApp, ctx: &egui::Context) {
     #[cfg(not(target_arch = "wasm32"))]
     {
-        // The updater asks to close only when no document has unsaved changes; the install starts when the app exits.
+        // An install waits until no document holds unsaved changes.
         let clean = !app.session.docs.iter().any(|d| d.is_dirty());
-        match app.updates_rt.updater.show_if(ctx, clean) {
-            Action::OpenUrl(url) => ctx.open_url(egui::OpenUrl::new_tab(url)),
-            // The whole application, not just the window that drew the prompt: the root window's guarded close.
-            Action::Close => ctx.send_viewport_cmd_to(egui::ViewportId::ROOT, egui::ViewportCommand::Close),
-            Action::None => {}
-        }
-        let rt = &mut app.updates_rt;
-        if result_window_shows(rt.updater.status(), rt.updater.prompt_open()) {
-            match CheckResultDialog::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")).show(ctx, rt.updater.status()) {
-                CheckResultResponse::None => {}
-                CheckResultResponse::Close => rt.updater.dismiss_status(),
-                CheckResultResponse::CheckAgain => rt.check_requested = true,
-                // The next `show_if` asks the window to close once no document has unsaved changes.
-                CheckResultResponse::RestartToUpdate => rt.updater.restart_to_update(),
-            }
-        }
+        let language = nodalia_update::Language::from_code(crate::i18n::current().map_or("en", |l| l.code));
+        let action = app.updates_rt.updater.show(ctx, language, clean);
+        act(ctx, action);
     }
 
     #[cfg(target_arch = "wasm32")]
@@ -154,23 +147,43 @@ pub(crate) fn show(app: &mut FigApp, ctx: &egui::Context) {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod tests {
     use super::*;
+    use nodalia_update::egui::Status;
 
     #[test]
-    fn result_window_shows_every_status_but_idle() {
-        let shown = [
-            Status::Checking,
-            Status::UpToDate,
-            Status::Failed("no network".into()),
-            Status::Installing,
-            Status::Ready,
-            Status::Managed,
-            Status::Updated("0.2.0".into()),
-            Status::InstallFailed("disk full".into()),
-        ];
-        for status in &shown {
-            assert!(result_window_shows(status, false), "{status:?}");
-            assert!(!result_window_shows(status, true), "{status:?} over the prompt");
+    fn the_releases_are_tramas_own() {
+        assert_eq!(crate::UPDATE_APP.repo, "getnodalia/trama");
+        assert_eq!(crate::UPDATE_APP.bundle, "Trama.app");
+        assert_eq!(crate::UPDATE_APP.version, env!("CARGO_PKG_VERSION"));
+    }
+
+    /// The names Trama's release workflows give its packages, and the systems whose updater must
+    /// find each one: a rename in `packaging/` the updater does not know would strand those users.
+    #[test]
+    fn every_published_package_is_found_by_the_updater_it_is_for() {
+        let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../../packaging");
+        let read = |path: &str| std::fs::read_to_string(format!("{root}/{path}")).unwrap();
+        let macos = read("macos/package.sh");
+        assert!(macos.contains(r#"APP="$WORK/Trama.app""#), "the bundle the updater swaps");
+        assert!(macos.contains(r#"DMG="$DIST/trama-$VERSION-macos-$ARCH.dmg""#));
+        for (package, systems) in [
+            ("trama-1.0.0-macos-universal.dmg", &[("macos", "aarch64"), ("macos", "x86_64")][..]),
+            ("trama-1.0.0-linux-x86_64.AppImage", &[("linux", "x86_64")]),
+            ("trama-1.0.0-windows-x64.msi", &[("windows", "x86_64")]),
+        ] {
+            let found = nodalia_update::systems_for_package(package);
+            for system in systems {
+                assert!(found.contains(system), "{package} is not offered to {system:?}");
+            }
         }
-        assert!(!result_window_shows(&Status::Idle, false));
+    }
+
+    #[test]
+    fn a_check_at_start_is_silent_until_it_finds_something() {
+        let mut rt = Runtime::default();
+        assert!(!rt.updater.is_open());
+        rt.updater.set_status(Status::Checking { user: false });
+        assert!(!rt.updater.is_open());
+        rt.updater.set_status(Status::Checking { user: true });
+        assert!(rt.updater.is_open());
     }
 }

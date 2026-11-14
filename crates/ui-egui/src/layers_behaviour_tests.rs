@@ -818,10 +818,14 @@ fn off_centre(u: &mut Ui, hint: &str) -> f32 {
     });
     let text = text.unwrap_or_else(|| panic!("no {hint:?}"));
     let fill = crate::theme::Tokens::get(&u.ctx).field;
-    let field = shapes.iter().find_map(|s| match s {
-        egui::Shape::Rect(r) if r.fill == fill && r.rect.contains(text) => Some(r.rect),
-        _ => None,
-    });
+    // The smallest such rectangle: in the light theme a field and the panel around it share a fill.
+    let field = shapes
+        .iter()
+        .filter_map(|s| match s {
+            egui::Shape::Rect(r) if r.fill == fill && r.rect.contains(text) => Some(r.rect),
+            _ => None,
+        })
+        .min_by(|a, b| a.area().total_cmp(&b.area()));
     (field.unwrap_or_else(|| panic!("no field around {hint:?}")).center().y - text.y).abs()
 }
 

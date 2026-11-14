@@ -65,6 +65,9 @@ pub(crate) fn flat(shapes: &[egui::epaint::ClippedShape]) -> Vec<Shape> {
 impl Harness {
     pub(crate) fn new() -> (Self, NodeId) {
         let mut s = Session::new();
+        // Trama ships with no server built in; these tests share online through one set in
+        // Preferences, as a user would.
+        s.prefs.publish_server = "wss://example.test/".into();
         let rect = id(&s.execute("shape.rectangle", &json!({"x": 100, "y": 100, "width": 200, "height": 100})).unwrap());
         s.execute("select.set", &json!({"ids": []})).unwrap();
         let events = Arc::new(Mutex::new(Vec::new()));

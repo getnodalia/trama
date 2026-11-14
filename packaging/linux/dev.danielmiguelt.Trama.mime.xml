@@ -7,6 +7,7 @@
     <comment>Trama document</comment>
     <icon name="dev.danielmiguelt.Trama"/>
     <glob pattern="*.trama"/>
+    <glob pattern="*.figcraft"/> <!-- rebrand: keep (saved before the rename) -->
   </mime-type>
   <!-- Sketch 48 and newer save a zip of JSON. -->
   <mime-type type="application/x-sketch">

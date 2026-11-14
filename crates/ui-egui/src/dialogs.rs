@@ -151,15 +151,19 @@ fn about_body(ui: &mut egui::Ui, t: &Tokens) {
         });
     });
     ui.add_space(12.0);
-    ui.label(tr(
-        "Interface design and prototyping. A free, open-source, clean-room design tool written from scratch in Rust, part of the Nodalia apps.",
-    ));
+    ui.label(tr("Interface design and prototyping. A free, open-source design tool written in Rust, part of Nodalia."));
     ui.add_space(8.0);
     ui.hyperlink_to("getnodalia.com/trama", "https://getnodalia.com/trama");
-    ui.hyperlink_to(tr("Join us on Discord"), "https://github.com/getnodalia/trama/issues");
+    ui.hyperlink_to(tr("Source code and issues on GitHub"), "https://github.com/getnodalia/trama");
     ui.add_space(8.0);
     ui.label(
         RichText::new(tr("Dual-licensed MIT OR Apache-2.0. Made by the Nodalia team and community.")).color(t.text_secondary).font(regular(11.0)),
+    );
+    // The upstream project's credit, as NOTICE and LICENSE-MIT keep it.
+    ui.label(
+        RichText::new(tr("Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences."))
+            .color(t.text_secondary)
+            .font(regular(11.0)),
     );
 }
 

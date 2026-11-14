@@ -134,9 +134,6 @@ impl eframe::App for App {
         let copies = recovery::lock(&self.recovery).take();
         with_app(|fig| {
             services::shutdown(fig, services::config_dir().as_deref(), copies);
-            // An update that waits for the app to close installs now: the app lives in a
-            // thread-local, and the process can end without dropping it.
-            fig.start_pending_update();
         });
         // Everything is kept: end before the windows' teardown, where AppKit's Touch Bar support
         // throws on the content view AccessKit restores (craft-libs#3, #781).
@@ -146,11 +143,6 @@ impl eframe::App for App {
 }
 
 fn main() -> eframe::Result {
-    // Windows: the update helper is a copy of this program started with `--finish-update`.
-    #[cfg(windows)]
-    if let Some(result) = craft_update::self_update::finish(&trama_ui_egui::UPDATE_APP, &std::env::args_os().skip(1).collect::<Vec<_>>()) {
-        std::process::exit(i32::from(result.is_err()));
-    }
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn")).init();
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.iter().any(|a| a == "--version" || a == "-V") {
@@ -339,27 +331,25 @@ fn opens_new_file(first_run: bool, start_on_home: bool, control: bool) -> bool {
 /// decides (KDE/Sway/Hyprland/COSMIC and X11 keep the native frame, GNOME gets the custom one).
 fn desktop_title_bar() -> trama_ui_egui::TitleBar {
     let choice = craft_window::Choice::probe(craft_window::Prefix::new("TRAMA"));
-    title_bar_for(choice.into_frame())
+    let forced_desktop = choice.overridden() == Some(false);
+    title_bar_for(choice.into_frame(), forced_desktop)
 }
 
-/// Map craft-window's [`craft_window::Frame`] onto Trama's own [`trama_ui_egui::TitleBar`].
+/// Map craft-window's [`craft_window::Frame`] onto Trama's own [`trama_ui_egui::TitleBar`],
+/// following the Nodalia Design Language: NDL's round window controls on Linux and the BSDs only,
+/// each platform's own controls on macOS and Windows.
 ///
-/// `Frame::App` means the app draws its own frame — Trama's custom title bar. `Frame::Desktop`
-/// means the desktop draws it, but Trama keeps each platform's existing look there:
-/// - macOS: the inset title bar with its traffic lights (`TitleBar::Inset`), unchanged.
-/// - Windows: Trama's own custom title bar (`TitleBar::Custom`), unchanged — Windows never used
-///   the plain native frame, and craft-window returning `Desktop` on Windows must not change that.
-/// - Linux and the BSDs: the compositor's native frame (`TitleBar::Native`). This is the only
-///   behaviour change: KDE and the other server-side-decoration compositors now keep their frame.
-fn title_bar_for(frame: craft_window::Frame) -> trama_ui_egui::TitleBar {
+/// - macOS: the inset title bar with the system's traffic lights (`TitleBar::Inset`).
+/// - Windows: Trama's custom title bar with Windows' own caption buttons (`TitleBar::Custom`).
+/// - Linux and the BSDs: Trama draws the frame with NDL's controls (`TitleBar::Custom`), unless
+///   `TRAMA_TITLEBAR=desktop` (or `system`) forced the desktop's own (`forced_desktop`).
+fn title_bar_for(frame: craft_window::Frame, forced_desktop: bool) -> trama_ui_egui::TitleBar {
     use trama_ui_egui::TitleBar;
     match frame {
         craft_window::Frame::Desktop if cfg!(target_os = "macos") => TitleBar::Inset,
-        // Windows kept Trama's own title bar before this change; keep it.
         craft_window::Frame::Desktop if cfg!(target_os = "windows") => TitleBar::Custom,
-        craft_window::Frame::Desktop => TitleBar::Native,
-        // The app draws the frame (GNOME's Wayland session, or a `TRAMA_TITLEBAR=app` override).
-        craft_window::Frame::App(_) => TitleBar::Custom,
+        craft_window::Frame::Desktop if forced_desktop => TitleBar::Native,
+        craft_window::Frame::Desktop | craft_window::Frame::App(_) => TitleBar::Custom,
     }
 }
 
@@ -382,29 +372,26 @@ mod title_bar_tests {
     #[test]
     fn the_app_frame_maps_to_the_custom_title_bar() {
         let layout = craft_window::Layout::default();
-        let bar = super::title_bar_for(craft_window::Frame::App(layout));
+        let bar = super::title_bar_for(craft_window::Frame::App(layout), false);
         assert_eq!(bar, TitleBar::Custom);
         let viewport = super::window_chrome(egui::ViewportBuilder::default(), bar);
         assert_eq!(viewport.decorations, Some(false));
     }
 
-    /// craft-window's desktop frame keeps each platform's existing look: macOS its inset traffic
-    /// lights, Windows Trama's own custom title bar (unchanged), and Linux/BSD the compositor's
-    /// native frame. The Linux case is the only behaviour change: KDE and the other
-    /// server-side-decoration compositors now keep their native frame.
+    /// The desktop frame keeps macOS's inset traffic lights and Windows' own caption buttons; on
+    /// Linux and the BSDs Trama draws NDL's controls unless the desktop's were asked for.
     #[test]
     fn the_desktop_frame_is_mapped_per_platform() {
-        let bar = super::title_bar_for(craft_window::Frame::Desktop);
+        let bar = super::title_bar_for(craft_window::Frame::Desktop, false);
+        let forced = super::title_bar_for(craft_window::Frame::Desktop, true);
         if cfg!(target_os = "macos") {
-            assert_eq!(bar, TitleBar::Inset);
+            assert_eq!((bar, forced), (TitleBar::Inset, TitleBar::Inset));
         } else if cfg!(target_os = "windows") {
-            // Windows kept its own title bar before and must keep it now.
-            assert_eq!(bar, TitleBar::Custom);
-            let viewport = super::window_chrome(egui::ViewportBuilder::default(), bar);
-            assert_eq!(viewport.decorations, Some(false));
+            assert_eq!((bar, forced), (TitleBar::Custom, TitleBar::Custom));
         } else {
-            assert_eq!(bar, TitleBar::Native);
-            let viewport = super::window_chrome(egui::ViewportBuilder::default(), bar);
+            assert_eq!(bar, TitleBar::Custom, "NDL's window controls by default");
+            assert_eq!(forced, TitleBar::Native, "TRAMA_TITLEBAR=desktop keeps the desktop's frame");
+            let viewport = super::window_chrome(egui::ViewportBuilder::default(), forced);
             assert_eq!(viewport.decorations, Some(true));
         }
     }
