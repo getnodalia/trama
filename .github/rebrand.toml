@@ -60,8 +60,9 @@ skip = [
     "NOTICE",
     "LICENSE-*",
     "licenses/*",
-    # The record of what came from upstream.
+    # The record of what came from upstream, and of the move to Nodalia.
     "docs/upstream.md",
+    "NODALIA_MIGRATION.md",
 ]
 
 # Run after renaming: shorter names change how rustfmt wraps lines and sorts imports.
@@ -227,4 +228,3 @@ to = "trama"
 [[replace]]
 from = "FIGCRAFT"
 to = "TRAMA"
-
