@@ -5,8 +5,8 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::mpsc::{Receiver, channel};
 use std::time::{Duration, Instant};
 
-use figcraft_collab::message::{self, ClientMsg, ServerMsg, Signal};
-use figcraft_collab::{Client, Server};
+use trama_collab::message::{self, ClientMsg, ServerMsg, Signal};
+use trama_collab::{Client, Server};
 use tungstenite::{Bytes, Message};
 
 use super::{Admission, Backend, Closing, Hosting};

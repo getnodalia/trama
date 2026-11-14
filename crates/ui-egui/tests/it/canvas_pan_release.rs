@@ -3,9 +3,9 @@
 //! must not move the view.
 
 use egui::{Event, Key, PointerButton, Pos2, RawInput, Rect, vec2};
-use figcraft_engine::Session;
-use figcraft_ui_egui::{FigApp, NoServices};
 use serde_json::json;
+use trama_engine::Session;
+use trama_ui_egui::{FigApp, NoServices};
 
 struct Frames {
     ctx: egui::Context,

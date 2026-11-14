@@ -1,8 +1,8 @@
 //! Top-level paint variable props share `variable.bind` behaviour in one transaction (#1000).
 
-use figcraft_color::Color;
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_color::Color;
+use trama_doc::NodeId;
 
 use crate::{Session, params::id_of};
 

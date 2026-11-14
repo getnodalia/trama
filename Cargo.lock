@@ -253,7 +253,7 @@ dependencies = [
  "objc2-foundation 0.3.2",
  "parking_lot",
  "percent-encoding",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
  "wl-clipboard-rs",
  "x11rb",
 ]
@@ -1001,7 +1001,7 @@ dependencies = [
 [[package]]
 name = "craft-atomic"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "rustix 1.1.5",
 ]
@@ -1009,12 +1009,12 @@ dependencies = [
 [[package]]
 name = "craft-docpath"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 
 [[package]]
 name = "craft-font-catalog"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "fontique",
  "skrifa 0.47.0",
@@ -1025,7 +1025,7 @@ dependencies = [
 [[package]]
 name = "craft-font-store"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-atomic",
  "craft-font-catalog",
@@ -1041,12 +1041,12 @@ dependencies = [
 [[package]]
 name = "craft-fonts-build"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 
 [[package]]
 name = "craft-i18n"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "fixed_decimal",
  "icu_decimal",
@@ -1069,7 +1069,7 @@ dependencies = [
 [[package]]
 name = "craft-keymap"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "egui",
  "serde",
@@ -1079,7 +1079,7 @@ dependencies = [
 [[package]]
 name = "craft-menu"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-keymap",
  "craft-quit",
@@ -1092,7 +1092,7 @@ dependencies = [
 [[package]]
 name = "craft-quit"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "dispatch2",
  "egui",
@@ -1103,7 +1103,7 @@ dependencies = [
 [[package]]
 name = "craft-settings"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-atomic",
  "dirs",
@@ -1114,7 +1114,7 @@ dependencies = [
 [[package]]
 name = "craft-ui"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-fonts-build",
  "craft-i18n",
@@ -1132,36 +1132,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "craft-update"
-version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e98299546f5c5c3c22388d16507f8b5e61a5f280#e98299546f5c5c3c22388d16507f8b5e61a5f280"
-dependencies = [
- "chrono",
- "dunce",
- "egui",
- "flate2",
- "getrandom 0.3.4",
- "image",
- "log",
- "plist",
- "rustix 1.1.5",
- "semver",
- "serde",
- "serde_json",
- "sha2",
- "tar",
- "tempfile",
- "ureq",
- "verifysign",
- "winreg",
- "winsafe",
- "zip 9.1.1",
-]
-
-[[package]]
 name = "craft-web-api"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
+source = "git+https://github.com/getnodalia/foundation?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
 dependencies = [
  "js-sys",
  "serde_json",
@@ -1172,7 +1145,7 @@ dependencies = [
 [[package]]
 name = "craft-web-host"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
+source = "git+https://github.com/getnodalia/foundation?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
 dependencies = [
  "wasm-bindgen",
  "web-sys",
@@ -1181,7 +1154,7 @@ dependencies = [
 [[package]]
 name = "craft-window"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "wayland-client",
 ]
@@ -1315,12 +1288,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "deranged"
-version = "0.5.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e9de72ce2ad1f90dc62fa25f0f430ef85eb4b0d8fa0be4f30373bc40a21d28e"
-
-[[package]]
 name = "derive_arbitrary"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1376,7 +1343,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1439,15 +1406,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8b14ccef22fc6f5a8f4d7d768562a182c04ce9a3b3157b91390b52ddfdf1a76"
 
 [[package]]
-name = "dunce"
-version = "1.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
-
-[[package]]
 name = "ecolor"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "emath",
@@ -1456,7 +1417,7 @@ dependencies = [
 [[package]]
 name = "eframe"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1491,7 +1452,7 @@ dependencies = [
 [[package]]
 name = "egui"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "accesskit",
  "ahash",
@@ -1510,7 +1471,7 @@ dependencies = [
 [[package]]
 name = "egui-wgpu"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1529,7 +1490,7 @@ dependencies = [
 [[package]]
 name = "egui-winit"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "accesskit_winit",
  "arboard",
@@ -1555,7 +1516,7 @@ dependencies = [
 [[package]]
 name = "egui_extras"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "egui",
@@ -1568,7 +1529,7 @@ dependencies = [
 [[package]]
 name = "egui_glow"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "egui",
@@ -1587,7 +1548,7 @@ checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 [[package]]
 name = "emath"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
 ]
@@ -1677,7 +1638,7 @@ dependencies = [
 [[package]]
 name = "epaint"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1703,7 +1664,7 @@ dependencies = [
 [[package]]
 name = "epaint_default_fonts"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[package]]
 name = "equivalent"
@@ -1718,7 +1679,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1782,394 +1743,6 @@ name = "fearless_simd"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b97b65636e5b9ef369943878ac74335ba1c55c1cb6adbf1e2c293c624248d693"
-
-[[package]]
-name = "figcraft"
-version = "0.18.1"
-dependencies = [
- "arboard",
- "craft-menu",
- "craft-settings",
- "craft-update",
- "craft-window",
- "eframe",
- "egui",
- "env_logger",
- "figcraft-collab-net",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-text",
- "figcraft-ui-egui",
- "fmv-macos-events",
- "image",
- "log",
- "objc2-app-kit 0.3.2",
- "objc2-foundation 0.3.2",
- "rfd",
- "serde_json",
- "wat",
- "webbrowser",
- "windows",
- "winit",
- "winresource",
- "winsafe",
- "zbus",
-]
-
-[[package]]
-name = "figcraft-cli"
-version = "0.18.1"
-dependencies = [
- "clap",
- "clap_complete",
- "clap_mangen",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-mcp",
- "figcraft-render",
- "figcraft-svg",
- "figcraft-text",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "figcraft-collab"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "flate2",
- "imbl",
- "postcard",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "figcraft-collab-net"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "figcraft-collab",
- "figcraft-doc",
- "figcraft-engine",
- "getrandom 0.4.3",
- "js-sys",
- "log",
- "proptest",
- "rustls",
- "rustls-pki-types",
- "serde_json",
- "tungstenite",
- "wasm-bindgen",
- "web-sys",
- "web-time",
- "webpki-roots",
- "windows-registry",
-]
-
-[[package]]
-name = "figcraft-color"
-version = "0.18.1"
-dependencies = [
- "kurbo",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "figcraft-doc"
-version = "0.18.1"
-dependencies = [
- "figcraft-color",
- "figcraft-geom",
- "imbl",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "figcraft-engine"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "craft-docpath",
- "craft-font-catalog",
- "craft-font-store",
- "deunicode",
- "figcraft-collab",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-layout",
- "figcraft-pathops",
- "figcraft-pdf",
- "figcraft-plugin",
- "figcraft-render",
- "figcraft-svg",
- "figcraft-text",
- "figcraft-vectordrawable",
- "image",
- "log",
- "regex",
- "same-file",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "wat",
- "web-time",
- "zip 2.6.1",
-]
-
-[[package]]
-name = "figcraft-format"
-version = "0.18.1"
-dependencies = [
- "figcraft-doc",
- "figcraft-layout",
- "figcraft-pathops",
- "flate2",
- "image",
- "ruzstd",
- "serde",
- "serde_json",
- "sha1",
- "sha2",
- "zip 2.6.1",
-]
-
-[[package]]
-name = "figcraft-geom"
-version = "0.18.1"
-dependencies = [
- "kurbo",
- "serde",
-]
-
-[[package]]
-name = "figcraft-layout"
-version = "0.18.1"
-dependencies = [
- "figcraft-doc",
- "figcraft-geom",
-]
-
-[[package]]
-name = "figcraft-mcp"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "figcraft-collab-net",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-geom",
- "figcraft-render",
- "image",
- "log",
- "proptest",
- "serde_json",
-]
-
-[[package]]
-name = "figcraft-pathops"
-version = "0.18.1"
-dependencies = [
- "figcraft-doc",
- "figcraft-geom",
- "linesweeper",
-]
-
-[[package]]
-name = "figcraft-pdf"
-version = "0.18.1"
-dependencies = [
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "flate2",
- "krilla",
- "log",
- "thiserror 2.0.21",
- "tiny-skia 0.12.0",
-]
-
-[[package]]
-name = "figcraft-plugin"
-version = "0.18.1"
-dependencies = [
- "figcraft-color",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
- "wasmi",
- "wat",
-]
-
-[[package]]
-name = "figcraft-render"
-version = "0.18.1"
-dependencies = [
- "crc32fast",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-text",
- "image",
- "log",
- "moxcms",
- "png",
- "rayon",
- "tiny-skia 0.12.0",
-]
-
-[[package]]
-name = "figcraft-server"
-version = "0.18.1"
-dependencies = [
- "chrono",
- "crc32fast",
- "ctrlc",
- "env_logger",
- "figcraft-collab",
- "figcraft-collab-net",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-plugin",
- "log",
- "rustix 1.1.5",
- "serde",
- "serde_json",
- "sha2",
- "toml",
- "tungstenite",
- "wat",
- "zip 2.6.1",
-]
-
-[[package]]
-name = "figcraft-svg"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "flate2",
- "thiserror 2.0.21",
- "usvg",
-]
-
-[[package]]
-name = "figcraft-text"
-version = "0.18.1"
-dependencies = [
- "core-text",
- "craft-font-catalog",
- "figcraft-doc",
- "figcraft-geom",
- "harfrust 0.13.3",
- "icu_segmenter",
- "log",
- "objc2 0.6.5",
- "png",
- "skrifa 0.47.0",
- "unicode-bidi",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "figcraft-ui-egui"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "craft-ui",
- "craft-update",
- "egui",
- "egui_extras",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-layout",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "image",
- "log",
- "serde",
- "serde_json",
- "toml",
- "wat",
- "web-time",
-]
-
-[[package]]
-name = "figcraft-vectordrawable"
-version = "0.18.1"
-dependencies = [
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "roxmltree 0.21.2",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "figcraft-web"
-version = "0.18.1"
-dependencies = [
- "base64 0.22.1",
- "craft-web-api",
- "craft-web-host",
- "eframe",
- "egui",
- "figcraft-collab-net",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-text",
- "figcraft-ui-egui",
- "js-sys",
- "log",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
-name = "filetime"
-version = "0.2.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c287a33c7f0a620c38e641e7f60827713987b3c0f26e8ddc9462cc69cf75759"
-dependencies = [
- "cfg-if",
- "libc",
-]
 
 [[package]]
 name = "find-msvc-tools"
@@ -2446,11 +2019,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
 dependencies = [
  "cfg-if",
- "js-sys",
  "libc",
  "r-efi 6.0.0",
  "rand_core 0.10.1",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -3161,7 +2732,7 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 [[package]]
 name = "krilla"
 version = "0.8.2"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "base64 0.22.1",
  "bumpalo",
@@ -3452,6 +3023,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "nodalia-theme"
+version = "0.1.0-alpha.1"
+source = "git+https://github.com/getnodalia/nodalia-design?rev=05dfff0a4dde3432b24d6596da4b2e4988736d37#05dfff0a4dde3432b24d6596da4b2e4988736d37"
+dependencies = [
+ "egui",
+]
+
+[[package]]
+name = "nodalia-update"
+version = "0.1.0-alpha.1"
+source = "git+https://github.com/getnodalia/nodalia-design?rev=05dfff0a4dde3432b24d6596da4b2e4988736d37#05dfff0a4dde3432b24d6596da4b2e4988736d37"
+dependencies = [
+ "egui",
+ "serde_json",
+ "sha2",
+ "ureq",
+]
+
+[[package]]
 name = "nohash-hasher"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3465,12 +3055,6 @@ checksum = "df9761775871bdef83bee530e60050f7e54b1105350d6884eb0fb4f46c2f9405"
 dependencies = [
  "memchr",
 ]
-
-[[package]]
-name = "num-conv"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "521739c6d2bac4aa25192232afe6841231376b2b26d4d9fae5ecf8ca5772e441"
 
 [[package]]
 name = "num-traits"
@@ -3885,7 +3469,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4064,19 +3648,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 
 [[package]]
-name = "plist"
-version = "1.10.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "327a4cb2ad49dc48adfdc9da89e22c64d488b508c67a044d71ba729e4521a285"
-dependencies = [
- "base64 0.23.1",
- "indexmap",
- "quick-xml 0.42.0",
- "serde",
- "time",
-]
-
-[[package]]
 name = "png"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4163,12 +3734,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "powerfmt"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a6394b9e965e73d0a289ee54f589087e2c676aedf60885baf52c76b771e4958"
-
-[[package]]
 name = "presser"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4241,15 +3806,6 @@ name = "quick-xml"
 version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e660451e55124f798a69a5af3f49ccfbefbd41910eefd25caf2393e1f3473ec1"
-dependencies = [
- "memchr",
-]
-
-[[package]]
-name = "quick-xml"
-version = "0.42.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41b1177fdf999d2321d3fb46ff47159d9c1fb9ad66a4879f8c50a0b504615e9b"
 dependencies = [
  "memchr",
 ]
@@ -4581,7 +4137,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4638,7 +4194,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4790,10 +4346,6 @@ name = "semver"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a7852d02fc848982e0c167ef163aaff9cd91dc640ba85e263cb1ce46fae51cd"
-dependencies = [
- "serde",
- "serde_core",
-]
 
 [[package]]
 name = "send_wrapper"
@@ -5191,16 +4743,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tar"
-version = "0.4.46"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f6221d9a6003c78398e3b239969f352578258df48c8eb051caadae0015bc840"
-dependencies = [
- "filetime",
- "libc",
-]
-
-[[package]]
 name = "tempfile"
 version = "3.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5210,7 +4752,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.5",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5274,36 +4816,6 @@ dependencies = [
  "quick-error 2.0.1",
  "weezl",
  "zune-jpeg",
-]
-
-[[package]]
-name = "time"
-version = "0.3.55"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134"
-dependencies = [
- "deranged",
- "num-conv",
- "powerfmt",
- "serde_core",
- "time-core",
- "time-macros",
-]
-
-[[package]]
-name = "time-core"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e1c906769ad99c88eaa54e728060edef082f8e358ff32030cb7c7d315e81109"
-
-[[package]]
-name = "time-macros"
-version = "0.2.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e689342a48d2ea927c87ea50cabf8594854bf940e9310208848d680d668ed85"
-dependencies = [
- "num-conv",
- "time-core",
 ]
 
 [[package]]
@@ -5470,6 +4982,384 @@ dependencies = [
 ]
 
 [[package]]
+name = "trama"
+version = "0.1.0-dev"
+dependencies = [
+ "arboard",
+ "craft-menu",
+ "craft-settings",
+ "craft-window",
+ "eframe",
+ "egui",
+ "env_logger",
+ "fmv-macos-events",
+ "image",
+ "log",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "rfd",
+ "serde_json",
+ "trama-collab-net",
+ "trama-engine",
+ "trama-format",
+ "trama-text",
+ "trama-ui-egui",
+ "wat",
+ "webbrowser",
+ "windows",
+ "winit",
+ "winresource",
+ "winsafe",
+ "zbus",
+]
+
+[[package]]
+name = "trama-cli"
+version = "0.1.0-dev"
+dependencies = [
+ "clap",
+ "clap_complete",
+ "clap_mangen",
+ "serde_json",
+ "thiserror 2.0.21",
+ "trama-doc",
+ "trama-engine",
+ "trama-format",
+ "trama-mcp",
+ "trama-render",
+ "trama-svg",
+ "trama-text",
+]
+
+[[package]]
+name = "trama-collab"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "flate2",
+ "imbl",
+ "postcard",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+]
+
+[[package]]
+name = "trama-collab-net"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "getrandom 0.4.3",
+ "js-sys",
+ "log",
+ "proptest",
+ "rustls",
+ "rustls-pki-types",
+ "serde_json",
+ "trama-collab",
+ "trama-doc",
+ "trama-engine",
+ "tungstenite",
+ "wasm-bindgen",
+ "web-sys",
+ "web-time",
+ "webpki-roots",
+ "windows-registry",
+]
+
+[[package]]
+name = "trama-color"
+version = "0.1.0-dev"
+dependencies = [
+ "kurbo",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "trama-doc"
+version = "0.1.0-dev"
+dependencies = [
+ "imbl",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "trama-color",
+ "trama-geom",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "trama-engine"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "craft-docpath",
+ "craft-font-catalog",
+ "craft-font-store",
+ "deunicode",
+ "image",
+ "log",
+ "regex",
+ "same-file",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "trama-collab",
+ "trama-color",
+ "trama-doc",
+ "trama-format",
+ "trama-geom",
+ "trama-layout",
+ "trama-pathops",
+ "trama-pdf",
+ "trama-plugin",
+ "trama-render",
+ "trama-svg",
+ "trama-text",
+ "trama-vectordrawable",
+ "wat",
+ "web-time",
+ "zip",
+]
+
+[[package]]
+name = "trama-format"
+version = "0.1.0-dev"
+dependencies = [
+ "flate2",
+ "image",
+ "ruzstd",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2",
+ "trama-doc",
+ "trama-layout",
+ "trama-pathops",
+ "zip",
+]
+
+[[package]]
+name = "trama-geom"
+version = "0.1.0-dev"
+dependencies = [
+ "kurbo",
+ "serde",
+]
+
+[[package]]
+name = "trama-layout"
+version = "0.1.0-dev"
+dependencies = [
+ "trama-doc",
+ "trama-geom",
+]
+
+[[package]]
+name = "trama-mcp"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "image",
+ "log",
+ "proptest",
+ "serde_json",
+ "trama-collab-net",
+ "trama-doc",
+ "trama-engine",
+ "trama-geom",
+ "trama-render",
+]
+
+[[package]]
+name = "trama-pathops"
+version = "0.1.0-dev"
+dependencies = [
+ "linesweeper",
+ "trama-doc",
+ "trama-geom",
+]
+
+[[package]]
+name = "trama-pdf"
+version = "0.1.0-dev"
+dependencies = [
+ "flate2",
+ "krilla",
+ "log",
+ "thiserror 2.0.21",
+ "tiny-skia 0.12.0",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
+]
+
+[[package]]
+name = "trama-plugin"
+version = "0.1.0-dev"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "trama-color",
+ "wasmi",
+ "wat",
+]
+
+[[package]]
+name = "trama-render"
+version = "0.1.0-dev"
+dependencies = [
+ "crc32fast",
+ "image",
+ "log",
+ "moxcms",
+ "png",
+ "rayon",
+ "tiny-skia 0.12.0",
+ "trama-color",
+ "trama-doc",
+ "trama-format",
+ "trama-geom",
+ "trama-pathops",
+ "trama-text",
+]
+
+[[package]]
+name = "trama-server"
+version = "0.1.0-dev"
+dependencies = [
+ "chrono",
+ "crc32fast",
+ "ctrlc",
+ "env_logger",
+ "log",
+ "rustix 1.1.5",
+ "serde",
+ "serde_json",
+ "sha2",
+ "toml",
+ "trama-collab",
+ "trama-collab-net",
+ "trama-doc",
+ "trama-engine",
+ "trama-format",
+ "trama-plugin",
+ "tungstenite",
+ "wat",
+ "zip",
+]
+
+[[package]]
+name = "trama-svg"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "flate2",
+ "thiserror 2.0.21",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
+ "usvg",
+]
+
+[[package]]
+name = "trama-text"
+version = "0.1.0-dev"
+dependencies = [
+ "core-text",
+ "craft-font-catalog",
+ "harfrust 0.13.3",
+ "icu_segmenter",
+ "log",
+ "objc2 0.6.5",
+ "png",
+ "skrifa 0.47.0",
+ "trama-doc",
+ "trama-geom",
+ "unicode-bidi",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "trama-ui-egui"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "craft-ui",
+ "egui",
+ "egui_extras",
+ "image",
+ "log",
+ "nodalia-theme",
+ "nodalia-update",
+ "serde",
+ "serde_json",
+ "toml",
+ "trama-color",
+ "trama-doc",
+ "trama-engine",
+ "trama-format",
+ "trama-geom",
+ "trama-layout",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
+ "wat",
+ "web-time",
+]
+
+[[package]]
+name = "trama-vectordrawable"
+version = "0.1.0-dev"
+dependencies = [
+ "roxmltree 0.21.2",
+ "thiserror 2.0.21",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
+]
+
+[[package]]
+name = "trama-web"
+version = "0.1.0-dev"
+dependencies = [
+ "base64 0.22.1",
+ "craft-web-api",
+ "craft-web-host",
+ "eframe",
+ "egui",
+ "js-sys",
+ "log",
+ "serde_json",
+ "trama-collab-net",
+ "trama-engine",
+ "trama-format",
+ "trama-text",
+ "trama-ui-egui",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "tree_magic_mini"
 version = "3.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5513,12 +5403,6 @@ checksum = "cb30dbbd9036155e74adad6812e9898d03ec374946234fbcebd5dfc7b9187b90"
 dependencies = [
  "rustc-hash 2.1.3",
 ]
-
-[[package]]
-name = "typed-path"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ce898823d8cd0f028662d2f349694b1af0a5cc9be83f1d213a00d3147445e1e"
 
 [[package]]
 name = "typenum"
@@ -5739,16 +5623,6 @@ dependencies = [
  "glifo",
  "hashbrown 0.17.1",
  "vello_common",
-]
-
-[[package]]
-name = "verifysign"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6acfcc42a8d44f340d001193d97ef56bf33210b51ad760ae8308c97d5241ca51"
-dependencies = [
- "core-foundation 0.10.1",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6059,7 +5933,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "338e30461b3a2b67d70eb30a6d89f8e0c93a833e07d2ae89085cd070c4a00ac0"
 dependencies = [
  "proc-macro2",
- "quick-xml 0.41.0",
+ "quick-xml",
  "quote",
 ]
 
@@ -6334,7 +6208,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6552,7 +6426,7 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 [[package]]
 name = "winit"
 version = "0.30.13"
-source = "git+https://github.com/storytold/winit.git?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
+source = "git+https://github.com/getnodalia/foundation?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
 dependencies = [
  "ahash",
  "android-activity",
@@ -6607,16 +6481,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "winreg"
-version = "0.55.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb5a765337c50e9ec252c2069be9bf91c7df47afb103b642ba3a53bf8101be97"
-dependencies = [
- "cfg-if",
- "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6764,10 +6628,10 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 
 [[package]]
 name = "xtask"
-version = "0.18.1"
+version = "0.1.0-dev"
 dependencies = [
- "figcraft-engine",
  "serde_json",
+ "trama-engine",
 ]
 
 [[package]]
@@ -7010,22 +6874,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "zip"
-version = "9.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "518b847fd864440c379748ad684c449f293af68978a485a4ff16f7c901c1f7c4"
-dependencies = [
- "crc32fast",
- "flate2",
- "getrandom 0.4.3",
- "indexmap",
- "memchr",
- "nix",
- "typed-path",
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "zlib-rs"
 version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7108,19 +6956,19 @@ dependencies = [
 [[patch.unused]]
 name = "egui_demo_lib"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_inspection"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_kittest"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_system_font_provider"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"

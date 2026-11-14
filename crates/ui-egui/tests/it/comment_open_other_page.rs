@@ -1,7 +1,7 @@
 use egui::{Pos2, RawInput, Rect, vec2};
-use figcraft_engine::Session;
-use figcraft_ui_egui::{FigApp, NoServices, control};
 use serde_json::json;
+use trama_engine::Session;
+use trama_ui_egui::{FigApp, NoServices, control};
 
 fn frame(ctx: &egui::Context, app: &mut FigApp, time: f64) {
     let mut out = ctx

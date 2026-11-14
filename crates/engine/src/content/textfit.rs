@@ -5,8 +5,8 @@
 //! with a no-break space. Every style run scales by the same factor, so mixed sizes keep their
 //! proportions.
 
-use figcraft_doc::{NodeKind, TextAutoResize, TextData};
 use serde_json::{Value, json};
+use trama_doc::{NodeKind, TextAutoResize, TextData};
 
 use crate::cmd::CommandSpec;
 use crate::params::{boolean, num, req_targets};
@@ -33,7 +33,7 @@ fn measure(t: &TextData, k: f64, width: f64) -> (usize, f64, bool) {
     t.max_lines = 0;
     let n = t.char_count();
     t.restyle(0, n, |s| s.font_size = (s.font_size * k).clamp(1.0, 5000.0));
-    let l = figcraft_text::layout(&t, Some(width), None);
+    let l = trama_text::layout(&t, Some(width), None);
     let orphan = l.lines.len() > 1
         && l.lines.last().is_some_and(|line| {
             let mut before = t.characters.chars().skip(line.char_start.saturating_sub(1));

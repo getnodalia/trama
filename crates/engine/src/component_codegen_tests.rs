@@ -5,8 +5,8 @@ use crate::Session;
 use crate::codegen::{CodeLang, code_for};
 use crate::component_codegen::{ParamKind, describe, main_of};
 use crate::components::tests::{ex, idv};
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_doc::*;
 
 fn code(s: &mut Session, id: NodeId, lang: &str) -> String {
     ex(s, "inspect.code", json!({"id": id, "language": lang}))["code"].as_str().unwrap_or_default().to_string()

@@ -1,7 +1,7 @@
 //! Smart-selection spacing in page coordinates. Tracks contain aligned siblings (columns for
 //! horizontal spacing, rows for vertical spacing); moving a track preserves its internal layout.
-use figcraft_doc::{Document, NodeId, NodeKind};
-use figcraft_geom::Rect;
+use trama_doc::{Document, NodeId, NodeKind};
+use trama_geom::Rect;
 
 const EPS: f64 = 0.01;
 

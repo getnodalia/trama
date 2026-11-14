@@ -1,9 +1,9 @@
 //! Frame guides: guides kept on a frame in its own coordinates, moving with it, saved with the file,
 //! copied with the frame, and snapped to by the layers inside it.
 
-use figcraft_doc::NodeId;
-use figcraft_geom::Rect;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_geom::Rect;
 
 use crate::Session;
 use crate::snap::Targets;
@@ -86,8 +86,8 @@ fn frame_guides_move_with_the_frame_and_snap_its_layers() {
 fn frame_guides_are_saved_and_copied_with_the_frame() {
     let (mut s, frame, _) = setup();
     s.execute("guide.add", &json!({"frame": frame, "vertical": false, "offset": 12})).unwrap();
-    let bytes = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
-    let (doc, _) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let (doc, _) = trama_format::load_bytes(&bytes).unwrap();
     assert_eq!(doc.node(frame).unwrap().guides.iter().map(|g| g.offset).collect::<Vec<_>>(), vec![12.0]);
     s.execute("select.set", &json!({"ids": [frame]})).unwrap();
     s.execute("edit.duplicate", &json!({})).unwrap();

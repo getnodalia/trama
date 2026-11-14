@@ -2,8 +2,8 @@
 //! (stored, edited, undone), the frames PDF, and bad values refused.
 
 use base64::Engine as _;
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_doc::*;
 
 use crate::Session;
 use crate::params::id_of;

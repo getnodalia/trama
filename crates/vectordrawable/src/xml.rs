@@ -4,9 +4,9 @@
 
 use std::fmt::Write as _;
 
-use figcraft_color::Color;
-use figcraft_geom::BezPath;
-use figcraft_geom::kurbo::PathEl;
+use trama_color::Color;
+use trama_geom::BezPath;
+use trama_geom::kurbo::PathEl;
 
 use crate::model::{Fill, GradKind, GroupItem, Item, ItemKind, NativeStroke, PathItem};
 

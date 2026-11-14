@@ -1,9 +1,9 @@
 //! Prototype presentation settings through the session: the device's rotation (saved in the
 //! file), the presenter's scale options and explicit variable modes set back to Auto.
 
-use figcraft_doc::NodeKind;
-use figcraft_doc::proto::{DeviceRotation, PrototypeSettings};
 use serde_json::json;
+use trama_doc::NodeKind;
+use trama_doc::proto::{DeviceRotation, PrototypeSettings};
 
 use crate::Session;
 use crate::params::id_of;
@@ -43,8 +43,8 @@ fn device_rotation_turns_phones_and_tablets_and_is_saved() {
     assert_eq!(settings(&s).rotation, DeviceRotation::Landscape);
     // Saved in the file and read back; files without it open in portrait.
     s.execute("proto.settings", &json!({"device": "iPad mini"})).unwrap();
-    let bytes = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
-    let (doc, _) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let (doc, _) = trama_format::load_bytes(&bytes).unwrap();
     let NodeKind::Page { prototype, .. } = &doc.node(doc.pages[0]).unwrap().kind else { panic!("not a page") };
     assert_eq!(prototype.device().map(|d| (d.width, d.height)), Some((1133.0, 744.0)));
     let old: PrototypeSettings = serde_json::from_value(json!({"device": "iPhone 16"})).unwrap();

@@ -2,8 +2,8 @@
 //! avatar, a list item, a card, a navigation bar and a tab bar) and two screens sketched with
 //! instances of them, a phone and a desktop one.
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use super::glyphs;
 use super::kit::{BOTTOM_EDGE, H, Kit, TOP_EDGE, TYPE, V, merged};

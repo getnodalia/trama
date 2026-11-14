@@ -115,7 +115,7 @@ fn moving_every_point_by_one_offset_carries_the_regions_paint_frame() {
         let NodeKind::Vector { network } = &mut node.kind else { panic!("expected a vector") };
         assert!(!network.regions.is_empty(), "the rectangle has a region");
         for region in &mut network.regions {
-            region.paint_space = Some(figcraft_doc::RegionPaintSpace { width: 100.0, height: 100.0, transform: Affine::IDENTITY });
+            region.paint_space = Some(trama_doc::RegionPaintSpace { width: 100.0, height: 100.0, transform: Affine::IDENTITY });
         }
     }
     let frame = |s: &Session| {

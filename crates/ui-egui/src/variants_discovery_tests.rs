@@ -3,9 +3,9 @@
 //! a lone one, and the canvas / layers context menu lists Combine only when it applies.
 
 use egui::Pos2;
-use figcraft_doc::{NodeId, NodeKind};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::{NodeId, NodeKind};
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::live_tests::{flat, has_text, text_center};

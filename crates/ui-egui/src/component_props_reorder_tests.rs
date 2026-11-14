@@ -3,9 +3,9 @@
 //! instances follow), its fields don't start a drag, and Escape cancels.
 
 use egui::{Event, Pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::list_drag::grip_id;

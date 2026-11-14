@@ -12,12 +12,12 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::PoisonError;
 
-use figcraft_geom::Affine;
 use skrifa::bitmap::{BitmapData, BitmapGlyph, BitmapStrikes, Origin};
 use skrifa::color::ColorPalettes;
 use skrifa::instance::Size;
 use skrifa::raw::TableProvider;
 use skrifa::{FontRef, GlyphId};
+use trama_geom::Affine;
 
 use crate::fontdb::{Coords, Face};
 

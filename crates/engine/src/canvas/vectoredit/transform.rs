@@ -5,9 +5,9 @@
 //! them; each drag is one undo step for every layer (the gestures live in `pointer.rs`). Commands make the same edits for the Design panel, the control channel and MCP,
 //! and while points are selected the flip and 90°/180° rotation commands act on them.
 
-use figcraft_doc::{Document, NodeId};
-use figcraft_geom::{Affine, Point};
 use serde_json::{Value, json};
+use trama_doc::{Document, NodeId};
+use trama_geom::{Affine, Point};
 
 use super::{VHit, VTool, VectorEdit, default_points, edit, editing, indices, network, ops, selected_points, selection_position};
 use crate::cmd::CommandSpec;
@@ -231,7 +231,7 @@ pub(super) fn specs() -> Vec<CommandSpec> {
                 let angle = req_num("vector.edit.rotate", p, "angle")?;
                 let c = b.center();
                 let pivot = Point::new(num_or(p, "cx", c.x), num_or(p, "cy", c.y));
-                transform_points(s.doc_mut()?, ve.id, &b.points, figcraft_geom::rotate_about(Affine::IDENTITY, pivot, angle))?;
+                transform_points(s.doc_mut()?, ve.id, &b.points, trama_geom::rotate_about(Affine::IDENTITY, pivot, angle))?;
                 Ok(json!({"ok": true}))
             }
         ),

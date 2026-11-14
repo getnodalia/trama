@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use figcraft_color::{ImageScaleMode, Paint};
-use figcraft_doc::{Document, ImageData, NodeId, NodeKind};
+use trama_color::{ImageScaleMode, Paint};
+use trama_doc::{Document, ImageData, NodeId, NodeKind};
 
 use crate::{Options, Pixmap, Retained, View, encode_png, render_view};
 

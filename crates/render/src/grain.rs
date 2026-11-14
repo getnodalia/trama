@@ -5,9 +5,9 @@
 //! hashed from its position and the layer: they stay put when the canvas pans or renders in pieces,
 //! scale with the layer when zooming, and every export draws the same grains.
 
-use figcraft_doc::{Noise, NoiseMode, Texture};
-use figcraft_geom::Affine;
 use tiny_skia::Pixmap;
+use trama_doc::{Noise, NoiseMode, Texture};
+use trama_geom::Affine;
 
 /// A well-mixed 64-bit hash of a grain cell.
 fn hash(ix: i64, iy: i64, seed: u32) -> u64 {

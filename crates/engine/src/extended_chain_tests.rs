@@ -3,8 +3,8 @@
 //! extended again, values flowing down the chain as each file accepts updates. A collection of
 //! this file extends too, following its edits at once (and chains of them).
 
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_doc::*;
 
 use crate::Session;
 use crate::params::id_of;
@@ -35,7 +35,7 @@ fn healthy(s: &Session) {
 }
 
 fn dir(name: &str) -> std::path::PathBuf {
-    let d = std::env::temp_dir().join(format!("figcraft-extchain-{}-{name}", std::process::id()));
+    let d = std::env::temp_dir().join(format!("trama-extchain-{}-{name}", std::process::id()));
     std::fs::create_dir_all(&d).unwrap();
     d
 }
@@ -66,7 +66,7 @@ fn republish(lib: &mut Session) {
 #[test]
 fn variables_new_to_an_extended_collection_are_an_update_of_their_own() {
     let d = dir("new");
-    let path = d.join("core.figcraft").to_string_lossy().into_owned();
+    let path = d.join("core.trama").to_string_lossy().into_owned();
     let (mut lib, lid) = core(&path);
     let mut s = Session::new();
     ex(&mut s, "library.add", json!({"path": path}));
@@ -98,8 +98,8 @@ fn variables_new_to_an_extended_collection_are_an_update_of_their_own() {
 #[test]
 fn an_extended_collection_can_be_extended_again() {
     let d = dir("chain");
-    let core_path = d.join("core.figcraft").to_string_lossy().into_owned();
-    let brand_path = d.join("brand.figcraft").to_string_lossy().into_owned();
+    let core_path = d.join("core.trama").to_string_lossy().into_owned();
+    let brand_path = d.join("brand.trama").to_string_lossy().into_owned();
     let (mut core_lib, core_id) = core(&core_path);
 
     // A brand library extends the core theme, overrides a value, adds a variable and publishes.
@@ -149,7 +149,7 @@ fn an_extended_collection_can_be_extended_again() {
     healthy(&s);
 
     // Saved and reopened, the chain's end is the same.
-    let user = d.join("product.figcraft").to_string_lossy().into_owned();
+    let user = d.join("product.trama").to_string_lossy().into_owned();
     ex(&mut s, "file.saveAs", json!({"path": user}));
     let mut t = Session::empty();
     ex(&mut t, "file.open", json!({"path": user}));
@@ -217,7 +217,7 @@ fn a_collection_of_this_file_extends_and_follows_its_edits() {
 
     // Saved and reopened, still extending.
     let d = dir("local");
-    let path = d.join("local.figcraft").to_string_lossy().into_owned();
+    let path = d.join("local.trama").to_string_lossy().into_owned();
     ex(&mut s, "file.saveAs", json!({"path": path}));
     let mut t = Session::empty();
     ex(&mut t, "file.open", json!({"path": path}));

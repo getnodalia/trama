@@ -5,9 +5,9 @@
 //! behaviour. What the gestures do to the document is in the engine's `panels_behaviour_tests`.
 
 use egui::{Event, Id, Modifiers, Pos2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 
@@ -818,10 +818,14 @@ fn off_centre(u: &mut Ui, hint: &str) -> f32 {
     });
     let text = text.unwrap_or_else(|| panic!("no {hint:?}"));
     let fill = crate::theme::Tokens::get(&u.ctx).field;
-    let field = shapes.iter().find_map(|s| match s {
-        egui::Shape::Rect(r) if r.fill == fill && r.rect.contains(text) => Some(r.rect),
-        _ => None,
-    });
+    // The smallest such rectangle: in the light theme a field and the panel around it share a fill.
+    let field = shapes
+        .iter()
+        .filter_map(|s| match s {
+            egui::Shape::Rect(r) if r.fill == fill && r.rect.contains(text) => Some(r.rect),
+            _ => None,
+        })
+        .min_by(|a, b| a.area().total_cmp(&b.area()));
     (field.unwrap_or_else(|| panic!("no field around {hint:?}")).center().y - text.y).abs()
 }
 

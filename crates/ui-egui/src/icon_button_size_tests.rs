@@ -5,7 +5,7 @@
 //! `online` and the style picker).
 
 use egui::{Rect, pos2, vec2};
-use figcraft_engine::Session;
+use trama_engine::Session;
 
 use crate::header_icon_size_tests::{painted_rects, paints_icon_at_button_size};
 use crate::icons::Icon;

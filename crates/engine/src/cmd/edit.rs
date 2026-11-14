@@ -2,9 +2,9 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_doc::{Document, Effect, ExportSetting, ImageData, LayoutGrid, Node, NodeId, NodeKind};
-use figcraft_geom::Affine;
 use serde_json::{Map, Value, json};
+use trama_doc::{Document, Effect, ExportSetting, ImageData, LayoutGrid, Node, NodeId, NodeKind};
+use trama_geom::Affine;
 
 use super::{CommandSpec, ok};
 use crate::params::{

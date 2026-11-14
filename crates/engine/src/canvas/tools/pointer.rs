@@ -49,9 +49,9 @@ impl Session {
         let (doc, page) = (self.doc()?, self.page()?);
         let focused = self.ds()?.focused();
         let mut hits = match (deep, focused) {
-            (true, _) => figcraft_doc::geometry::marquee_deep(doc, page, r),
-            (false, Some(f)) => figcraft_doc::geometry::marquee(doc, page, r, Some(f)),
-            (false, None) => figcraft_doc::geometry::marquee_select(doc, page, r, within),
+            (true, _) => trama_doc::geometry::marquee_deep(doc, page, r),
+            (false, Some(f)) => trama_doc::geometry::marquee(doc, page, r, Some(f)),
+            (false, None) => trama_doc::geometry::marquee_select(doc, page, r, within),
         };
         if let Some(f) = focused {
             hits.retain(|h| *h != f && doc.is_ancestor(f, *h));

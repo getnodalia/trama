@@ -1,4 +1,4 @@
-//! FigCraft plugins: the manifest (`figcraft-plugin.json`) and the WebAssembly sandbox a plugin
+//! Trama plugins: the manifest (`trama-plugin.json`) and the WebAssembly sandbox a plugin
 //! runs in, and the widget descriptions a plugin hands back. The engine decides what a plugin may
 //! do (its permissions, which commands it may call, one undo step per run, panel or widget
 //! callback, where settings are kept); this crate only runs modules safely: a metered interpreter
@@ -9,7 +9,7 @@ pub mod manifest;
 mod sandbox;
 pub mod widget;
 
-pub use manifest::{API_VERSION, Access, MANIFEST_FILE, Manifest, Panel, Param, ParamKind, Permissions, PluginCommand};
+pub use manifest::{API_VERSION, Access, LEGACY_MANIFEST, MANIFEST_FILE, Manifest, Panel, Param, ParamKind, Permissions, PluginCommand};
 pub use sandbox::{ENTRY, Host, IMPORT_MODULE, Instance, Limits, PluginError, RunOutput, UiChange, check_module, run};
 pub use widget::{MenuItem, MenuKind, WidgetHover, WidgetKind, WidgetNode, WidgetRender};
 

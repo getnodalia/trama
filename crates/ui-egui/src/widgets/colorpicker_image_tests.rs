@@ -8,10 +8,10 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use base64::Engine as _;
 use egui::{Event, Pos2, RawInput};
-use figcraft_color::{ImageScaleMode, PaintKind};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_color::{ImageScaleMode, PaintKind};
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use super::{PickerTarget, set_image_pending, window_id};
 use crate::layers_drag_tests::Ui;
@@ -64,14 +64,14 @@ fn open_picker(u: &mut Ui, id: NodeId, index: usize) -> PickerTarget {
 fn drop_png(u: &mut Ui, at: Option<Pos2>, bytes: Vec<u8>) {
     let events: Vec<Event> = at.map_or(vec![Event::PointerGone], |p| vec![Event::PointerMoved(p)]);
     u.frame_raw(RawInput { events: events.clone(), ..Default::default() });
-    let file = Arc::new(Dropped(Path::new("figcraft-picker-drop").join("new.png"), bytes)) as egui::DroppedFileHandle;
+    let file = Arc::new(Dropped(Path::new("trama-picker-drop").join("new.png"), bytes)) as egui::DroppedFileHandle;
     u.frame_raw(RawInput { events, dropped_files: vec![file], ..Default::default() });
     for _ in 0..6 {
         u.frame(vec![]);
     }
 }
 
-fn top_image(u: &Ui, id: NodeId, index: usize) -> figcraft_color::ImagePaint {
+fn top_image(u: &Ui, id: NodeId, index: usize) -> trama_color::ImagePaint {
     let paint = u.app.session.doc().unwrap().node(id).unwrap().fills[index].clone();
     let PaintKind::Image(img) = paint.kind else { panic!("not an image: {paint:?}") };
     img
@@ -209,7 +209,7 @@ fn click_upload(u: &mut Ui) {
 }
 
 fn temp_dir(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("figcraft-upload-{}-{name}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-upload-{}-{name}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     dir
 }
@@ -307,7 +307,7 @@ fn upload_from_computer_on_a_regions_fill_puts_the_image_in_the_region() {
     let doc = u.app.session.doc().unwrap();
     let n = doc.node(id).unwrap();
     assert_eq!(n.fills, layer_fills, "the layer's fills are untouched");
-    let figcraft_doc::NodeKind::Vector { network } = &n.kind else { panic!("not a vector") };
+    let trama_doc::NodeKind::Vector { network } = &n.kind else { panic!("not a vector") };
     let region = network.regions[1].fills.clone().unwrap();
     assert!(matches!(region.last().map(|p| &p.kind), Some(PaintKind::Image(_))), "{region:?}");
     let _ = std::fs::remove_dir_all(&dir);

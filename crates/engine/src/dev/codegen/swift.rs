@@ -14,7 +14,7 @@ fn swift_point(p: (f64, f64)) -> String {
 }
 
 /// A gradient fill on a layer of `w` x `h` as a SwiftUI gradient.
-fn swift_gradient(g: &figcraft_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
+fn swift_gradient(g: &trama_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
     let stops = gradient_stops(g, opacity)
         .into_iter()
         .map(|(at, c)| format!("Gradient.Stop(color: {}, location: {})", swift_color(c), num(at)))

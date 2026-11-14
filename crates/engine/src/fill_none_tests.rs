@@ -1,8 +1,8 @@
 //! `props.fill` and `props.stroke` accept `"none"` (either case) and `null` as no paint, the
 //! same as an empty `fills`/`strokes` list (#1036): an outline-only shape in one call.
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use crate::Session;
 

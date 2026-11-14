@@ -2,8 +2,8 @@
 //! sizes by the same code. Wide sizes put the words beside the picture, tall ones above it; type
 //! and spacing scale with the frame.
 
-use figcraft_doc::NodeId;
 use serde_json::json;
+use trama_doc::NodeId;
 
 use super::glyphs;
 use super::kit::{ACCENT, DEEP, H, INK, Kit, ON_BRAND, V};

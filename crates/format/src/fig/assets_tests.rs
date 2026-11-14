@@ -5,8 +5,8 @@
 //! laid out for it. Everything written reads back; what the format can't say is written as its
 //! value with a warning; damaged files never panic.
 
-use figcraft_doc::{Collection, ColorOperand, Mode, Style, StyleKind, Variable, VariableType, VariableValue};
 use serde_json::json;
+use trama_doc::{Collection, ColorOperand, Mode, Style, StyleKind, Variable, VariableType, VariableValue};
 
 use super::*;
 
@@ -1016,7 +1016,7 @@ fn junk_style_definitions_and_orders_never_panic() {
     }
 }
 
-/// Local only (`FIGCRAFT_FIG_SAMPLES`): each sample's variables, modes, bindings, styles and style
+/// Local only (`TRAMA_FIG_SAMPLES`): each sample's variables, modes, bindings, styles and style
 /// links come back the same after an export and another import.
 #[test]
 fn local_samples_keep_their_variables_and_styles() {

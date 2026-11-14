@@ -6,15 +6,15 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_color::{BlendMode, Color, Paint};
-use figcraft_doc::{
+use serde_json::{Value, json};
+use trama_color::{BlendMode, Color, Paint};
+use trama_doc::{
     AutoLayout, BOARD_COLORS, BoardItem, BoardShape, Connector, Constraints, CrossAlign, DocError, Document, Effect, EffectKind, End, FileKind,
     HConstraint, LayoutMode, MainAlign, Node, NodeId, NodeKind, Routing, STAMP_SIZE, Shadow, Side, Sizing, Stamp, StrokeAlign, StrokeCap, StrokeJoin,
     TextAlignH, TextAutoResize, TextData, VConstraint, VectorNetwork, board_color,
 };
-use figcraft_geom::kurbo::PathEl;
-use figcraft_geom::{Affine, BezPath, Point, Rect, Shape};
-use serde_json::{Value, json};
+use trama_geom::kurbo::PathEl;
+use trama_geom::{Affine, BezPath, Point, Rect, Shape};
 
 use crate::cmd::CommandSpec;
 use crate::params::{boolean, color_of, get, id, id_of, num, num_or, opt_id, req_num, req_string, req_targets, string};

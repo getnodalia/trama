@@ -10,11 +10,11 @@ pub(crate) fn recovered(path: &str) -> Result<DocState> {
 /// A recovery copy's bytes as a document with unsaved changes and no path (the browser keeps its
 /// copies in the page's storage, not in files).
 pub(crate) fn recovered_from(bytes: &[u8]) -> Result<DocState> {
-    let loaded = figcraft_format::load_bytes_with_versions(bytes).map_err(|e| EngineError::Other(e.to_string()))?;
+    let loaded = trama_format::load_bytes_with_versions(bytes).map_err(|e| EngineError::Other(e.to_string()))?;
     Ok(DocState::new(loaded.doc, None).with_versions(loaded.versions).with_branches(loaded.branches).unsaved())
 }
 
-/// The largest file opened or imported as a document. A `.figcraft` file keeps its images as
+/// The largest file opened or imported as a document. A `.trama` file keeps its images as
 /// they are, so a real one can be far larger than it unpacks to (#1313's took 7.4 GB); twice that
 /// opens, while a device, a pipe or an absurd file is refused before it is read (#1114).
 pub const MAX_DOCUMENT_FILE: u64 = 16 << 30;
@@ -35,7 +35,7 @@ pub(crate) fn read_capped(path: &str, max: u64) -> Result<Vec<u8>> {
 }
 
 /// Write `bytes` to `path` through a uniquely named, exclusively created staging file and one
-/// atomic rename (see [`figcraft_format::write_file_atomic`]): a failed or interrupted write never
+/// atomic rename (see [`trama_format::write_file_atomic`]): a failed or interrupted write never
 /// truncates `path`, and no file or symlink at a staging name is ever written through.
 #[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn write(path: &str, bytes: &[u8]) -> Result<()> {
@@ -67,12 +67,12 @@ pub fn load(path: &str) -> Result<(Document, Vec<String>)> {
 }
 
 pub fn load_bytes(bytes: &[u8], name_hint: &str) -> Result<(Document, Vec<String>)> {
-    load_with(bytes, name_hint, None, &figcraft_format::rest::no_images).map(|(l, _)| (l.doc, l.issues))
+    load_with(bytes, name_hint, None, &trama_format::rest::no_images).map(|(l, _)| (l.doc, l.issues))
 }
 
 /// [`load`] with the version history, also telling whether the file was REST API file JSON. A REST
 /// import reads its variables from `variables`, else from a variables JSON next to the file.
-pub fn load_path(path: &str, variables: Option<&Value>) -> Result<(figcraft_format::Loaded, bool)> {
+pub fn load_path(path: &str, variables: Option<&Value>) -> Result<(trama_format::Loaded, bool)> {
     let bytes = read(path)?;
     let sibling = if variables.is_none() { sibling_variables(path) } else { None };
     let (mut loaded, rest) = load_with(&bytes, path, variables.or(sibling.as_ref()), &rest_images(path))?;
@@ -88,8 +88,8 @@ pub(super) fn load_with(
     bytes: &[u8],
     name_hint: &str,
     variables: Option<&Value>,
-    images: figcraft_format::rest::ImageResolver,
-) -> Result<(figcraft_format::Loaded, bool)> {
+    images: trama_format::rest::ImageResolver,
+) -> Result<(trama_format::Loaded, bool)> {
     let (mut loaded, rest) = load_any(bytes, name_hint, variables, images)?;
     let notes = crate::components::break_component_cycles(&mut loaded.doc);
     loaded.issues.extend(notes);
@@ -100,36 +100,36 @@ fn load_any(
     bytes: &[u8],
     name_hint: &str,
     variables: Option<&Value>,
-    images: figcraft_format::rest::ImageResolver,
-) -> Result<(figcraft_format::Loaded, bool)> {
+    images: trama_format::rest::ImageResolver,
+) -> Result<(trama_format::Loaded, bool)> {
     match ext(name_hint).as_str() {
         "svg" => {
             let mut doc = Document::new(file_stem(name_hint));
             let page = doc.first_page().ok_or(EngineError::NoDocument)?;
-            let notes = figcraft_svg::import_svg_with_notes(&mut doc, bytes, page, 0.0, 0.0, &file_stem(name_hint))
+            let notes = trama_svg::import_svg_with_notes(&mut doc, bytes, page, 0.0, 0.0, &file_stem(name_hint))
                 .map_err(|e| EngineError::Other(e.to_string()))?
                 .notes;
-            Ok((figcraft_format::Loaded { issues: notes, ..doc.into() }, false))
+            Ok((trama_format::Loaded { issues: notes, ..doc.into() }, false))
         }
         "penpot" => {
-            let (mut doc, mut notes) = figcraft_format::penpot::import(bytes).map_err(|e| EngineError::Other(e.to_string()))?;
+            let (mut doc, mut notes) = trama_format::penpot::import(bytes).map_err(|e| EngineError::Other(e.to_string()))?;
             expand_penpot_raw_svgs(&mut doc, &mut notes);
             // Penpot imports stay offline: referenced fonts must be installed locally.
             // The format reader stays platform-agnostic. Font availability is checked here,
-            // where FigCraft's system/embedded font registry is accessible. Never replace
+            // where Trama's system/embedded font registry is accessible. Never replace
             // the original family in the document: it can resolve after installation.
-            figcraft_text::scan_system_fonts();
-            let families = figcraft_text::family_names();
+            trama_text::scan_system_fonts();
+            let families = trama_text::family_names();
             let mut font_notes = missing_penpot_font_warnings(&doc, &families);
             font_notes.append(&mut notes); // Show missing-font details first in the UI toast.
-            Ok((figcraft_format::Loaded { issues: font_notes, ..doc.into() }, true))
+            Ok((trama_format::Loaded { issues: font_notes, ..doc.into() }, true))
         }
         "png" | "jpg" | "jpeg" | "gif" | "webp" | "bmp" | "tif" | "tiff" => {
             let mut doc = Document::new(file_stem(name_hint));
             let page = doc.first_page().ok_or(EngineError::NoDocument)?;
             let (hash, w, h) = crate::cmd::create::add_readable_image(&mut doc, bytes.to_vec()).map_err(EngineError::Other)?;
             let id = doc.create(page, NodeKind::Rectangle, &file_stem(name_hint), 0.0, 0.0, f64::from(w), f64::from(h))?;
-            doc.get_mut(id)?.fills = vec![figcraft_color::Paint::image(hash, figcraft_color::ImageScaleMode::Fill)];
+            doc.get_mut(id)?.fills = vec![trama_color::Paint::image(hash, trama_color::ImageScaleMode::Fill)];
             Ok((doc.into(), false))
         }
         _ => {
@@ -139,13 +139,13 @@ fn load_any(
             if let Some(r) = load_sketch(bytes, &file_stem(name_hint)) {
                 return Ok((r?, true));
             }
-            if let Some(r) = figcraft_format::rest::try_import_with(bytes, variables, images) {
+            if let Some(r) = trama_format::rest::try_import_with(bytes, variables, images) {
                 let (mut doc, warnings) = r.map_err(|e| EngineError::Other(e.to_string()))?;
                 link_instances(&mut doc);
                 installed_fonts_first();
-                return Ok((figcraft_format::Loaded { issues: warnings, ..doc.into() }, true));
+                return Ok((trama_format::Loaded { issues: warnings, ..doc.into() }, true));
             }
-            let mut loaded = figcraft_format::load_bytes_with_versions(bytes).map_err(|e| EngineError::Other(e.to_string()))?;
+            let mut loaded = trama_format::load_bytes_with_versions(bytes).map_err(|e| EngineError::Other(e.to_string()))?;
             // Older files saved an untouched default title even after the user chose a filename.
             if loaded.doc.name.is_empty() || loaded.doc.name == "Untitled" {
                 loaded.doc.name = file_stem(name_hint);
@@ -156,22 +156,22 @@ fn load_any(
 }
 
 /// Gives `None` when `bytes` are not a `.sketch` file. Then other readers can try.
-fn load_sketch(bytes: &[u8], name: &str) -> Option<Result<figcraft_format::Loaded>> {
-    if !figcraft_format::sketch::is_sketch(bytes) {
+fn load_sketch(bytes: &[u8], name: &str) -> Option<Result<trama_format::Loaded>> {
+    if !trama_format::sketch::is_sketch(bytes) {
         return None;
     }
     // The import and what follows read the installed fonts: the system's must be known first (the
     // desktop app scans them in the background; this waits for that scan).
-    figcraft_text::fontdb::scan_system_fonts();
-    let fonts: figcraft_format::sketch::FontLookup = Box::new(figcraft_text::fontdb::postscript_face);
-    let r = figcraft_format::sketch::try_import_with_fonts(bytes, name, Some(fonts))?;
+    trama_text::fontdb::scan_system_fonts();
+    let fonts: trama_format::sketch::FontLookup = Box::new(trama_text::fontdb::postscript_face);
+    let r = trama_format::sketch::try_import_with_fonts(bytes, name, Some(fonts))?;
     Some(r.map_err(|e| EngineError::Other(e.to_string())).map(|(mut doc, warnings)| {
         match_font_families(&mut doc);
         platform_tracking(&mut doc);
         sketch_line_heights(&mut doc);
         link_instances(&mut doc);
         reflow_overridden_text(&mut doc);
-        figcraft_format::Loaded { issues: warnings, ..doc.into() }
+        trama_format::Loaded { issues: warnings, ..doc.into() }
     }))
 }
 
@@ -203,29 +203,29 @@ fn reflow_overridden_text(doc: &mut Document) {
         .collect();
     resized.sort_by_key(|r| std::cmp::Reverse(r.0));
     for (_, id) in resized {
-        figcraft_layout::layout_frame(doc, id, &m);
+        trama_layout::layout_frame(doc, id, &m);
     }
     for id in changed {
-        if let Some((w, h)) = doc.node(id).and_then(figcraft_text::auto_size) {
+        if let Some((w, h)) = doc.node(id).and_then(trama_text::auto_size) {
             // Sketch grows auto-width text from its aligned edge: a centred one stays centred, a
             // right-aligned one keeps its right edge.
             let shift = doc.node(id).map_or(0.0, |n| match &n.kind {
-                NodeKind::Text(t) if t.auto_resize == figcraft_doc::TextAutoResize::WidthAndHeight => match t.align_h {
-                    figcraft_doc::TextAlignH::Center => (n.width - w) / 2.0,
-                    figcraft_doc::TextAlignH::Right => n.width - w,
+                NodeKind::Text(t) if t.auto_resize == trama_doc::TextAutoResize::WidthAndHeight => match t.align_h {
+                    trama_doc::TextAlignH::Center => (n.width - w) / 2.0,
+                    trama_doc::TextAlignH::Right => n.width - w,
                     _ => 0.0,
                 },
                 _ => 0.0,
             });
-            figcraft_layout::set_size(doc, id, w, h);
+            trama_layout::set_size(doc, id, w, h);
             if shift.is_finite()
                 && shift != 0.0
                 && let Some(n) = doc.node_mut(id)
             {
-                n.transform *= figcraft_doc::geom::Affine::translate((shift, 0.0));
+                n.transform *= trama_doc::geom::Affine::translate((shift, 0.0));
             }
         }
-        figcraft_layout::layout_up(doc, id, &m);
+        trama_layout::layout_up(doc, id, &m);
     }
 }
 
@@ -233,9 +233,9 @@ fn reflow_overridden_text(doc: &mut Document) {
 /// "PingFangSC-Semibold") take the installed family's name when they differ only in spaces and
 /// case.
 fn match_font_families(doc: &mut Document) {
-    let installed = figcraft_text::fontdb::family_names();
+    let installed = trama_text::fontdb::family_names();
     let mut cache: std::collections::BTreeMap<String, Option<String>> = std::collections::BTreeMap::new();
-    let mut fix = |style: &mut figcraft_doc::TextStyle| {
+    let mut fix = |style: &mut trama_doc::TextStyle| {
         let found = cache.entry(style.font_family.clone()).or_insert_with(|| installed_family(&style.font_family, &installed));
         if let Some(f) = found {
             style.font_family = f.clone();
@@ -259,28 +259,27 @@ fn match_font_families(doc: &mut Document) {
 }
 
 /// Sketch draws text with the tracking a font's `trak` table gives at its size (Apple's text engine
-/// adds it; FigCraft's, like Figma's, doesn't): the imported text keeps it as letter spacing, so
+/// adds it; Trama's, like Figma's, doesn't): the imported text keeps it as letter spacing, so
 /// lines measure and break as they did there. A named style's optical size follows the text size
-/// there too (FigCraft keeps the instance's), so the imported text carries it as an `opsz` value.
+/// there too (Trama keeps the instance's), so the imported text carries it as an `opsz` value.
 fn platform_tracking(doc: &mut Document) {
-    let mut cache: std::collections::BTreeMap<(String, String), Option<std::sync::Arc<figcraft_text::fontdb::Face>>> =
-        std::collections::BTreeMap::new();
-    let mut face = |style: &figcraft_doc::TextStyle| {
+    let mut cache: std::collections::BTreeMap<(String, String), Option<std::sync::Arc<trama_text::fontdb::Face>>> = std::collections::BTreeMap::new();
+    let mut face = |style: &trama_doc::TextStyle| {
         cache
             .entry((style.font_family.clone(), style.font_style.clone()))
             .or_insert_with(|| {
-                figcraft_text::fontdb::has_family(&style.font_family)
-                    .then(|| figcraft_text::fontdb::find_face(&style.font_family, &style.font_style))
+                trama_text::fontdb::has_family(&style.font_family)
+                    .then(|| trama_text::fontdb::find_face(&style.font_family, &style.font_style))
                     .flatten()
             })
             .clone()
     };
-    let mut track = |style: &mut figcraft_doc::TextStyle| {
+    let mut track = |style: &mut trama_doc::TextStyle| {
         let Some(f) = face(style) else { return };
         let t = f.tracking(style.font_size);
         if t != 0.0 && t.is_finite() {
             let px = style.letter_spacing.resolve(style.font_size);
-            style.letter_spacing = figcraft_doc::LetterSpacing::Pixels(px + t);
+            style.letter_spacing = trama_doc::LetterSpacing::Pixels(px + t);
         }
         if f.axis("opsz").is_some() && f.instance(&style.font_style).is_some() && style.font_size.is_finite() {
             style.variations.entry("opsz".into()).or_insert(style.font_size);
@@ -310,7 +309,7 @@ const TALL_LINE_FAMILIES: [&str; 11] =
 /// Sketch's natural line for a font of `ascent` and `descent` in `upem` units at `size` px: its
 /// height in px and how far down the text moves so its baseline sits where Sketch puts it. Sketch
 /// rounds the ascent and descent to whole pixels each and leaves the font's line gap out (a fifth
-/// more for [`TALL_LINE_FAMILIES`]), with the baseline above the rounded descent; FigCraft centres
+/// more for [`TALL_LINE_FAMILIES`]), with the baseline above the rounded descent; Trama centres
 /// the font's own ascent and descent in the line. `(0, 0)` without metrics.
 pub(crate) fn sketch_line(ascent: f64, descent: f64, upem: f64, family: &str, size: f64) -> (f64, f64) {
     let k = size / upem;
@@ -321,11 +320,11 @@ pub(crate) fn sketch_line(ascent: f64, descent: f64, upem: f64, family: &str, si
     let natural = a.round() + d.round();
     let line = if TALL_LINE_FAMILIES.iter().any(|f| f.eq_ignore_ascii_case(family)) { (natural * 1.2).round() } else { natural };
     let sketch_baseline = line - d.round();
-    let figcraft_baseline = (line - (a + d)) / 2.0 + a;
-    (line, sketch_baseline - figcraft_baseline)
+    let trama_baseline = (line - (a + d)) / 2.0 + a;
+    (line, sketch_baseline - trama_baseline)
 }
 
-/// Text without a fixed line height takes the line Sketch drew it with (FigCraft's natural line,
+/// Text without a fixed line height takes the line Sketch drew it with (Trama's natural line,
 /// like Figma's, counts the font's line gap and centres the font in it; Sketch's doesn't), as a
 /// share of its size so it still follows the size, and moves to Sketch's baseline. Shared text
 /// styles take the line too.
@@ -338,8 +337,8 @@ fn sketch_line_heights(doc: &mut Document) {
             return 0.0;
         }
         let m = *cache.entry((style.font_family.clone(), style.font_style.clone())).or_insert_with(|| {
-            figcraft_text::fontdb::has_family(&style.font_family)
-                .then(|| figcraft_text::fontdb::find_face(&style.font_family, &style.font_style))
+            trama_text::fontdb::has_family(&style.font_family)
+                .then(|| trama_text::fontdb::find_face(&style.font_family, &style.font_style))
                 .flatten()
                 .map(|f| (f.ascent, f.descent, f.upem))
         });
@@ -363,7 +362,7 @@ fn sketch_line_heights(doc: &mut Document) {
         }
         // Down in the layer's own frame (a rotated text moves along its own axis).
         if !laid_out && down.is_finite() && down != 0.0 {
-            n.transform *= figcraft_doc::geom::Affine::translate((0.0, down));
+            n.transform *= trama_doc::geom::Affine::translate((0.0, down));
         }
     }
     for st in &mut doc.styles {
@@ -388,24 +387,24 @@ pub(crate) fn installed_family(family: &str, installed: &[String]) -> Option<Str
 /// laid out, or it is measured (and reported missing) in a fallback font while the desktop's
 /// background scan is still running (#1292).
 fn installed_fonts_first() {
-    figcraft_text::scan_system_fonts();
+    trama_text::scan_system_fonts();
 }
 
 /// Gives `None` when `bytes` are not a `.fig` file. Then other readers can try.
-pub(crate) fn load_fig(bytes: &[u8], name: &str) -> Option<Result<figcraft_format::Loaded>> {
-    let r = figcraft_format::fig::try_import(bytes, name)?;
+pub(crate) fn load_fig(bytes: &[u8], name: &str) -> Option<Result<trama_format::Loaded>> {
+    let r = trama_format::fig::try_import(bytes, name)?;
     Some(r.map_err(|e| EngineError::Other(e.to_string())).map(|(mut doc, warnings)| {
         link_instances(&mut doc);
         installed_fonts_first();
-        figcraft_format::Loaded { issues: warnings, ..doc.into() }
+        trama_format::Loaded { issues: warnings, ..doc.into() }
     }))
 }
 
 /// The most layers all of a Penpot file's raw SVG placeholders may expand to together.
 const MAX_PENPOT_SVG_LAYERS: usize = 100_000;
 
-/// Turn Penpot raw SVG placeholders into editable FigCraft SVG content, using the
-/// normal SVG importer. The parser (figcraft-format) only stores bounded XML so it
+/// Turn Penpot raw SVG placeholders into editable Trama SVG content, using the
+/// normal SVG importer. The parser (trama-format) only stores bounded XML so it
 /// does not need to depend on the SVG crate; the engine does this second pass.
 /// Any failure leaves the original placeholder and XML data intact for later use.
 fn expand_penpot_raw_svgs(doc: &mut Document, notes: &mut Vec<String>) {
@@ -439,7 +438,7 @@ fn expand_penpot_raw_svgs_within(doc: &mut Document, notes: &mut Vec<String>, mu
             continue;
         }
         let before = doc.node_count();
-        let imported = figcraft_svg::import_svg_with_notes(doc, xml.as_bytes(), id, 0.0, 0.0, &name);
+        let imported = trama_svg::import_svg_with_notes(doc, xml.as_bytes(), id, 0.0, 0.0, &name);
         match imported {
             Ok(imported) => {
                 // An SVG can be syntactically valid yet contain no supported drawable
@@ -479,7 +478,7 @@ fn expand_penpot_raw_svgs_within(doc: &mut Document, notes: &mut Vec<String>, mu
                     let sx = (width / svg_w).clamp(0.0001, 10_000.0);
                     let sy = (height / svg_h).clamp(0.0001, 10_000.0);
                     if let Some(n) = doc.node_mut(imported.frame) {
-                        n.transform = figcraft_geom::Affine::scale_non_uniform(sx, sy);
+                        n.transform = trama_geom::Affine::scale_non_uniform(sx, sy);
                     }
                 }
                 if let Some(n) = doc.node_mut(id) {
@@ -509,7 +508,7 @@ fn expand_penpot_raw_svgs_within(doc: &mut Document, notes: &mut Vec<String>, mu
 
 /// Whether some of the first `len` characters are in none of `runs`. Where runs start and stop
 /// covering is summed once, so runs overlapping any number of times cost no more than their count.
-fn has_uncovered(len: usize, runs: &[figcraft_doc::StyleRun]) -> bool {
+fn has_uncovered(len: usize, runs: &[trama_doc::StyleRun]) -> bool {
     let mut change = vec![0i64; len + 1];
     for run in runs {
         let (start, end) = (run.start.min(len), run.end.min(len));
@@ -532,8 +531,8 @@ fn has_uncovered(len: usize, runs: &[figcraft_doc::StyleRun]) -> bool {
 /// Non-destructive font diagnostic for the action palette, CLI and control API.
 /// Includes styled runs, not just the default typeface of each text layer.
 pub(super) fn font_report(doc: &Document) -> Value {
-    figcraft_text::scan_system_fonts();
-    font_report_with_families(doc, &figcraft_text::family_names())
+    trama_text::scan_system_fonts();
+    font_report_with_families(doc, &trama_text::family_names())
 }
 
 fn font_report_with_families(doc: &Document, installed: &[String]) -> Value {
@@ -625,7 +624,7 @@ fn font_report_with_families(doc: &Document, installed: &[String]) -> Value {
                 None
             } else {
                 // Also under the other name its fonts give the family ("Economia Medium").
-                Some(known.contains(&lower) || figcraft_text::has_family(&family))
+                Some(known.contains(&lower) || trama_text::has_family(&family))
             };
             json!({"family":family,"available":available,"layers":layers.into_iter().collect::<Vec<_>>()})
         })
@@ -687,7 +686,7 @@ fn missing_penpot_font_warnings(doc: &Document, families: &[String]) -> Vec<Stri
         .join(", ");
     let extra = if count > 8 { format!(" and {} more", count - 8) } else { String::new() };
     vec![format!(
-        "Penpot: {count} font family/families are not installed or embedded: {names}{extra}. FigCraft uses fallback fonts for display, but preserves the original family names; install the licensed fonts and reopen the file to restore text metrics."
+        "Penpot: {count} font family/families are not installed or embedded: {names}{extra}. Trama uses fallback fonts for display, but preserves the original family names; install the licensed fonts and reopen the file to restore text metrics."
     )]
 }
 
@@ -709,7 +708,7 @@ fn link_instances(doc: &mut Document) {
 
 /// Largest image file read for a REST API file JSON import.
 #[cfg(not(target_arch = "wasm32"))]
-const MAX_IMAGE_FILE: u64 = figcraft_doc::ImageData::MAX_BYTES;
+const MAX_IMAGE_FILE: u64 = trama_doc::ImageData::MAX_BYTES;
 
 /// Image bytes for a REST API file JSON's `imageRef`: `images/<imageRef>[.png|.jpg|…]` next to
 /// the file.
@@ -730,7 +729,7 @@ pub(super) fn rest_images(path: &str) -> impl Fn(&str) -> Option<Vec<u8>> {
 
 #[cfg(target_arch = "wasm32")]
 pub(super) fn rest_images(_path: &str) -> impl Fn(&str) -> Option<Vec<u8>> {
-    figcraft_format::rest::no_images
+    trama_format::rest::no_images
 }
 
 /// Largest variables JSON read from disk.
@@ -748,7 +747,7 @@ pub(super) fn sibling_variables(path: &str) -> Option<Value> {
     let dir = file.parent()?;
     [format!("{}.variables.json", file_stem(path)), "variables.json".to_string()].iter().map(|n| dir.join(n)).filter(|c| c != file).find_map(|c| {
         let v: Value = serde_json::from_slice(&crate::file_access::read_capped(c, MAX_VARIABLES_FILE).ok()?).ok()?;
-        figcraft_format::rest::is_variables_json(&v).then_some(v)
+        trama_format::rest::is_variables_json(&v).then_some(v)
     })
 }
 
@@ -771,7 +770,7 @@ pub(crate) fn variables_param(cmd: &str, p: &Value) -> Result<Option<Value>> {
         Some(Value::String(path)) => parse(&read(path)?)?,
         Some(_) => return Err(bad(cmd, "variables: the local variables JSON (an object, JSON text or a path)")),
     };
-    if !figcraft_format::rest::is_variables_json(&v) {
+    if !trama_format::rest::is_variables_json(&v) {
         return Err(bad(cmd, "variables: expected the local variables JSON (`meta.variableCollections` and `meta.variables`)"));
     }
     Ok(Some(v))
@@ -780,7 +779,7 @@ pub(crate) fn variables_param(cmd: &str, p: &Value) -> Result<Option<Value>> {
 #[cfg(test)]
 mod penpot_font_warning_tests {
     use super::*;
-    use figcraft_doc::{StyleRun, TextData};
+    use trama_doc::{StyleRun, TextData};
 
     #[test]
     fn font_report_explains_custom_and_google_provenance() {
@@ -838,7 +837,7 @@ mod penpot_font_warning_tests {
 #[cfg(test)]
 mod penpot_svg_v10_tests {
     use super::*;
-    use figcraft_doc::TextData;
+    use trama_doc::TextData;
 
     #[test]
     fn placeholders_share_one_layer_allowance() {
@@ -867,7 +866,7 @@ mod penpot_svg_v10_tests {
 
     #[test]
     fn many_overlapping_style_runs_are_summed_once() {
-        use figcraft_doc::StyleRun;
+        use trama_doc::StyleRun;
         let mut doc = Document::new("Runs");
         let page = doc.first_page().unwrap();
         let mut t = TextData::new("x".repeat(100_000));

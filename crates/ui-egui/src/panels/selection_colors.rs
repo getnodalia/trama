@@ -4,11 +4,11 @@
 use std::sync::Arc;
 
 use egui::{Id, Ui};
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Document, NodeId, PublishedLibrary, Style, StyleKind, VariableType};
-use figcraft_engine::library;
-use figcraft_engine::selection_colors::{PaintTarget, SelectionColor, bind_refusal, collect, create_refusal, in_scope};
 use serde_json::json;
+use trama_color::{Color, Paint};
+use trama_doc::{Document, NodeId, PublishedLibrary, Style, StyleKind, VariableType};
+use trama_engine::library;
+use trama_engine::selection_colors::{PaintTarget, SelectionColor, bind_refusal, collect, create_refusal, in_scope};
 
 use crate::a11y::Tip;
 use crate::colorpicker::PickerTarget;
@@ -136,7 +136,7 @@ pub fn section(app: &mut FigApp, ui: &mut Ui, doc: &Arc<Document>, ids: &[NodeId
                                 {
                                     if let Some(color) = Color::from_hex_or_name(&hex) {
                                         let mut paint = group.paint.clone();
-                                        paint.kind = figcraft_color::PaintKind::Solid { color: color.with_alpha(1.0) };
+                                        paint.kind = trama_color::PaintKind::Solid { color: color.with_alpha(1.0) };
                                         if color.a < 1.0 {
                                             paint.opacity = color.a;
                                         }
@@ -324,7 +324,7 @@ mod tests {
     use super::*;
     use crate::NoServices;
     use egui::{Event, Pos2, RawInput, Rect, Shape, vec2};
-    use figcraft_engine::Session;
+    use trama_engine::Session;
 
     struct Panel {
         ctx: egui::Context,
@@ -653,10 +653,10 @@ mod tests {
 
     #[test]
     fn styles_menu_offers_an_enabled_librarys_published_color_styles() {
-        let dir = std::env::temp_dir().join(format!("figcraft-selection-colors-panel-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("trama-selection-colors-panel-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir(&dir).unwrap();
-        let path = dir.join("library.figcraft");
+        let path = dir.join("library.trama");
         let mut publisher = Session::new();
         publisher.execute("style.create", &json!({"type":"paint","name":"Ocean","value":"#00ffff"})).unwrap();
         publisher.execute("style.create", &json!({"type":"paint","name":"_Draft","value":"#ffff00"})).unwrap();

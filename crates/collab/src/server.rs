@@ -3,8 +3,8 @@
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
-use figcraft_doc::{Document, NodeId};
 use serde::{Deserialize, Serialize};
+use trama_doc::{Document, NodeId};
 
 use crate::change::{Change, Entry, Family, Prop, Target};
 use crate::message::{

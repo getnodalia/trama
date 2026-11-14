@@ -2,9 +2,9 @@
 //! what the renderer draws with each on and off, that a click picks what is drawn (and nothing
 //! that isn't), and the commands themselves (toggles of the view, checked in the menu).
 
-use figcraft_doc::NodeId;
-use figcraft_render::{Options, Outline, View, render_view, to_rgba8};
 use serde_json::{Value, json};
+use trama_doc::NodeId;
+use trama_render::{Options, Outline, View, render_view, to_rgba8};
 
 use crate::Session;
 use crate::params::id_of;

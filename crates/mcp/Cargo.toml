@@ -1,19 +1,19 @@
 [package]
-name = "figcraft-mcp"
+name = "trama-mcp"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "FigCraft MCP server: JSON-RPC 2.0 over stdio, driving a headless engine session or a running FigCraft app"
+description = "Trama MCP server: JSON-RPC 2.0 over stdio, driving a headless engine session or a running Trama app"
 
 [lints]
 workspace = true
 
 [dependencies]
-figcraft-engine = { workspace = true }
-figcraft-collab-net = { workspace = true }
-figcraft-doc = { workspace = true }
-figcraft-geom = { workspace = true }
-figcraft-render = { workspace = true }
+trama-engine = { workspace = true }
+trama-collab-net = { workspace = true }
+trama-doc = { workspace = true }
+trama-geom = { workspace = true }
+trama-render = { workspace = true }
 serde_json = { workspace = true }
 base64 = { workspace = true }
 log = { workspace = true }

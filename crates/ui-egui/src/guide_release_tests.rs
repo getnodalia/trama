@@ -2,8 +2,8 @@
 //! and a later click on the canvas neither adds a guide nor moves one.
 
 use egui::{Event, Pos2, vec2};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

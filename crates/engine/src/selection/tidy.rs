@@ -14,7 +14,7 @@
 //! columns is the mirror image. Tidy up is unavailable for fewer than three layers, for layers all
 //! in one row and one column (overlapping each other), for a diagonal and for an irregular layout.
 //!
-//! Not measured, FigCraft's choices: a 2 x 2 grid packed as columns; layers in an auto layout flow
+//! Not measured, Trama's choices: a 2 x 2 grid packed as columns; layers in an auto layout flow
 //! making it unavailable (the frame places them, and the measurement could not tell this from an
 //! irregular layout); the 2,000 layer cap; rotated layers counting by their box; gaps a pixel
 //! apart being different gaps; an explicit `spacing` taking two layers; no rounding in a grid with
@@ -22,8 +22,8 @@
 
 use std::collections::BTreeSet;
 
-use figcraft_doc::{Document, NodeId};
-use figcraft_geom::Rect;
+use trama_doc::{Document, NodeId};
+use trama_geom::Rect;
 
 use crate::cmd::edit::roots;
 

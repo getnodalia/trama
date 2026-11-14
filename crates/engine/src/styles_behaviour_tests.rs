@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 
 use crate::Session;
 use crate::params::id_of;
-use figcraft_doc::{ListStyle, Node, NodeId, ParagraphStyle, StyleKind, TextData};
+use trama_doc::{ListStyle, Node, NodeId, ParagraphStyle, StyleKind, TextData};
 
 fn id(v: Value) -> NodeId {
     id_of(&v["id"]).unwrap()
@@ -298,7 +298,7 @@ fn a_style_link_leaves_values_its_style_does_not_set() {
     run(&mut s, "node.set", json!({"id": set, "props": props}));
     for (how, layer) in [("node.create", made), ("node.set", set)] {
         assert_eq!(link(&s, layer, "text").as_deref(), Some(st.as_str()), "{how}: linked");
-        assert_eq!(node(&s, layer).kind.text().unwrap().align_h, figcraft_doc::TextAlignH::Center, "{how}: `textAlign` applies");
+        assert_eq!(node(&s, layer).kind.text().unwrap().align_h, trama_doc::TextAlignH::Center, "{how}: `textAlign` applies");
     }
 }
 
@@ -423,7 +423,7 @@ fn text_styles_carry_the_wrap_style() {
     // Explore text properties: a wrap style can be set on the text layer, a paragraph or a text
     // style. A style made from a text takes its wrap style, applying it sets it,
     // editing it on a styled text unlinks it.
-    use figcraft_doc::WrapStyle::{Auto, Balance, Pretty};
+    use trama_doc::WrapStyle::{Auto, Balance, Pretty};
     let mut s = Session::new();
     let td = |s: &Session, n: NodeId| -> TextData { node(s, n).kind.text().unwrap().clone() };
     let t = text(&mut s, 0.0);

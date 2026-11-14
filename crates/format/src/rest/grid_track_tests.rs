@@ -2,8 +2,8 @@
 //! `grid-template-columns`/`-rows` strings). Fixtures are synthetic, written by hand.
 
 use super::*;
-use figcraft_doc::GridTrack;
 use serde_json::json;
+use trama_doc::GridTrack;
 
 fn tracks(columns: Value, rows: Value) -> (Vec<GridTrack>, Vec<GridTrack>) {
     let file = json!({"name": "Fixture", "document": {"id": "0:0", "name": "Document", "type": "DOCUMENT", "children": [

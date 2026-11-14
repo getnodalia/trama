@@ -21,7 +21,7 @@ message SymbolData GUID symbolID, float uniformScaleFactor
 message NodeChange GUID guid, ParentIndex parentIndex, NodeType type, string name, Vector size, Matrix transform, TextData textData, float fontSize, FontName fontName, TextPathStart textPathStart, VectorData vectorData, StyleType styleType, StyleId styleIdForText, TextDecoration textDecoration, SymbolData symbolData
 message Message NodeChange[] nodeChanges, Blob[] blobs
 ";
-use figcraft_doc::{NodeKind, TextPath};
+use trama_doc::{NodeKind, TextPath};
 
 fn o(fields: Vec<(&'static str, Kv<'static>)>) -> Kv<'static> {
     Kv::Object(fields)
@@ -268,8 +268,8 @@ fn a_text_on_a_path_in_a_scaled_instance_has_its_path_scaled() {
 
 // The `.fig` export writes text on a path.
 
-use figcraft_doc::geom::kurbo::PathEl;
-use figcraft_doc::{Document, NodeId, TextAlignV};
+use trama_doc::geom::kurbo::PathEl;
+use trama_doc::{Document, NodeId, TextAlignV};
 
 const W1: &str = "text on a path with more than one line was written as plain text";
 const W2: &str = "text on a path the format can't hold was written as plain text";
@@ -340,14 +340,14 @@ fn doc_of(texts: &[(&str, &str, &str, f64, bool, f64, f64)]) -> Document {
     doc
 }
 
-fn text_of<'a>(doc: &'a Document, name: &str) -> &'a figcraft_doc::TextData {
+fn text_of<'a>(doc: &'a Document, name: &str) -> &'a trama_doc::TextData {
     let node = doc.nodes().find(|n| n.name == name).unwrap_or_else(|| panic!("no layer {name}"));
     let NodeKind::Text(td) = &node.kind else { panic!("{name} is not text") };
     td
 }
 
 fn elements(d: &str) -> Vec<(char, Vec<(f64, f64)>)> {
-    figcraft_doc::geom::svg_path(d)
+    trama_doc::geom::svg_path(d)
         .unwrap()
         .elements()
         .iter()

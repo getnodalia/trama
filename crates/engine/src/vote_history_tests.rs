@@ -2,8 +2,8 @@
 //! results until they're deleted): recorded when a vote ends, at most [`VOTE_HISTORY_MAX`], listed
 //! newest first, deleted one at a time, saved, carried over undo, and opened from older files.
 
-use figcraft_doc::{NodeId, VOTE_HISTORY_MAX, Vote, VoteRecord, VoteScope};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, VOTE_HISTORY_MAX, Vote, VoteRecord, VoteScope};
 
 use crate::board_tests::{board, id};
 use crate::{EngineError, Session};
@@ -95,14 +95,14 @@ fn kept_results_save_and_older_files_open() {
     let a = sticky(&mut s, 0.0, "A");
     vote(&mut s, &[("Ada", a)]);
     let doc = s.doc().unwrap().clone();
-    let bytes = figcraft_format::save_bytes(&doc, None).unwrap();
-    let (back, _) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(&doc, None).unwrap();
+    let (back, _) = trama_format::load_bytes(&bytes).unwrap();
     assert_eq!(back.vote_history, doc.vote_history);
     // A file from before results were kept: none listed but the ended vote on its board, which
     // shows and clears as before (it can't be deleted: it isn't kept).
-    let mut v = figcraft_format::to_json(&doc).unwrap();
+    let mut v = trama_format::to_json(&doc).unwrap();
     assert!(v.as_object_mut().unwrap().remove("vote_history").is_some(), "saved as vote_history");
-    let (old, _) = figcraft_format::from_json(&v.to_string()).unwrap();
+    let (old, _) = trama_format::from_json(&v.to_string()).unwrap();
     assert!(old.vote_history.is_empty() && old.vote.is_some());
     let mut s = board();
     s.ds_mut().unwrap().doc = std::sync::Arc::new(old);
@@ -110,7 +110,7 @@ fn kept_results_save_and_older_files_open() {
     ex(&mut s, "board.vote", json!({"action": "clear"}));
     assert!(sessions(&mut s).is_empty());
     // Design files don't write it.
-    assert!(figcraft_format::to_json(&figcraft_doc::Document::new("D")).unwrap().get("vote_history").is_none());
+    assert!(trama_format::to_json(&trama_doc::Document::new("D")).unwrap().get("vote_history").is_none());
 }
 
 #[test]

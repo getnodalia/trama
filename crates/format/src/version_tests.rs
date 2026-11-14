@@ -1,9 +1,9 @@
-//! The version history in `.figcraft` files: round trips, files without versions, damaged entries.
+//! The version history in `.trama` files: round trips, files without versions, damaged entries.
 
 use std::io::Write;
 use std::sync::Arc;
 
-use figcraft_doc::{Document, NodeKind};
+use trama_doc::{Document, NodeKind};
 
 use super::*;
 
@@ -149,4 +149,15 @@ fn saving_refuses_bad_version_ids() {
     let v = Version::new("a", &"n".repeat(MAX_VERSION_NAME + 10), &"é".repeat(MAX_VERSION_DESCRIPTION + 1), 0, d);
     assert_eq!(v.name.chars().count(), MAX_VERSION_NAME);
     assert_eq!(v.description.chars().count(), MAX_VERSION_DESCRIPTION);
+}
+
+#[test]
+fn documents_saved_under_the_old_extension_are_native_files() {
+    for ext in ["trama", "TRAMA", "figcraft", "FigCraft"] {
+        // rebrand: keep
+        assert!(is_native_extension(ext), "{ext}");
+    }
+    for ext in ["fig", "json", "", "tramas"] {
+        assert!(!is_native_extension(ext), "{ext}");
+    }
 }

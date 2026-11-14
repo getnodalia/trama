@@ -3,9 +3,9 @@
 //! Escape.
 
 use egui::{Key, pos2};
-use figcraft_engine::Session;
-use figcraft_engine::branches::Side;
 use serde_json::json;
+use trama_engine::Session;
+use trama_engine::branches::Side;
 
 use crate::present_tests::{Ui, id};
 

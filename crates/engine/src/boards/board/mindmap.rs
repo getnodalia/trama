@@ -5,13 +5,13 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{
+use serde_json::{Value, json};
+use trama_color::{Color, Paint};
+use trama_doc::{
     AutoLayout, BoardItem, Connector, Document, End, LetterSpacing, LineHeight, MIND_GAP_X, MIND_GAP_Y, MIND_MAX_DEPTH, MIND_MAX_NODES, MindBox,
     NodeId, NodeKind, Routing, Side, Sizing, StrokeCap, TextAlignH, TextAutoResize, mind_layout,
 };
-use figcraft_geom::{Affine, Point, Rect};
-use serde_json::{Value, json};
+use trama_geom::{Affine, Point, Rect};
 
 use super::connectors::make;
 use super::items::{add, add_text, owner_of_text};
@@ -173,7 +173,7 @@ pub(super) fn mind_map_cmd(s: &mut Session, p: &Value) -> Result<Value> {
     // non-finite centre, which `coord` refuses).
     let (vx, vy) = {
         let ds = s.ds()?;
-        let c = ds.doc.world_transform(parent).inverse() * figcraft_geom::Point::new(ds.view.cx, ds.view.cy);
+        let c = ds.doc.world_transform(parent).inverse() * trama_geom::Point::new(ds.view.cx, ds.view.cy);
         (c.x, c.y)
     };
     let (x, y) = (coord(cmd, p, "x", vx)?, coord(cmd, p, "y", vy)?);

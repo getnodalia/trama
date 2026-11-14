@@ -11,9 +11,9 @@
 
 use std::collections::HashMap;
 
-use figcraft_color::{BlendMode, Color};
-use figcraft_doc::{Blur, Effect, EffectKind, Shadow};
-use figcraft_geom::{Affine, Vec2};
+use trama_color::{BlendMode, Color};
+use trama_doc::{Blur, Effect, EffectKind, Shadow};
+use trama_geom::{Affine, Vec2};
 use usvg::filter::{ColorMatrixKind, CompositeOperator, Input, Kind, MorphologyOperator};
 
 use super::paint::color;

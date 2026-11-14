@@ -2,12 +2,12 @@
 //! schema.
 
 use super::*;
-use figcraft_doc::color::{BlendMode, GradientKind, ImageScaleMode, PaintKind};
-use figcraft_doc::{
+use serde_json::json;
+use trama_doc::color::{BlendMode, GradientKind, ImageScaleMode, PaintKind};
+use trama_doc::{
     CrossAlign, EffectKind, ExportFormat, ExportSize, GridKind, HConstraint, LetterSpacing, LineHeight, ListStyle, MainAlign, Sizing, StrokeAlign,
     StrokeCap, StrokeJoin, TextAlignH, TextAlignV, TextAutoResize, TextCase, TextDecoration, VConstraint,
 };
-use serde_json::json;
 
 fn file(pages: Value) -> Value {
     json!({"name": "Fixture", "schemaVersion": 0, "document": {"id": "0:0", "name": "Document", "type": "DOCUMENT", "children": pages}})
@@ -347,7 +347,7 @@ fn text_styles_and_runs() {
     assert_eq!((td.style.case, td.style.decoration), (TextCase::Upper, TextDecoration::Underline));
     assert_eq!((td.align_h, td.align_v, td.auto_resize), (TextAlignH::Center, TextAlignV::Middle, TextAutoResize::Height));
     assert_eq!((td.paragraph_spacing, td.paragraph_indent), (8.0, 4.0));
-    assert_eq!(td.leading_trim, figcraft_doc::LeadingTrim::CapHeight);
+    assert_eq!(td.leading_trim, trama_doc::LeadingTrim::CapHeight);
     assert_eq!(td.features.get("liga"), Some(&false));
     assert_eq!(td.features.get("ss01"), Some(&true));
     assert_eq!(td.list, ListStyle::Bulleted);
@@ -412,7 +412,7 @@ fn auto_layout_constraints_and_grids() {
     assert_eq!((stack.child_layout.sizing_h, stack.child_layout.sizing_v), (Sizing::Fixed, Sizing::Hug), "vertical: primary axis hugs");
     assert_eq!(stack.grids.len(), 2);
     assert_eq!((stack.grids[0].kind, stack.grids[0].count, stack.grids[0].gutter, stack.grids[0].offset), (GridKind::Columns, 4, 12.0, 3.0));
-    assert_eq!(stack.grids[0].align, figcraft_doc::GridAlign::Center);
+    assert_eq!(stack.grids[0].align, trama_doc::GridAlign::Center);
     assert!(!stack.grids[1].visible && stack.grids[1].size == 8.0);
     let grow = named(&doc, "Grow");
     assert_eq!((grow.child_layout.sizing_h, grow.child_layout.sizing_v), (Sizing::Fill, Sizing::Fill));
@@ -567,7 +567,7 @@ fn nodes_response_flows_and_detection() {
     assert_eq!((flows[0].name.as_str(), flows[0].start), ("Onboarding", named(&doc, "Home").id));
     assert!(warnings.iter().any(|w| w.contains("interactions")) && warnings.iter().any(|w| w.contains("variables bound to")), "{warnings:?}");
 
-    // Native FigCraft JSON and other text are left to the other loaders.
+    // Native Trama JSON and other text are left to the other loaders.
     let native = serde_json::to_vec(&crate::to_json(&Document::new("x")).unwrap()).unwrap();
     assert!(try_import(&native, &no_images).is_none());
     assert!(try_import(b"PK\x03\x04", &no_images).is_none());
@@ -816,7 +816,7 @@ fn a_start_on_every_line_counts_only_where_the_list_starts() {
          "style": {"fontFamily": "Inter", "fontSize": 12},
          "lineTypes": ["ORDERED", "ORDERED", "ORDERED"], "listStartOffsets": [4, 4, 4]}
     ]));
-    let figcraft_doc::NodeKind::Text(t) = &named(&doc, "Every").kind else { panic!("not text") };
+    let trama_doc::NodeKind::Text(t) = &named(&doc, "Every").kind else { panic!("not text") };
     let offsets: Vec<u32> = (0..t.paragraph_count()).map(|p| t.para_list(p).start_offset).collect();
     assert_eq!(offsets, [4, 0, 0]);
 }

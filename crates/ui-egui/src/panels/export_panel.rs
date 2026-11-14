@@ -7,10 +7,10 @@ use std::collections::BTreeSet;
 use std::sync::Arc;
 
 use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
-use figcraft_doc::color::ColorProfile;
-use figcraft_doc::{Document, ExportColorProfile, ExportFormat, ExportSetting, ExportSize, NodeId, NodeKind, PrintSettings, VdCompat};
-use figcraft_engine::cmd::file::export_jobs;
 use serde_json::{Value, json};
+use trama_doc::color::ColorProfile;
+use trama_doc::{Document, ExportColorProfile, ExportFormat, ExportSetting, ExportSize, NodeId, NodeKind, PrintSettings, VdCompat};
+use trama_engine::cmd::file::export_jobs;
 
 use crate::FigApp;
 use crate::i18n::{tr, tr_noop, trf, trn};
@@ -398,7 +398,7 @@ pub(crate) fn wide_button(ui: &mut Ui, label: &str) -> bool {
 /// one file through a save dialog, several into a folder.
 pub(crate) fn export_layers(app: &mut FigApp, ids: &[NodeId], assets: bool) {
     let jobs = match app.session.doc() {
-        Ok(doc) if assets => figcraft_engine::devinspect::asset_jobs(doc, ids),
+        Ok(doc) if assets => trama_engine::devinspect::asset_jobs(doc, ids),
         Ok(doc) => export_jobs(doc, ids),
         Err(_) => return,
     };

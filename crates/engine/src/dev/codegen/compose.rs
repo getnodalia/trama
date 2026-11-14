@@ -3,7 +3,7 @@ use super::{
     CodeLang, Color, Ctx, GradientKind, LayoutMode, Node, NodeId, NodeKind, PADDING, Paint, PaintKind, drop_shadow, first_fill, gradient_axis,
     gradient_stops, indent, literal, named, native_gradient_kind, num, radius, stroke_color, visible_fills,
 };
-use figcraft_doc::Document;
+use trama_doc::Document;
 
 // ------------------------------------------------------------------ Jetpack Compose
 
@@ -47,7 +47,7 @@ fn compose_sign(v: f64, other: f64) -> i8 {
 
 /// A gradient fill as a Compose `Brush` for a `w` x `h` layer. A linear gradient snaps to the
 /// nearest of eight directions; radial and angular ones sit at the box's centre.
-fn compose_gradient(g: &figcraft_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
+fn compose_gradient(g: &trama_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
     let stops = gradient_stops(g, opacity).into_iter().map(|(at, c)| format!("{}f to {}", num(at), kotlin_color(c))).collect::<Vec<_>>().join(", ");
     match native_gradient_kind(g) {
         GradientKind::Linear => {

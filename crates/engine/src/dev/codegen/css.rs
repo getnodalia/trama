@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use figcraft_doc::VariableId;
+use trama_doc::VariableId;
 
 use super::{
     ContentAlign, CrossAlign, Document, EffectKind, LayoutMode, LetterSpacing, LineHeight, MainAlign, Node, NodeId, NodeKind, PADDING, PaintKind,
@@ -150,12 +150,12 @@ pub(crate) fn css_decls(doc: &Document, n: &Node, t: &mut Tokens, hug: (bool, bo
     if n.opacity < 1.0 {
         put("opacity", tok(doc, n, &["opacity"], num(f64::from(n.opacity)), t));
     }
-    if !matches!(n.blend, figcraft_color::BlendMode::Normal | figcraft_color::BlendMode::PassThrough) {
+    if !matches!(n.blend, trama_color::BlendMode::Normal | trama_color::BlendMode::PassThrough) {
         put("mix-blend-mode", n.blend.css().into());
     }
     // Rotation turns counter-clockwise about the top-left corner (the position given); CSS
     // rotate turns clockwise.
-    let rot = figcraft_geom::rotation_degrees(n.transform);
+    let rot = trama_geom::rotation_degrees(n.transform);
     if rot.abs() > 0.01 && rot.is_finite() {
         put("transform", format!("rotate({}deg)", num(-rot)));
         put("transform-origin", "top left".into());
@@ -178,7 +178,7 @@ pub(crate) fn css_decls(doc: &Document, n: &Node, t: &mut Tokens, hug: (bool, bo
         // One `background` with every visible fill as a layer, top first (a document's fills run
         // bottom to top, as the renderer paints them). CSS allows a plain colour only as the last
         // layer, so a solid above another fill becomes a one-colour gradient.
-        let visible: Vec<(usize, &figcraft_color::Paint)> = n.fills.iter().enumerate().filter(|(_, p)| p.visible).collect();
+        let visible: Vec<(usize, &trama_color::Paint)> = n.fills.iter().enumerate().filter(|(_, p)| p.visible).collect();
         let layers: Vec<String> = visible
             .iter()
             .enumerate()
@@ -215,7 +215,7 @@ pub(crate) fn css_decls(doc: &Document, n: &Node, t: &mut Tokens, hug: (bool, bo
 }
 
 /// The flex declarations of auto layout `l` on `n`.
-fn layout_decls(doc: &Document, n: &Node, l: &figcraft_doc::AutoLayout, t: &mut Tokens, put: &mut impl FnMut(&str, String)) {
+fn layout_decls(doc: &Document, n: &Node, l: &trama_doc::AutoLayout, t: &mut Tokens, put: &mut impl FnMut(&str, String)) {
     let px = |v: f64| format!("{}px", num(v));
     put("display", "flex".into());
     put("flex-direction", if l.mode == LayoutMode::Vertical { "column" } else { "row" }.into());
@@ -296,7 +296,7 @@ fn effect_decls(n: &Node, put: &mut impl FnMut(&str, String)) {
 }
 
 /// The type declarations of text layer `n`.
-fn text_decls(doc: &Document, n: &Node, tx: &figcraft_doc::TextData, t: &mut Tokens, put: &mut impl FnMut(&str, String)) {
+fn text_decls(doc: &Document, n: &Node, tx: &trama_doc::TextData, t: &mut Tokens, put: &mut impl FnMut(&str, String)) {
     let px = |v: f64| format!("{}px", num(v));
     let s = &tx.style;
     put(
@@ -336,15 +336,15 @@ fn text_decls(doc: &Document, n: &Node, tx: &figcraft_doc::TextData, t: &mut Tok
     // CSS has one `text-wrap` per element: written when every paragraph has the same one.
     let wrap = (0..tx.paragraph_count()).map(|p| tx.para_wrap_style(p)).collect::<Vec<_>>();
     match wrap.first().copied().filter(|w| wrap.iter().all(|x| x == w)) {
-        Some(figcraft_doc::WrapStyle::Balance) => put("text-wrap", "balance".into()),
-        Some(figcraft_doc::WrapStyle::Pretty) => put("text-wrap", "pretty".into()),
+        Some(trama_doc::WrapStyle::Balance) => put("text-wrap", "balance".into()),
+        Some(trama_doc::WrapStyle::Pretty) => put("text-wrap", "pretty".into()),
         _ => {}
     }
     // A base direction forced on every paragraph (CSS has one per element).
     let dir = tx.paragraphs.first().map(|p| p.direction).filter(|d| tx.paragraphs.iter().all(|p| p.direction == *d));
     match dir {
-        Some(figcraft_doc::TextDirection::Ltr) => put("direction", "ltr".into()),
-        Some(figcraft_doc::TextDirection::Rtl) => {
+        Some(trama_doc::TextDirection::Ltr) => put("direction", "ltr".into()),
+        Some(trama_doc::TextDirection::Rtl) => {
             put("direction", "rtl".into());
             // Left alignment is absolute on the canvas; `start` would be the right edge here.
             if tx.align_h == TextAlignH::Left {
@@ -366,12 +366,12 @@ fn text_decls(doc: &Document, n: &Node, tx: &figcraft_doc::TextData, t: &mut Tok
         TextDecoration::Strikethrough => put("text-decoration", "line-through".into()),
     }
     decoration_decls(s, put);
-    if tx.leading_trim == figcraft_doc::LeadingTrim::CapHeight {
+    if tx.leading_trim == trama_doc::LeadingTrim::CapHeight {
         put("text-box", "trim-both cap alphabetic".into());
     }
 }
 
-fn decoration_decls(s: &figcraft_doc::TextStyle, put: &mut impl FnMut(&str, String)) {
+fn decoration_decls(s: &trama_doc::TextStyle, put: &mut impl FnMut(&str, String)) {
     let px = |v: f64| format!("{}px", num(v));
     if s.decoration != TextDecoration::None {
         let l = s.look();
@@ -381,9 +381,9 @@ fn decoration_decls(s: &figcraft_doc::TextStyle, put: &mut impl FnMut(&str, Stri
             LineHeight::Percent(p) => Some(format!("{}%", num(p))),
         };
         match l.style {
-            figcraft_doc::DecorationStyle::Solid => {}
-            figcraft_doc::DecorationStyle::Dotted => put("text-decoration-style", "dotted".into()),
-            figcraft_doc::DecorationStyle::Wavy => put("text-decoration-style", "wavy".into()),
+            trama_doc::DecorationStyle::Solid => {}
+            trama_doc::DecorationStyle::Dotted => put("text-decoration-style", "dotted".into()),
+            trama_doc::DecorationStyle::Wavy => put("text-decoration-style", "wavy".into()),
         }
         if let Some(v) = len(l.thickness) {
             put("text-decoration-thickness", v);
@@ -406,7 +406,7 @@ fn decoration_decls(s: &figcraft_doc::TextStyle, put: &mut impl FnMut(&str, Stri
 /// A gradient fill on a `w`×`h` box as a CSS background: linear along its handles' direction
 /// (CSS angles: 0deg up, 90deg right), radial with its handles' radii, angular as a conic
 /// gradient from its start direction.
-fn css_gradient(g: &figcraft_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
+fn css_gradient(g: &trama_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
     let stops = g
         .sorted_stops()
         .iter()
@@ -418,12 +418,12 @@ fn css_gradient(g: &figcraft_color::Gradient, w: f64, h: f64, opacity: f32) -> S
     let pct = |v: f64| format!("{}%", num(v * 100.0));
     let at = format!("at {} {}", pct(g.from.0), pct(g.from.1));
     match g.kind {
-        figcraft_color::GradientKind::Linear => format!("linear-gradient({}deg, {stops})", num(angle)),
-        figcraft_color::GradientKind::Radial | figcraft_color::GradientKind::Diamond => {
+        trama_color::GradientKind::Linear => format!("linear-gradient({}deg, {stops})", num(angle)),
+        trama_color::GradientKind::Radial | trama_color::GradientKind::Diamond => {
             let (rx, ry) = (((g.width.0 - g.from.0) * w).hypot((g.width.1 - g.from.1) * h), dx.hypot(dy));
             let rel = |r: f64, side: f64| if side > 0.0 { pct(r / side) } else { "50%".into() };
             format!("radial-gradient({} {} {at}, {stops})", rel(rx, w), rel(ry, h))
         }
-        figcraft_color::GradientKind::Angular => format!("conic-gradient(from {}deg {at}, {stops})", num(angle)),
+        trama_color::GradientKind::Angular => format!("conic-gradient(from {}deg {at}, {stops})", num(angle)),
     }
 }

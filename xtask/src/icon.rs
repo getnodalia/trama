@@ -1,7 +1,7 @@
-//! The app icon: rasterises the master `assets/app-icon/figcraft.svg` (the chameleon, see
-//! `assets/app-icon/README.md`) with the `resvg` CLI (`cargo install resvg`). Writes
-//! figcraft-<size>.png (macOS grid), the hicolor theme and figcraft.ico. The outputs are
-//! committed, so building and packaging never need `resvg`.
+//! The app icon: rasterises the master `assets/app-icon/trama.svg` (the woven swatch, see
+//! `assets/app-icon/README.md`) and its Colloid-grid Linux version `trama-linux.svg` with the
+//! `resvg` CLI (`cargo install resvg`). Writes trama-<size>.png (macOS grid), trama.ico and the
+//! hicolor theme. The outputs are committed, so building and packaging never need `resvg`.
 
 use std::path::Path;
 use std::process::Command;
@@ -21,28 +21,29 @@ fn render(svg: &Path, size: u32, out: &Path) -> bool {
 
 pub fn generate(root: &Path) -> bool {
     let dir = root.join("assets/app-icon");
-    let Ok(master) = std::fs::read_to_string(dir.join("figcraft.svg")) else {
-        eprintln!("icon: cannot read {}", dir.join("figcraft.svg").display());
+    let Ok(master) = std::fs::read_to_string(dir.join("trama.svg")) else {
+        eprintln!("icon: cannot read {}", dir.join("trama.svg").display());
         return false;
     };
     if !master.contains(VIEW_BOX) {
-        eprintln!("icon: expected {VIEW_BOX} in figcraft.svg");
+        eprintln!("icon: expected {VIEW_BOX} in trama.svg");
         return false;
     }
     let tmp = root.join("target/icon");
-    // Windows and Linux show the tile edge to edge, rounded corners and all: the master as it is.
-    let (mac, tile) = (tmp.join("mac.svg"), dir.join("figcraft.svg"));
+    // Windows shows the tile edge to edge, rounded corners and all: the master as it is. Linux
+    // uses the Colloid grid (a 224 tile on a 256 canvas with its shadow), like the icon theme.
+    let (mac, tile, linux) = (tmp.join("mac.svg"), dir.join("trama.svg"), dir.join("trama-linux.svg"));
     let mut ok = std::fs::create_dir_all(&tmp).is_ok() && std::fs::write(&mac, master.replacen(VIEW_BOX, MAC_VIEW_BOX, 1)).is_ok();
     if !ok {
         eprintln!("icon: cannot write {}", tmp.display());
         return false;
     }
     for size in [16u32, 32, 48, 64, 128, 256, 512, 1024] {
-        ok &= render(&mac, size, &dir.join(format!("figcraft-{size}.png")));
+        ok &= render(&mac, size, &dir.join(format!("trama-{size}.png")));
         if size <= 512 {
             let hd = dir.join(format!("hicolor/{size}x{size}/apps"));
             let _ = std::fs::create_dir_all(&hd);
-            ok &= render(&tile, size, &hd.join("ai.storyteller.figcraft.png"));
+            ok &= render(&linux, size, &hd.join("dev.danielmiguelt.Trama.png"));
         }
     }
     // Windows .ico (PNG-compressed entries).
@@ -67,15 +68,14 @@ pub fn generate(root: &Path) -> bool {
     for png in &pngs {
         ico.extend_from_slice(png);
     }
-    let ico_path = dir.join("figcraft.ico");
+    let ico_path = dir.join("trama.ico");
     let _ = std::fs::remove_file(&ico_path);
     ok &= std::fs::write(&ico_path, ico).is_ok();
-    // The lighter trace keeps the scalable theme icon cheap to render.
     let sd = dir.join("hicolor/scalable/apps");
     let _ = std::fs::create_dir_all(&sd);
-    let target = sd.join("ai.storyteller.figcraft.svg");
+    let target = sd.join("dev.danielmiguelt.Trama.svg");
     let _ = std::fs::remove_file(&target);
-    ok &= std::fs::copy(dir.join("figcraft-small.svg"), &target).is_ok();
+    ok &= std::fs::copy(&linux, &target).is_ok();
     eprintln!("icon: wrote {}", dir.display());
     ok
 }

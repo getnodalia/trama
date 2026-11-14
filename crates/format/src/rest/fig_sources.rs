@@ -3,8 +3,8 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_doc::{Document, NodeId, NodeKind};
 use serde_json::Value;
+use trama_doc::{Document, NodeId, NodeKind};
 
 use super::{FIG_SOURCE_FIELD, MAX_DEPTH};
 

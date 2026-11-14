@@ -3,9 +3,9 @@
 
 use std::io::{Read, Write};
 
-use figcraft_doc::NodeId;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use trama_doc::NodeId;
 
 use crate::Error;
 use crate::change::Change;
@@ -669,7 +669,7 @@ pub enum LibraryReq {
     /// The file's library, unless the server's version is `have`; `usage` reports how the asking
     /// file uses it.
     Fetch { have: Option<u64>, usage: Option<Usage> },
-    /// Keep `archive` (a `.figcraft` archive holding the published library) as the file's library.
+    /// Keep `archive` (a `.trama` archive holding the published library) as the file's library.
     /// Needs an edit link; the library must be the one kept (same id) at a newer version.
     Publish { archive: Vec<u8> },
     /// The usage reports of the files that use the library.
@@ -702,7 +702,7 @@ pub enum LibraryReply {
     Ready {
         access: Access,
     },
-    /// The library (a `.figcraft` archive holding it) at `version`.
+    /// The library (a `.trama` archive holding it) at `version`.
     Library {
         version: u64,
         archive: Vec<u8>,
@@ -776,7 +776,7 @@ pub enum PluginReq {
     List { query: String },
     /// A plugin's bundle: version `version`, or its latest.
     Fetch { id: String, version: Option<String> },
-    /// Keep a bundle (`figcraft_plugin::bundle`) as a new version of its plugin. Needs the key.
+    /// Keep a bundle (`trama_plugin::bundle`) as a new version of its plugin. Needs the key.
     Publish { bundle: Vec<u8> },
     /// Remove version `version` of a plugin, or all of them. Needs the key.
     Unpublish { id: String, version: Option<String> },

@@ -1,4 +1,4 @@
-//! Design tokens (UI3 light and dark) and fonts.
+//! Design tokens (the Nodalia Design Language, light and dark, with Trama's accent) and fonts.
 
 use std::sync::{Arc, OnceLock};
 
@@ -54,34 +54,36 @@ pub struct Tokens {
     pub focus: Color32,
 }
 
-/// FigCraft's brand green for solid surfaces.
-pub const BRAND: Color32 = Color32::from_rgb(0x02, 0xDA, 0x96);
-/// Contrast-safe green for thin selection outlines and white-on-green labels.
-/// It reaches 4.5:1 on white and 3:1 on the dark canvas.
-pub const ACCENT: Color32 = Color32::from_rgb(0x00, 0x87, 0x5F);
-/// Ink on the bright green brand surface (white would not have enough contrast).
-pub const ACCENT_ON: Color32 = Color32::from_rgb(0x07, 0x35, 0x2A);
+/// Trama's purple (its icon's), bright enough for overlays on a dark page (3:1 on the dark canvas).
+pub const BRAND: Color32 = Color32::from_rgb(0xA5, 0x5E, 0xEA);
+/// The deeper purple for thin selection outlines on light pages and white-on-purple labels: 4.5:1
+/// on white.
+pub const ACCENT: Color32 = Color32::from_rgb(0x7A, 0x26, 0xC9);
+/// Ink on a [`BRAND`] surface.
+pub const ACCENT_ON: Color32 = Color32::from_rgb(0xFF, 0xFF, 0xFF);
+/// Trama's accent in the Nodalia palette.
+pub const TRAMA: nodalia_theme::Accent = nodalia_theme::Accent::Trama;
 /// Id of the canvas overlays' green for this frame ([`set_canvas_page`]).
-const CANVAS_ACCENT: &str = "figcraft-canvas-accent";
+const CANVAS_ACCENT: &str = "trama-canvas-accent";
 
 /// Remember the page colour the canvas shows. Its overlays (outlines, handles, arrows) take
-/// whichever green contrasts more with it: the bright one on a dark page, the darker on a light one.
+/// whichever purple contrasts more with it: the bright one on a dark page, the deeper on a light one.
 pub fn set_canvas_page(ctx: &Context, page: Color32) {
     let pick = if c(BRAND).contrast(c(page)) > c(ACCENT).contrast(c(page)) { BRAND } else { ACCENT };
     ctx.data_mut(|d| d.insert_temp(egui::Id::unique(CANVAS_ACCENT), pick));
 }
 
 /// `x` (opaque) as a document colour, for its contrast with another.
-fn c(x: Color32) -> figcraft_color::Color {
-    figcraft_color::Color::new(f32::from(x.r()) / 255.0, f32::from(x.g()) / 255.0, f32::from(x.b()) / 255.0, 1.0)
+fn c(x: Color32) -> trama_color::Color {
+    trama_color::Color::new(f32::from(x.r()) / 255.0, f32::from(x.g()) / 255.0, f32::from(x.b()) / 255.0, 1.0)
 }
 
-/// The green for overlays drawn on the page ([`set_canvas_page`]); [`ACCENT`] before a page shows.
+/// The purple for overlays drawn on the page ([`set_canvas_page`]); [`ACCENT`] before a page shows.
 pub fn canvas_accent(ctx: &Context) -> Color32 {
     ctx.data(|d| d.get_temp(egui::Id::unique(CANVAS_ACCENT))).unwrap_or(ACCENT)
 }
 
-/// A fill under white text: the darker green stands in for the bright one.
+/// A fill under white text: the deeper purple stands in for the bright one.
 pub fn under_white(c: Color32) -> Color32 {
     if c == BRAND { ACCENT } else { c }
 }
@@ -90,100 +92,72 @@ pub fn under_white(c: Color32) -> Color32 {
 /// the people colours, so it never looks like someone in a live session).
 pub const AGENT: Color32 = Color32::from_rgb(0xF5, 0x9E, 0x0B);
 
-pub const COMPONENT: Color32 = Color32::from_rgb(0x97, 0x47, 0xFF);
+/// Components, variants and instances on the canvas: magenta, so they never read as the purple
+/// accent of a plain selection.
+pub const COMPONENT: Color32 = Color32::from_rgb(0xD1, 0x2D, 0x8E);
 /// Handoff status badges (white text on these, in both themes).
 pub const DEV_READY: Color32 = Color32::from_rgb(0x08, 0x7D, 0x4F);
 pub const DEV_CHANGED: Color32 = Color32::from_rgb(0xA7, 0x5B, 0x00);
 pub const DEV_COMPLETED: Color32 = Color32::from_rgb(0x6E, 0x6E, 0x73);
 
 impl Tokens {
+    /// NDL's light palette with Trama's accent.
     pub fn light() -> Self {
-        Self {
-            dark: false,
-            bg: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-            panel: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-            canvas: Color32::from_rgb(0xF5, 0xF5, 0xF5),
-            border: Color32::from_rgb(0xE6, 0xE6, 0xE6),
-            border_strong: Color32::from_rgb(0xD9, 0xD9, 0xD9),
-            text: Color32::from_rgb(0x1E, 0x1E, 0x1E),
-            // 4.7:1 on fields and hovered rows (#F5F5F5), 4.6:1 on selected rows: WCAG AA.
-            text_secondary: Color32::from_rgb(0x6E, 0x6E, 0x6E),
-            // Dim text: 3.2:1 on the selected component row (#F1E9FF, the tightest of the
-            // rows it lands on; #8A8A8A was 2.93:1 there), still dimmer than secondary text.
-            text_tertiary: Color32::from_rgb(0x84, 0x84, 0x84),
-            icon: Color32::from_rgb(0x1E, 0x1E, 0x1E),
-            icon_secondary: Color32::from_rgb(0x75, 0x75, 0x75),
-            hover: Color32::from_rgb(0xF5, 0xF5, 0xF5),
-            pressed: Color32::from_rgb(0xE6, 0xE6, 0xE6),
-            field: Color32::from_rgb(0xF5, 0xF5, 0xF5),
-            field_hover_border: Color32::from_rgb(0xE6, 0xE6, 0xE6),
-            accent: BRAND,
-            accent_hover: Color32::from_rgb(0x00, 0xAD, 0x78),
-            accent_on: ACCENT_ON,
-            // Darker green keeps links and labels legible on white and selected rows.
-            accent_text: Color32::from_rgb(0x00, 0x7A, 0x56),
-            selected_row: Color32::from_rgb(0xE0, 0xFB, 0xF1),
-            selected_row_child: Color32::from_rgb(0xF1, 0xFC, 0xF7),
-            // A shade darker than the canvas purple: 5.5:1 on white, 4.7:1 on the selected
-            // component row and 5.0:1 on a hovered row (the canvas purple reaches 3.8:1 and 4.1:1).
-            component: Color32::from_rgb(0x86, 0x38, 0xF0),
-            component_row: Color32::from_rgb(0xF1, 0xE9, 0xFF),
-            component_row_child: Color32::from_rgb(0xF8, 0xF4, 0xFF),
-            danger: Color32::from_rgb(0xF2, 0x48, 0x22),
-            success: DEV_READY,
-            warning: Color32::from_rgb(0xFF, 0xCD, 0x29),
-            guide: Color32::from_rgb(0xF2, 0x48, 0x22),
-            tab_bar: Color32::from_rgb(0xE8, 0xE8, 0xE8),
-            tab_active: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-            shadow: Color32::from_black_alpha(40),
-            menu: Color32::from_rgb(0x1E, 0x1E, 0x1E),
-            menu_text: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-            menu_hover: ACCENT,
-            menu_dim: Color32::from_rgb(0x9A, 0x9A, 0x9A),
-            focus: Color32::from_rgb(0x00, 0x7A, 0x56),
-        }
+        Self::nodalia(nodalia_theme::Mode::Light)
     }
 
+    /// NDL's dark palette with Trama's accent.
     pub fn dark() -> Self {
+        Self::nodalia(nodalia_theme::Mode::Dark)
+    }
+
+    /// Every chrome colour from `nodalia-theme` (`Mode::palette_with(Accent::Trama)`). The canvas
+    /// marks (components, handoff badges, guides) keep Trama's own, tuned for the pages they sit on.
+    fn nodalia(mode: nodalia_theme::Mode) -> Self {
+        let p = mode.palette_with(TRAMA);
+        let c = ndl;
+        let dark = mode.is_dark();
+        let panel = c(p.surface_panel);
+        let selected = c(p.selection_bg);
         Self {
-            dark: true,
-            bg: Color32::from_rgb(0x2C, 0x2C, 0x2C),
-            panel: Color32::from_rgb(0x2C, 0x2C, 0x2C),
-            canvas: Color32::from_rgb(0x1E, 0x1E, 0x1E),
-            border: Color32::from_rgb(0x44, 0x44, 0x44),
-            border_strong: Color32::from_rgb(0x55, 0x55, 0x55),
-            text: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-            text_secondary: Color32::from_rgb(0xB3, 0xB3, 0xB3),
-            text_tertiary: Color32::from_rgb(0x88, 0x88, 0x88),
-            icon: Color32::from_rgb(0xF5, 0xF5, 0xF5),
-            icon_secondary: Color32::from_rgb(0xB3, 0xB3, 0xB3),
-            hover: Color32::from_rgb(0x38, 0x38, 0x38),
-            pressed: Color32::from_rgb(0x44, 0x44, 0x44),
-            field: Color32::from_rgb(0x38, 0x38, 0x38),
-            field_hover_border: Color32::from_rgb(0x4D, 0x4D, 0x4D),
-            accent: BRAND,
-            accent_hover: Color32::from_rgb(0x52, 0xE9, 0xB7),
-            accent_on: ACCENT_ON,
-            accent_text: Color32::from_rgb(0x52, 0xE9, 0xB7),
-            selected_row: Color32::from_rgb(0x16, 0x42, 0x36),
-            selected_row_child: Color32::from_rgb(0x12, 0x37, 0x2D),
-            // 5.4:1 on the panel, 4.6:1 on the selected component row, 4.5:1 on a hovered row
-            // (the canvas purple reaches 3.1:1 and 2.7:1, #1903).
-            component: Color32::from_rgb(0xD2, 0x7C, 0xFF),
-            component_row: Color32::from_rgb(0x3E, 0x30, 0x52),
-            component_row_child: Color32::from_rgb(0x36, 0x2B, 0x47),
-            danger: Color32::from_rgb(0xF2, 0x48, 0x22),
+            dark,
+            bg: c(p.surface_window),
+            panel,
+            canvas: c(p.surface_sunken),
+            border: c(p.border_subtle),
+            border_strong: c(p.border_default),
+            text: c(p.text_primary),
+            text_secondary: c(p.text_secondary),
+            text_tertiary: c(p.text_tertiary),
+            icon: c(p.text_primary),
+            icon_secondary: c(p.text_secondary),
+            hover: c(p.control_bg_hover),
+            pressed: c(p.control_bg_pressed),
+            // Trama's fields have no outline, so they take the control fill: NDL's field colour is
+            // the panel's own white in the light theme.
+            field: c(p.control_bg),
+            field_hover_border: c(p.border_default),
+            accent: c(p.accent_default),
+            accent_hover: c(p.accent_hover),
+            accent_on: c(p.text_on_accent),
+            accent_text: c(p.accent_text),
+            selected_row: selected,
+            selected_row_child: mix(panel, selected, 0.5),
+            component: if dark { Color32::from_rgb(0xFF, 0x7C, 0xC6) } else { Color32::from_rgb(0xB0, 0x1F, 0x76) },
+            component_row: if dark { Color32::from_rgb(0x4E, 0x23, 0x3E) } else { Color32::from_rgb(0xFC, 0xE6, 0xF2) },
+            component_row_child: if dark { Color32::from_rgb(0x3D, 0x1E, 0x32) } else { Color32::from_rgb(0xFE, 0xF3, 0xF9) },
+            danger: c(p.status_danger_fg),
             success: DEV_READY,
             warning: Color32::from_rgb(0xFF, 0xCD, 0x29),
             guide: Color32::from_rgb(0xF2, 0x48, 0x22),
-            tab_bar: Color32::from_rgb(0x1E, 0x1E, 0x1E),
-            tab_active: Color32::from_rgb(0x2C, 0x2C, 0x2C),
-            shadow: Color32::from_black_alpha(90),
+            tab_bar: c(p.surface_window),
+            tab_active: panel,
+            shadow: Color32::from_black_alpha(if dark { 90 } else { 40 }),
             menu: Color32::from_rgb(0x1E, 0x1E, 0x1E),
             menu_text: Color32::from_rgb(0xFF, 0xFF, 0xFF),
             menu_hover: ACCENT,
             menu_dim: Color32::from_rgb(0x9A, 0x9A, 0x9A),
-            focus: BRAND,
+            focus: c(p.border_focus),
         }
     }
 
@@ -194,7 +168,7 @@ impl Tokens {
 
 /// Stable id for temporary theme tokens.
 fn tokens_id() -> egui::Id {
-    egui::Id::unique("figcraft_tokens")
+    egui::Id::unique("trama_tokens")
 }
 
 /// egui's default for how long hover fades and openings animate.
@@ -294,7 +268,7 @@ pub fn on_dark<R>(ui: &mut egui::Ui, f: impl FnOnce(&mut egui::Ui) -> R) -> R {
 /// built-in faces are the whole RTL fallback, so tests and releases do not depend on installed fonts.
 pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     let mut fonts = FontDefinitions::default();
-    let find = |family: &str, style: &str| figcraft_text::CRAFT_FONTS.iter().find(|f| f.family == family && f.style == style).map(|f| f.bytes);
+    let find = |family: &str, style: &str| trama_text::CRAFT_FONTS.iter().find(|f| f.family == family && f.style == style).map(|f| f.bytes);
     let regular = find("Inter", "Regular");
     let semibold = find("Inter", "SemiBold").or_else(|| find("Inter", "Bold"));
     if let Some(r) = regular {
@@ -318,7 +292,7 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     // Keep the logo's typeface independent of UI text. System Archivo is used when available;
     // releases with craft-fonts embed it so the wordmark does not depend on installation.
     let archivo = find("Archivo", "SemiBold").map(FontData::from_static).or_else(|| {
-        system.then(|| figcraft_text::find_face("Archivo", "SemiBold")).flatten().filter(|face| face.family == "Archivo").map(|face| font_data(&face))
+        system.then(|| trama_text::find_face("Archivo", "SemiBold")).flatten().filter(|face| face.family == "Archivo").map(|face| font_data(&face))
     });
     let mut brand = Vec::new();
     if let Some(data) = archivo {
@@ -327,14 +301,14 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     }
     brand.extend(fonts.families.get(&FontFamily::Name("semibold".into())).cloned().unwrap_or_default());
     fonts.families.insert(FontFamily::Name("brand".into()), brand);
-    // CJK and other scripts from craft-fonts as fallbacks (Noto Sans CJK only with FIGCRAFT_EMBED_CJK).
+    // CJK and other scripts from craft-fonts as fallbacks (Noto Sans CJK only with TRAMA_EMBED_CJK).
     const BUILT_IN: [&str; 7] =
         ["Inter", "BIZ UDPGothic", "Noto Sans CJK SC", "Noto Sans Arabic", "Noto Sans Hebrew", "Noto Sans Georgian", "Noto Sans Thai"];
     let lang = crate::i18n::current().map_or("en", |l| l.code);
     // A Chinese UI draws Han in a Chinese face: the built-in Japanese one goes after the system faces.
     let late = |family: &str| family == "BIZ UDPGothic" && crate::cjk::language(lang) == crate::cjk::HAN;
     let craft = |last: bool| {
-        figcraft_text::CRAFT_FONTS
+        trama_text::CRAFT_FONTS
             .iter()
             .filter(move |f| f.family != "Inter" && f.style == "Regular" && BUILT_IN.contains(&f.family) && late(f.family) == last)
             .map(|f| (format!("craft-{}", f.family), FontData::from_static(f.bytes)))
@@ -345,8 +319,8 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
         let embedded = |c: char| {
             BUILT_IN
                 .into_iter()
-                .filter(|f| !late(f) && figcraft_text::CRAFT_FONTS.iter().any(|cf| cf.family == *f))
-                .filter_map(|f| figcraft_text::find_face(f, "Regular"))
+                .filter(|f| !late(f) && trama_text::CRAFT_FONTS.iter().any(|cf| cf.family == *f))
+                .filter_map(|f| trama_text::find_face(f, "Regular"))
                 .any(|x| x.has_char(c))
         };
         let mut taken = Vec::new();
@@ -366,14 +340,14 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     ctx.set_fonts(fonts);
 }
 
-/// The glyphs macOS shortcuts are written with ([`figcraft_engine::keymap::display`]).
+/// The glyphs macOS shortcuts are written with ([`trama_engine::keymap::display`]).
 const KEY_SYMBOLS: &str = "⌃⌥⇧⌘⌫↵⇥⇞⇟←→↑↓";
 /// System families that have them, in order of preference.
 const KEY_FAMILIES: [&str; 6] = ["Lucida Grande", "Apple Symbols", "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", "FreeSans"];
 
 /// System faces for the shortcut glyphs the UI's own fonts lack (egui's default face has ⌘ but
 /// not ⌥ or ↵); `taken` as for [`system_fallbacks`].
-fn key_symbol_fallbacks(have: &dyn Fn(char) -> bool, taken: &mut Vec<Arc<figcraft_text::Face>>) -> Vec<(String, FontData)> {
+fn key_symbol_fallbacks(have: &dyn Fn(char) -> bool, taken: &mut Vec<Arc<trama_text::Face>>) -> Vec<(String, FontData)> {
     system_fallbacks(KEY_SYMBOLS.chars(), &KEY_FAMILIES, have, taken)
 }
 
@@ -384,14 +358,14 @@ pub(crate) fn system_fallbacks(
     samples: impl IntoIterator<Item = char>,
     families: &[&str],
     have: &dyn Fn(char) -> bool,
-    taken: &mut Vec<Arc<figcraft_text::Face>>,
+    taken: &mut Vec<Arc<trama_text::Face>>,
 ) -> Vec<(String, FontData)> {
     let mut out = Vec::new();
     for c in samples {
         if have(c) || taken.iter().any(|f| f.has_char(c)) {
             continue;
         }
-        let Some(face) = figcraft_text::face_with_char(c, families) else { continue };
+        let Some(face) = trama_text::face_with_char(c, families) else { continue };
         out.push((format!("system-{}-{}", face.family, face.style), font_data(&face)));
         taken.push(face);
     }
@@ -401,10 +375,10 @@ pub(crate) fn system_fallbacks(
 /// egui font data over a face's bytes, without copying them (CJK faces are 10–20 MB). Font
 /// database faces are never dropped, so a system face's shared bytes are kept for good: leaking
 /// one more reference to them costs a pointer and gives egui the `'static` slice it needs.
-pub fn font_data(face: &figcraft_text::Face) -> FontData {
+pub fn font_data(face: &trama_text::Face) -> FontData {
     let bytes: &'static [u8] = match &face.bytes {
-        figcraft_text::fontdb::FontBytes::Static(b) => b,
-        figcraft_text::fontdb::FontBytes::Shared(v) => Box::leak(Box::new(v.clone())).as_slice(),
+        trama_text::fontdb::FontBytes::Static(b) => b,
+        trama_text::fontdb::FontBytes::Shared(v) => Box::leak(Box::new(v.clone())).as_slice(),
     };
     let mut data = FontData::from_static(bytes);
     data.index = face.index;
@@ -419,20 +393,16 @@ pub fn brand(size: f32) -> FontId {
     FontId::new(size, FontFamily::Name("brand".into()))
 }
 
-/// The two-tone Archivo wordmark used in the home sidebar and About window.
+/// The wordmark used in the home sidebar and About window: "Trama" in the brand face.
 pub fn paint_wordmark(painter: &egui::Painter, left_center: egui::Pos2, size: f32, t: &Tokens) {
-    let font = brand(size);
-    let fig = painter.layout_no_wrap("Fig".into(), font.clone(), t.text);
-    let fig_width = fig.size().x;
-    painter.galley(egui::pos2(left_center.x, left_center.y - fig.size().y / 2.0), fig, t.text);
-    painter.text(egui::pos2(left_center.x + fig_width, left_center.y), egui::Align2::LEFT_CENTER, "Craft", font, t.accent_text);
+    painter.text(left_center, egui::Align2::LEFT_CENTER, "Trama", brand(size), t.text);
 }
 
-/// Paint the owner's original chameleon icon from the existing app asset.
+/// Paint Trama's app icon (the woven swatch) from its 64 px render.
 pub fn paint_app_icon(ui: &egui::Ui, rect: egui::Rect) {
     static ICON: OnceLock<Option<egui::ColorImage>> = OnceLock::new();
     let image = ICON.get_or_init(|| {
-        let rgba = image::load_from_memory(include_bytes!("../../../assets/app-icon/figcraft-64.png")).ok()?.to_rgba8();
+        let rgba = image::load_from_memory(include_bytes!("../../../assets/app-icon/trama-64.png")).ok()?.to_rgba8();
         Some(egui::ColorImage::from_rgba_unmultiplied([rgba.width() as usize, rgba.height() as usize], rgba.as_raw()))
     });
     let Some(image) = image else {
@@ -440,9 +410,9 @@ pub fn paint_app_icon(ui: &egui::Ui, rect: egui::Rect) {
         crate::icons::paint(ui.painter(), rect.shrink(rect.width() * 0.22), crate::icons::Icon::Logo, ACCENT_ON);
         return;
     };
-    let id = egui::Id::unique("figcraft_original_app_icon");
+    let id = egui::Id::unique("trama_original_app_icon");
     let texture = ui.ctx().data(|data| data.get_temp::<egui::TextureHandle>(id)).unwrap_or_else(|| {
-        let texture = ui.ctx().load_texture("figcraft-original-app-icon", image.clone(), egui::TextureOptions::LINEAR);
+        let texture = ui.ctx().load_texture("trama-original-app-icon", image.clone(), egui::TextureOptions::LINEAR);
         ui.ctx().data_mut(|data| data.insert_temp(id, texture.clone()));
         texture
     });
@@ -453,28 +423,39 @@ pub fn regular(size: f32) -> FontId {
     FontId::new(size, FontFamily::Proportional)
 }
 
-pub fn c32(c: figcraft_color::Color) -> Color32 {
+pub fn c32(c: trama_color::Color) -> Color32 {
     let [r, g, b, a] = c.to_rgba8();
     Color32::from_rgba_unmultiplied(r, g, b, a)
 }
 
 /// Stable id for the current document-to-screen colour conversion.
 fn screen_conversion_id() -> egui::Id {
-    egui::Id::unique("figcraft_screen_conversion")
+    egui::Id::unique("trama_screen_conversion")
 }
 
 /// Remember the colour profile of the document on screen (once per frame): document colours drawn
 /// by the UI ([`doc_c32`]) go from it to the screen's sRGB.
-pub fn set_doc_profile(ctx: &Context, profile: figcraft_color::ColorProfile) {
-    let conv = profile.conversion_to(figcraft_color::ColorProfile::Srgb);
+pub fn set_doc_profile(ctx: &Context, profile: trama_color::ColorProfile) {
+    let conv = profile.conversion_to(trama_color::ColorProfile::Srgb);
     ctx.data_mut(|d| d.insert_temp(screen_conversion_id(), conv));
 }
 
 /// A document colour (a paint, swatch, background) for the screen: converted from the document's
 /// colour profile to sRGB. UI chrome colours use [`c32`].
-pub fn doc_c32(ctx: &Context, c: figcraft_color::Color) -> Color32 {
-    let conv = ctx.data(|d| d.get_temp::<figcraft_color::ProfileConversion>(screen_conversion_id()));
+pub fn doc_c32(ctx: &Context, c: trama_color::Color) -> Color32 {
+    let conv = ctx.data(|d| d.get_temp::<trama_color::ProfileConversion>(screen_conversion_id()));
     c32(conv.map_or(c, |k| k.apply(c)))
+}
+
+/// An NDL colour as egui's.
+pub(crate) fn ndl(c: nodalia_theme::Rgba) -> Color32 {
+    Color32::from_rgba_unmultiplied(c.r, c.g, c.b, c.a)
+}
+
+/// `a` moved `k` of the way to `b`.
+fn mix(a: Color32, b: Color32, k: f32) -> Color32 {
+    let m = |p: u8, q: u8| (f32::from(p) + (f32::from(q) - f32::from(p)) * k).round() as u8;
+    Color32::from_rgb(m(a.r(), b.r()), m(a.g(), b.g()), m(a.b(), b.b()))
 }
 
 #[cfg(test)]
@@ -526,8 +507,8 @@ mod tests {
 
     #[test]
     fn ui_font_draws_every_mac_shortcut_glyph() {
-        figcraft_text::scan_system_fonts();
-        let lacking: String = KEY_SYMBOLS.chars().filter(|c| figcraft_text::face_with_char(*c, &KEY_FAMILIES).is_none()).collect();
+        trama_text::scan_system_fonts();
+        let lacking: String = KEY_SYMBOLS.chars().filter(|c| trama_text::face_with_char(*c, &KEY_FAMILIES).is_none()).collect();
         if !lacking.is_empty() {
             eprintln!("no system face here draws {lacking}; skipping");
             return;
@@ -550,7 +531,7 @@ mod tests {
     fn ui_font_draws_thai_with_the_built_in_thai_face() {
         // The web build has no system fonts: Thai layer names, frame labels and field text are drawn
         // by craft-fonts' Noto Sans Thai, a built-in fallback, when the build embeds it.
-        if !figcraft_text::CRAFT_FONTS.iter().any(|f| f.family == "Noto Sans Thai") {
+        if !trama_text::CRAFT_FONTS.iter().any(|f| f.family == "Noto Sans Thai") {
             eprintln!("built without craft-fonts' Noto Sans Thai; skipping");
             return;
         }

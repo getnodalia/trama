@@ -3,8 +3,8 @@
 //! the values; what shows it (the Inspect panel, `component.playground`) renders that instance and
 //! generates its code.
 
-use figcraft_doc::{Document, ExportFormat, NodeId, NodeKind};
 use serde_json::{Map, Value, json};
+use trama_doc::{Document, ExportFormat, NodeId, NodeKind};
 
 use crate::cmd::CommandSpec;
 use crate::codegen::CodeLang;

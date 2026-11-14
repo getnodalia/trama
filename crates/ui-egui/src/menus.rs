@@ -2,8 +2,8 @@
 //! Actions palette (⌘K / ⌘/).
 
 use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
-use figcraft_engine::catalog::{MENU, SEP};
 use serde_json::json;
+use trama_engine::catalog::{MENU, SEP};
 
 use crate::FigApp;
 use crate::a11y;
@@ -18,7 +18,7 @@ mod select_layer;
 mod tree;
 
 pub use clipboard::paste;
-use clipboard::{figcraft_svg_export, text_layers_text};
+use clipboard::{text_layers_text, trama_svg_export};
 use palette::palette;
 #[cfg(test)]
 pub(crate) use palette::{ActionRow, command_sections, palette_sections, recent_row, run_action};
@@ -49,9 +49,9 @@ pub const UI_COMMANDS: &[&str] = &[
 
 /// Dev Mode (the Inspect tab) refuses command `id` from the menus, shortcuts, clipboard, the
 /// Pages list, the layers panel, files dropped on the canvas and the Assets panel: it edits the
-/// design ([`figcraft_engine::devinspect::dev_mode_allows`]). Says so when it does.
+/// design ([`trama_engine::devinspect::dev_mode_allows`]). Says so when it does.
 pub fn dev_mode_refuses(app: &mut FigApp, id: &str) -> bool {
-    let refused = app.ui.right_tab == crate::RightTab::Inspect && !figcraft_engine::devinspect::dev_mode_allows(id);
+    let refused = app.ui.right_tab == crate::RightTab::Inspect && !trama_engine::devinspect::dev_mode_allows(id);
     if refused {
         app.toast(tr("Developer Mode only inspects: switch to Design (Shift+D) to edit"));
     }
@@ -66,7 +66,7 @@ pub fn record_recent(app: &mut FigApp, key: &str) {
     }
     r.retain(|k| k != key);
     r.insert(0, key.to_string());
-    r.truncate(figcraft_engine::MAX_RECENT_ACTIONS);
+    r.truncate(trama_engine::MAX_RECENT_ACTIONS);
 }
 
 /// Run a menu, shortcut or palette action by id: actions that need the UI (dialogs, panels, the
@@ -114,14 +114,14 @@ pub fn invoke(app: &mut FigApp, id: &str) {
         "edit.copyAsCss" => {
             let ids = app.session.selection();
             if let (Some(first), Ok(doc)) = (ids.first(), app.session.doc()) {
-                let css = figcraft_engine::codegen::code_for(doc, *first, figcraft_engine::codegen::CodeLang::Css);
+                let css = trama_engine::codegen::code_for(doc, *first, trama_engine::codegen::CodeLang::Css);
                 app.clipboard_set_text(&css);
                 app.toast(tr("Copied as CSS"));
             }
         }
         "edit.copyAsSvg" => {
             let ids = app.session.selection();
-            if let Some(svg) = app.session.doc().ok().and_then(|d| figcraft_svg_export(d, &ids)) {
+            if let Some(svg) = app.session.doc().ok().and_then(|d| trama_svg_export(d, &ids)) {
                 app.clipboard_set_text(&svg);
                 app.toast(tr("Copied as SVG"));
             }
@@ -129,11 +129,11 @@ pub fn invoke(app: &mut FigApp, id: &str) {
         "edit.copyAsPng" => {
             let ids = app.session.selection();
             if let Some((mut pix, profile)) =
-                app.session.doc().ok().and_then(|d| Some((figcraft_engine::cmd::file::copy_png(d, &ids)?, d.color_profile)))
+                app.session.doc().ok().and_then(|d| Some((trama_engine::cmd::file::copy_png(d, &ids)?, d.color_profile)))
             {
                 // Clipboard images are read as sRGB.
-                figcraft_render::to_srgb(&mut pix, profile);
-                let rgba = figcraft_render::to_rgba8(&pix);
+                trama_render::to_srgb(&mut pix, profile);
+                let rgba = trama_render::to_rgba8(&pix);
                 app.clipboard_set_png(pix.width(), pix.height(), &rgba);
                 app.toast(tr("Copied as PNG"));
             }
@@ -153,7 +153,7 @@ pub fn invoke(app: &mut FigApp, id: &str) {
             // Only a selected layer has a link, and the copy goes through the control-channel fence
             // (`clipboard_set_text`): a synthetic gesture never replaces the user's clipboard.
             if let Some(id) = app.session.selection().first() {
-                app.clipboard_set_text(&format!("figcraft://node/{}", id.0));
+                app.clipboard_set_text(&format!("trama://node/{}", id.0));
                 app.toast(tr("Link copied"));
             }
         }
@@ -209,17 +209,17 @@ pub fn invoke(app: &mut FigApp, id: &str) {
                 .ok()
                 .and_then(|d| d.vector_edit.as_ref())
                 .is_some_and(|ve| ve.parts().iter().any(|p| !p.vertices.is_empty() || !p.segments.is_empty()));
-            let mirror = doc.filter(|_| !partial).and_then(|d| text_layers_text(d, &ids).or_else(|| figcraft_svg_export(d, &ids)));
+            let mirror = doc.filter(|_| !partial).and_then(|d| text_layers_text(d, &ids).or_else(|| trama_svg_export(d, &ids)));
             let ran = app.run(id, json!({}));
             // A partial copy put temporary layers on the engine clipboard; mirror their SVG.
             let refused = partial && ran.is_none();
-            let mirror = if partial { ran.and_then(|_| figcraft_engine::cmd::edit::clipboard_svg(&app.session)) } else { mirror };
+            let mirror = if partial { ran.and_then(|_| trama_engine::cmd::edit::clipboard_svg(&app.session)) } else { mirror };
             // Mirror to the system clipboard (text or SVG, else a marker) and remember it, so a
             // later paste knows whether the clipboard still holds our layers. Control-channel
             // gestures keep the engine's copy but never replace the user's clipboard; `run` then
             // invalidates the old mirror because it no longer describes the engine clipboard.
             if !app.control_synthetic && !refused {
-                let text = mirror.unwrap_or_else(|| format!("figcraft://clipboard/{}", ids.len()));
+                let text = mirror.unwrap_or_else(|| format!("trama://clipboard/{}", ids.len()));
                 app.clipboard_set_text(&text);
                 app.ui.last_copy = Some(text);
                 app.ui.last_copy_generation = app.session.clipboard.layers_generation;
@@ -256,7 +256,7 @@ fn export_frames_pdf(app: &mut FigApp) {
 
 /// Whether a menu id is available (registered in the engine or handled by the UI).
 pub fn available(id: &str) -> bool {
-    !id.is_empty() && (figcraft_engine::find_command(id).is_some() || UI_COMMANDS.contains(&id))
+    !id.is_empty() && (trama_engine::find_command(id).is_some() || UI_COMMANDS.contains(&id))
 }
 
 /// Draw one level of the main menu: `prefix` is the menu path ("File", "Edit/Copy as").
@@ -287,7 +287,7 @@ fn menu_level(app: &mut FigApp, ui: &mut Ui, prefix: &str) -> bool {
             }
             // One window in the browser.
             let enabled = available(m.id) && !(m.id == "window.new" && ui.ctx().embed_viewports());
-            let checked = figcraft_engine::cmd::view::checked(&app.session, m.id).unwrap_or(false);
+            let checked = trama_engine::cmd::view::checked(&app.session, m.id).unwrap_or(false);
             if item(ui, &i18n::menu_item(m.id, m.label), crate::shortcuts::shortcut(m.id).unwrap_or(""), enabled, checked, &t) && enabled {
                 clicked = Some(m.id);
             }
@@ -467,7 +467,7 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                     let secs: Vec<bool> = ids
                         .iter()
                         .filter_map(|i| doc.node(*i))
-                        .filter(|n| matches!(n.kind, figcraft_doc::NodeKind::Section { .. }))
+                        .filter(|n| matches!(n.kind, trama_doc::NodeKind::Section { .. }))
                         .map(|n| n.hides_contents())
                         .collect();
                     (!secs.is_empty()).then(|| if secs.iter().all(|h| *h) { tr("Show section contents") } else { tr("Hide section contents") })
@@ -475,14 +475,14 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                 // Frames on the page (or in a section) convert to sections, and sections to frames.
                 let convert = app.session.doc().ok().and_then(|doc| {
                     let nodes: Vec<_> = ids.iter().filter_map(|i| doc.node(*i)).collect();
-                    let on_board = |n: &figcraft_doc::Node| {
-                        n.parent.and_then(|p| doc.node(p)).is_some_and(|p| p.is_page() || matches!(p.kind, figcraft_doc::NodeKind::Section { .. }))
+                    let on_board = |n: &trama_doc::Node| {
+                        n.parent.and_then(|p| doc.node(p)).is_some_and(|p| p.is_page() || matches!(p.kind, trama_doc::NodeKind::Section { .. }))
                     };
                     if nodes.is_empty() {
                         None
-                    } else if nodes.iter().all(|n| matches!(n.kind, figcraft_doc::NodeKind::Section { .. })) {
+                    } else if nodes.iter().all(|n| matches!(n.kind, trama_doc::NodeKind::Section { .. })) {
                         Some((tr("Convert to frame"), "object.convertToFrame"))
-                    } else if nodes.iter().all(|n| matches!(n.kind, figcraft_doc::NodeKind::Frame) && on_board(n)) {
+                    } else if nodes.iter().all(|n| matches!(n.kind, trama_doc::NodeKind::Frame) && on_board(n)) {
                         Some((tr("Convert to section"), "object.convertToSection"))
                     } else {
                         None
@@ -494,11 +494,11 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                     .session
                     .doc()
                     .ok()
-                    .filter(|doc| figcraft_engine::cmd::component::can_combine_variants(doc, &app.session.selection()))
+                    .filter(|doc| trama_engine::cmd::component::can_combine_variants(doc, &app.session.selection()))
                     .map(|_| i18n::command("component.combineVariants", "Combine as variants"));
                 // One layer with an image fill can be cropped (judged on the selection, as above).
                 let crop = app.session.doc().ok().is_some_and(|doc| {
-                    matches!(app.session.selection().as_slice(), [id] if doc.node(*id).and_then(figcraft_engine::cmd::image::top_image_fill).is_some())
+                    matches!(app.session.selection().as_slice(), [id] if doc.node(*id).and_then(trama_engine::cmd::image::top_image_fill).is_some())
                 });
                 let copy_link = i18n::command("edit.copyLink", "Copy link to selection");
                 let mut entries: Vec<(&str, &str)> = if has_sel {
@@ -570,7 +570,7 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                     .session
                     .doc()
                     .ok()
-                    .is_some_and(|doc| ids.iter().all(|i| doc.node(*i).is_some_and(|n| matches!(n.kind, figcraft_doc::NodeKind::Instance { .. }))))
+                    .is_some_and(|doc| ids.iter().all(|i| doc.node(*i).is_some_and(|n| matches!(n.kind, trama_doc::NodeKind::Instance { .. }))))
                     && let Some(at) = entries.iter().position(|e| e.1 == "component.create")
                 {
                     entries[at] = (tr("Go to main component"), "component.goToMain");

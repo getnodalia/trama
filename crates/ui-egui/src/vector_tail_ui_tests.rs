@@ -3,9 +3,9 @@
 
 use egui::accesskit::{Node, Role};
 use egui::{Event, Key, Modifiers};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::icons::Icon;
 use crate::layers_drag_tests::Ui;
@@ -68,7 +68,7 @@ fn arc_fields_show_and_set_the_ellipse_arc() {
     press(&mut u, Key::Enter);
     u.frame(vec![]);
     let sweep = match u.app.session.doc().unwrap().node(e).unwrap().kind {
-        figcraft_doc::NodeKind::Ellipse { sweep, .. } => sweep,
+        trama_doc::NodeKind::Ellipse { sweep, .. } => sweep,
         _ => 0.0,
     };
     assert!((sweep - std::f64::consts::PI).abs() < 1e-9, "{sweep}");

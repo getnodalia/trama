@@ -1,8 +1,8 @@
 //! Sketch layers → document layers: kinds, positions, transforms, constraints, visibility.
 
-use figcraft_doc::color::PaintKind;
-use figcraft_doc::{Document, HConstraint, NodeKind, VConstraint};
 use serde_json::{Value, json};
+use trama_doc::color::PaintKind;
+use trama_doc::{Document, HConstraint, NodeKind, VConstraint};
 
 use super::fixture::*;
 use super::import;
@@ -17,7 +17,7 @@ fn open(layers: Vec<Value>) -> (Document, Vec<String>) {
     open_with(layers, &[])
 }
 
-fn node<'d>(doc: &'d Document, name: &str) -> &'d figcraft_doc::Node {
+fn node<'d>(doc: &'d Document, name: &str) -> &'d trama_doc::Node {
     doc.nodes().find(|n| n.name == name).unwrap_or_else(|| panic!("no layer named {name}"))
 }
 

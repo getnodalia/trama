@@ -2,12 +2,12 @@
 //! `transitionNodeID`, scrolling (`overflowDirection`, `scrollBehavior`), and the pages'
 //! `prototypeDevice`, `prototypeBackgrounds` and `prototypeStartNodeID`.
 
-use figcraft_doc::proto::{
+use serde_json::{Value, json};
+use trama_doc::proto::{
     Action, ConditionalBlock, DeviceRotation, Direction, Easing, Expr, ExprOp, Interaction, KeyMods, MAX_ACTION_DEPTH, MAX_EXPR_DEPTH, Overflow,
     OverlayAnchor, OverlayPosition, PrototypeSettings, ScrollPosition, Transition, Trigger, gamepad_button,
 };
-use figcraft_doc::{Node, NodeId, VariableType, VariableValue};
-use serde_json::{Value, json};
+use trama_doc::{Node, NodeId, VariableType, VariableValue};
 
 use super::Ctx;
 use super::props::{color, flag, list, num, text};

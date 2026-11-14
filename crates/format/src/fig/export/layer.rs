@@ -26,7 +26,7 @@ impl<'d> Exporter<'d> {
             if !n.guides.is_empty() {
                 self.warn("ruler guides were left out");
             }
-            let defaults = figcraft_doc::proto::PrototypeSettings::default();
+            let defaults = trama_doc::proto::PrototypeSettings::default();
             // Every page writes its colour, so Figma shows the same one (a page without the field shows Figma's own default).
             // The colour is written opaque: the record measured has alpha 1, and the import reads the colour as opaque and
             // an alpha of 0 as no background.
@@ -34,7 +34,7 @@ impl<'d> Exporter<'d> {
             if prototype.background.a < 1.0 {
                 self.warn("a prototype background's opacity was left out");
             }
-            if (figcraft_doc::proto::PrototypeSettings { background: defaults.background, ..prototype.clone() }) != defaults {
+            if (trama_doc::proto::PrototypeSettings { background: defaults.background, ..prototype.clone() }) != defaults {
                 self.warn("prototype device settings were left out");
             }
             self.modes(n, &mut f);
@@ -59,7 +59,7 @@ impl<'d> Exporter<'d> {
             // The format's variable width is the same on both sides of the path: a stroke wider on
             // one side is written as the area it paints, with the stroke itself kept as plugin data
             // (which the import puts back).
-            self.warn("strokes wider on one side of their path were written as filled outlines (the stroke itself is kept for FigCraft)");
+            self.warn("strokes wider on one side of their path were written as filled outlines (the stroke itself is kept for Trama)");
             let children = self.layer(&outline, parent, f, nested);
             f.push(("pluginData", arr(vec![o(vec![("pluginID", s(STASH.0)), ("value", s(&original)), ("key", s(STASH.1))])])));
             return children;
@@ -162,7 +162,7 @@ impl<'d> Exporter<'d> {
                         f.push(("variantPropSpecs", arr(specs)));
                     }
                 } else {
-                    let defs: Vec<Kv> = figcraft_doc::ordered_props(props, prop_order)
+                    let defs: Vec<Kv> = trama_doc::ordered_props(props, prop_order)
                         .into_iter()
                         .enumerate()
                         .filter_map(|(i, (name, d))| self.prop_def(n.id, name, d, i))
@@ -194,7 +194,7 @@ impl<'d> Exporter<'d> {
         }
         let boxy = n.kind.is_frame_like() || matches!(n.kind, NodeKind::Rectangle | NodeKind::Section { .. });
         if (boxy || matches!(n.kind, NodeKind::Ellipse { .. } | NodeKind::Polygon { .. } | NodeKind::Star { .. }))
-            && let Some(p) = figcraft_doc::geometry::shape_path(n)
+            && let Some(p) = trama_doc::geometry::shape_path(n)
         {
             self.geometry("fillGeometry", &p, WindingRule::NonZero, f);
         }
@@ -279,10 +279,10 @@ impl<'d> Exporter<'d> {
         }
         self.child_layout(n, parent, f);
         if !n.exports.is_empty() {
-            if n.exports.iter().any(|x| x.format == figcraft_doc::ExportFormat::Webp) {
+            if n.exports.iter().any(|x| x.format == trama_doc::ExportFormat::Webp) {
                 self.warn("WebP export settings were written as PNG");
             }
-            if n.exports.iter().any(|x| x.format == figcraft_doc::ExportFormat::VectorDrawable) {
+            if n.exports.iter().any(|x| x.format == trama_doc::ExportFormat::VectorDrawable) {
                 self.warn("Android Vector Drawable (XML) export settings were written as SVG");
             }
             f.push(("exportSettings", arr(n.exports.iter().map(export_setting).collect())));

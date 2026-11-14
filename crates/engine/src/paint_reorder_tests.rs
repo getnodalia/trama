@@ -2,9 +2,9 @@
 //! `grid.move`): one undo step each, items keep everything, variable bindings and style links
 //! follow; layout grid fields and instances' component properties bound to variables.
 
-use figcraft_color::{Color, Gradient, GradientKind, ImageScaleMode, Paint};
-use figcraft_doc::{GridKind, LayoutGrid, Node, NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_color::{Color, Gradient, GradientKind, ImageScaleMode, Paint};
+use trama_doc::{GridKind, LayoutGrid, Node, NodeId, NodeKind};
 
 use crate::Session;
 

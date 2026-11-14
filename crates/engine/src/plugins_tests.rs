@@ -7,7 +7,7 @@ use serde_json::{Value, json};
 
 use crate::components::tests::{ex, idv, node};
 use crate::{EngineError, Session};
-use figcraft_doc::NodeId;
+use trama_doc::NodeId;
 
 /// What a test plugin does when a call is refused: fail the run (status 1), or carry on and report
 /// the refusal as its output.
@@ -182,14 +182,14 @@ fn files_dialogs_history_and_plugins_are_off_limits() {
     let mut s = Session::new();
     let a = rect(&mut s, 0.0);
     ex(&mut s, "select.set", json!({"ids": [a]}));
-    let dir = std::env::temp_dir().join(format!("figcraft-plugin-deny-{}", std::process::id()));
-    let target = dir.join("stolen.figcraft").to_string_lossy().into_owned();
+    let dir = std::env::temp_dir().join(format!("trama-plugin-deny-{}", std::process::id()));
+    let target = dir.join("stolen.trama").to_string_lossy().into_owned();
     let refused = [
         ("file.saveAs", json!({"path": target})),
         ("file.open", json!({"path": "C:/Windows/win.ini"})),
         ("image.place", json!({"path": "secret.png"})),
         ("text.loadFont", json!({"path": "/etc/hosts"})),
-        ("library.add", json!({"path": "lib.figcraft"})),
+        ("library.add", json!({"path": "lib.trama"})),
         ("plugin.run", json!({"id": "org.test.deny"})),
         ("plugin.remove", json!({"id": "org.test.deny"})),
         ("edit.undo", json!({})),
@@ -200,7 +200,7 @@ fn files_dialogs_history_and_plugins_are_off_limits() {
         ("codeConnect.import", json!({"path": "/etc/passwd"})),
         ("component.playground", json!({"id": a, "path": target})),
         ("variable.import", json!({"variables": "/etc/passwd"})),
-        ("collab.recoverFile", json!({"path": "copy.figcraft", "file": "x", "session": 1, "client": 1, "seq": 0})),
+        ("collab.recoverFile", json!({"path": "copy.trama", "file": "x", "session": 1, "client": 1, "seq": 0})),
         ("window.new", json!({"path": "C:/Windows/win.ini"})),
         ("doc.switch", json!({"index": 0})),
         ("pref.keepTool", json!({})),
@@ -329,7 +329,7 @@ fn junk_manifests_and_modules_are_refused() {
         json!({"manifest": "{ not json", "wasm": b64(&ok)}),
         json!({"manifest": 7, "wasm": b64(&ok)}),
         json!({"manifest": manifest("org.test.x", "write", &[])}),
-        json!({"path": "Z:/definitely/not/here/figcraft-plugin.json"}),
+        json!({"path": "Z:/definitely/not/here/trama-plugin.json"}),
         json!({"path": 5}),
         json!({"manifest": manifest("org.test.x", "write", &[]), "wasm": "A".repeat(23_000_000)}),
     ];
@@ -367,18 +367,28 @@ impl Drop for TempDir {
 }
 
 #[test]
+fn a_plugin_folder_made_before_the_rename_imports_through_its_old_manifest_name() {
+    let dir = TempDir(std::env::temp_dir().join(format!("trama-plugin-legacy-{}", std::process::id())));
+    std::fs::create_dir_all(&dir.0).unwrap();
+    std::fs::write(dir.0.join("plugin.wasm"), script(&[], OnRefusal::Fail, "")).unwrap();
+    std::fs::write(dir.0.join(crate::plugins::LEGACY_MANIFEST), manifest("org.test.legacy", "read", &[]).to_string()).unwrap();
+    let mut s = Session::new();
+    assert_eq!(ex(&mut s, "plugin.import", json!({"path": dir.0.to_string_lossy()}))["id"], "org.test.legacy");
+}
+
+#[test]
 fn development_plugins_load_from_a_manifest_and_reload_their_module() {
-    let dir = TempDir(std::env::temp_dir().join(format!("figcraft-plugin-dev-{}", std::process::id())));
+    let dir = TempDir(std::env::temp_dir().join(format!("trama-plugin-dev-{}", std::process::id())));
     std::fs::create_dir_all(&dir.0).unwrap();
     let write_module = |calls: &[(&str, Value)]| std::fs::write(dir.0.join("plugin.wasm"), script(calls, OnRefusal::Fail, "")).unwrap();
-    std::fs::write(dir.0.join("figcraft-plugin.json"), manifest("org.test.dev", "write", &[]).to_string()).unwrap();
+    std::fs::write(dir.0.join("trama-plugin.json"), manifest("org.test.dev", "write", &[]).to_string()).unwrap();
     write_module(&[("shape.rectangle", json!({"x": 0, "y": 0, "width": 5, "height": 5}))]);
     let mut s = Session::new();
     // The folder or the manifest file itself.
     let out = ex(&mut s, "plugin.import", json!({"path": dir.0.to_string_lossy()}));
     assert_eq!(out["id"], "org.test.dev");
     assert_eq!(out["replaced"], false);
-    let manifest_path = dir.0.join("figcraft-plugin.json").to_string_lossy().into_owned();
+    let manifest_path = dir.0.join("trama-plugin.json").to_string_lossy().into_owned();
     assert_eq!(ex(&mut s, "plugin.import", json!({"path": manifest_path}))["replaced"], true);
     ex(&mut s, "plugin.run", json!({"id": "org.test.dev"}));
     assert_eq!(layer_count(&s), 1);
@@ -535,7 +545,7 @@ fn a_run_that_fails_afterwards_leaves_no_dialog_behind() {
 #[test]
 fn file_commands_stay_closed_to_plugins() {
     let mut s = Session::new();
-    let calls = [("file.saveAs", json!({"path": "/tmp/x.figcraft"}))];
+    let calls = [("file.saveAs", json!({"path": "/tmp/x.trama"}))];
     install(&mut s, manifest("org.test.files", "read", &[]), &script(&calls, OnRefusal::Report, ""));
     let out = ex(&mut s, "plugin.run", json!({"id": "org.test.files"}));
     assert!(out["output"].as_str().unwrap_or_default().contains("isn't available to plugins"), "{out}");

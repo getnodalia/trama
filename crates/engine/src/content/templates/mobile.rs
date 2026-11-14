@@ -2,8 +2,8 @@
 //! from three components (a button, a trail card, a tab bar with two variants), linked into a
 //! prototype flow.
 
-use figcraft_doc::NodeId;
 use serde_json::json;
+use trama_doc::NodeId;
 
 use super::glyphs::{self, Glyph};
 use super::kit::{BORDER, CARD, H, ICON, INK, Kit, MUTED, ON_BRAND, PAGE, PRIMARY, SUNKEN, TOP_EDGE, V, shadow};

@@ -4,10 +4,10 @@
 //! Modifiers are Cmd/Alt/Shift only, which mean the same on every platform.
 
 use egui::{Event, Key, Modifiers, pos2};
-use figcraft_doc::{NodeId, TextDecoration};
-use figcraft_engine::Session;
-use figcraft_engine::keymap::KEYS;
 use serde_json::json;
+use trama_doc::{NodeId, TextDecoration};
+use trama_engine::Session;
+use trama_engine::keymap::KEYS;
 
 use crate::RightTab;
 use crate::layers_drag_tests::Ui;
@@ -188,7 +188,7 @@ fn shortcuts_panel_opens_switches_tabs_and_searches() {
     // Ctrl+Shift+? (Control on macOS too).
     press(&mut u, Key::Questionmark, Modifiers { ctrl: true, command: !cfg!(target_os = "macos"), shift: true, ..Modifiers::NONE });
     assert!(u.app.ui.shortcuts_panel, "Ctrl+Shift+? opens the panel");
-    for g in figcraft_engine::keymap::Group::ALL {
+    for g in trama_engine::keymap::Group::ALL {
         u.app.ui.shortcuts_tab = g;
         u.frame(vec![]);
     }

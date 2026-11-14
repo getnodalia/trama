@@ -1,8 +1,8 @@
 //! Sketch prototype links, hotspots, export options, layout grids, smart layout and locked
 //! overrides.
 
-use figcraft_doc::{Document, ExportFormat, Node, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{Document, ExportFormat, Node, NodeKind};
 
 use super::fixture::*;
 use super::import;

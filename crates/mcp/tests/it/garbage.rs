@@ -1,8 +1,8 @@
 //! Fuzz-ish: no input line may crash the server or leave it unable to answer.
 
-use figcraft_mcp::{Server, TOOL_NAMES};
 use proptest::prelude::*;
 use serde_json::{Value, json};
+use trama_mcp::{Server, TOOL_NAMES};
 
 fn still_alive(s: &mut Server) {
     let r: Value = serde_json::from_str(&s.handle_line(r#"{"jsonrpc":"2.0","id":"alive","method":"ping"}"#).unwrap()).unwrap();
@@ -58,7 +58,7 @@ proptest! {
     }
 
     #[test]
-    fn arbitrary_commands(cmd in prop::sample::select(figcraft_engine::all_commands().iter().map(|c| c.id).filter(|id| !id.starts_with("file.") && *id != "doc.home").collect::<Vec<_>>()), params in arb_json()) {
+    fn arbitrary_commands(cmd in prop::sample::select(trama_engine::all_commands().iter().map(|c| c.id).filter(|id| !id.starts_with("file.") && *id != "doc.home").collect::<Vec<_>>()), params in arb_json()) {
         let mut s = Server::headless();
         let _ = s.handle_line(&json!({"jsonrpc":"2.0","id":0,"method":"tools/call","params":{"name":"create_node","arguments":{"type":"rectangle"}}}).to_string());
         let line = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "run_command", "arguments": {"command": cmd, "params": params}}}).to_string();

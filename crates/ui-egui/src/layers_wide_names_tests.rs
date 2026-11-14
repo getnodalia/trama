@@ -4,9 +4,9 @@
 //! fit leave the list as wide as the panel; a name past the width cap (#1650) still elides.
 
 use egui::{Event, MouseWheelUnit, Pos2, Shape, TouchPhase, Vec2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

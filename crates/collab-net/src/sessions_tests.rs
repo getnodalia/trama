@@ -6,10 +6,10 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, Instant};
 
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
-use figcraft_engine::live::{Event, Live, Presence, Role, Status};
 use serde_json::{Value, json};
+use trama_doc::NodeId;
+use trama_engine::Session;
+use trama_engine::live::{Event, Live, Presence, Role, Status};
 
 use crate::NetLink;
 use crate::loopback_tests::quick;

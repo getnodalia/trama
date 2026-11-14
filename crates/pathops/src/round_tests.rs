@@ -2,9 +2,9 @@
 //! arc; smooth joins and straight-run leftovers of the sweep do not count; a radius larger than the
 //! edges allow shrinks to fit.
 
-use figcraft_doc::BoolOp;
-use figcraft_geom::kurbo::{Affine, BezPath, PathEl, PathSeg, Point, Shape, Vec2};
-use figcraft_geom::{ellipse, rounded_rect, split_subpaths};
+use trama_doc::BoolOp;
+use trama_geom::kurbo::{Affine, BezPath, PathEl, PathSeg, Point, Shape, Vec2};
+use trama_geom::{ellipse, rounded_rect, split_subpaths};
 
 use crate::{boolean, boolean_step, round_corners};
 
@@ -12,8 +12,8 @@ fn rect(x: f64, y: f64, w: f64, h: f64) -> BezPath {
     kurbo_rect(x, y, w, h).to_path(0.1)
 }
 
-fn kurbo_rect(x: f64, y: f64, w: f64, h: f64) -> figcraft_geom::Rect {
-    figcraft_geom::Rect::new(x, y, x + w, y + h)
+fn kurbo_rect(x: f64, y: f64, w: f64, h: f64) -> trama_geom::Rect {
+    trama_geom::Rect::new(x, y, x + w, y + h)
 }
 
 fn l_shape() -> BezPath {

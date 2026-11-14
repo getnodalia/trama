@@ -1,8 +1,8 @@
 //! An agent attached over MCP comments under its own name (#1414): the client's name from
 //! `initialize` (`clientInfo.title`, else `.name`), marked as an agent's, or "AI agent".
 
-use figcraft_mcp::Server;
 use serde_json::{Value, json};
+use trama_mcp::Server;
 
 use crate::common::Client;
 

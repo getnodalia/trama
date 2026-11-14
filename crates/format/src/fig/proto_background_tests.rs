@@ -1,8 +1,8 @@
 //! A page's prototype background in `.fig` exports.
 
-use figcraft_doc::color::Color;
-use figcraft_doc::proto::{DeviceRotation, PrototypeSettings};
-use figcraft_doc::{Document, NodeKind};
+use trama_doc::color::Color;
+use trama_doc::proto::{DeviceRotation, PrototypeSettings};
+use trama_doc::{Document, NodeKind};
 
 use super::kiwi::Kv;
 use super::{Archive, decode_canvas, export, import};
@@ -30,7 +30,7 @@ fn written(doc: &Document) -> Option<[f32; 4]> {
     page.get("prototypeBackgroundColor").map(|c| ["r", "g", "b", "a"].map(|k| c.get(k).and_then(Kv::f64).unwrap() as f32))
 }
 
-fn with_prototype(set: impl FnOnce(&mut figcraft_doc::proto::PrototypeSettings)) -> Document {
+fn with_prototype(set: impl FnOnce(&mut trama_doc::proto::PrototypeSettings)) -> Document {
     let mut doc = Document::new("t");
     let page = doc.first_page().unwrap();
     if let Some(NodeKind::Page { prototype, .. }) = doc.node_mut(page).map(|n| &mut n.kind) {

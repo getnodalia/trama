@@ -4,10 +4,10 @@
 //! the editor.
 
 use egui::{Event, Pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_doc::proto::Action;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_doc::proto::Action;
+use trama_engine::Session;
 
 use crate::list_drag::grip_id;
 use crate::present_tests::{Ui, id};

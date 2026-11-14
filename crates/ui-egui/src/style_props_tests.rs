@@ -2,9 +2,9 @@
 //! Cmd+Alt+V / Ctrl+Alt+V: fills, strokes, corners, effects, opacity and blend mode.
 
 use egui::{Event, Key, Modifiers};
-use figcraft_doc::{NodeId, NodeKind};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::{NodeId, NodeKind};
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

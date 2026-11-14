@@ -1,9 +1,9 @@
 //! Params the panels build at run time name only what their commands take: a name a command
 //! doesn't list is refused (#1413), which would break the control that sent it.
 
-use figcraft_doc::{ExportColorProfile, ExportFormat, ExportSetting, NodeId, PrintSettings, VdCompat};
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_doc::{ExportColorProfile, ExportFormat, ExportSetting, NodeId, PrintSettings, VdCompat};
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices};
 

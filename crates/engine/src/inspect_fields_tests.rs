@@ -1,7 +1,7 @@
 //! Compact inspection keeps the tree useful without building every layer property.
 
-use figcraft_doc::{NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, NodeKind};
 
 use crate::Session;
 use crate::inspect::{InspectOptions, document, document_with_options, node_json, node_json_with_options};

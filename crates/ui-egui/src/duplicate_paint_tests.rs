@@ -1,9 +1,9 @@
 //! A duplicate's fill is its own: recolouring it, with the picker that was open on the original,
 //! leaves the original as it was (#586).
 
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::colorpicker::PickerTarget;
 use crate::layers_drag_tests::Ui;

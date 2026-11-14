@@ -9,10 +9,10 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::rc::Rc;
 
-use figcraft_doc::VectorNetwork;
-use figcraft_doc::geom::{Affine, Point};
-use figcraft_doc::proto::{MAX_ACTION_DEPTH, MAX_EXPR_DEPTH};
 use serde_json::{Map, Value, json};
+use trama_doc::VectorNetwork;
+use trama_doc::geom::{Affine, Point};
+use trama_doc::proto::{MAX_ACTION_DEPTH, MAX_EXPR_DEPTH};
 
 use super::kiwi::Kv;
 use super::network;

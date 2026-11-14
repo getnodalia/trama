@@ -2,9 +2,9 @@
 //! the layer it fills, not as a fresh render, so patterns in patterns can't stack three times the
 //! cap; and the deepest render the cap allows fits a render thread's stack ([`RENDER_STACK`]).
 
-use figcraft_color::{Color, Paint, PaintKind, PatternPaint};
-use figcraft_doc::{Document, Effect, NodeId, NodeKind};
 use tiny_skia::Pixmap;
+use trama_color::{Color, Paint, PaintKind, PatternPaint};
+use trama_doc::{Document, Effect, NodeId, NodeKind};
 
 use crate::backdrop::render_beneath;
 use crate::{Alone, MAX_EXPORT_DEPTH, Options, RENDER_STACK, View, at_layer_depth, layer_depth, render_alone, render_view, render_view_single};

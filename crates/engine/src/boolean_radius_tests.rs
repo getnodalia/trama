@@ -6,8 +6,8 @@ use serde_json::json;
 use crate::Session;
 use crate::booleans_tests::{area, click, ex};
 use crate::params::id_of;
-use figcraft_doc::{NodeId, NodeKind};
-use figcraft_geom::{Point, Shape};
+use trama_doc::{NodeId, NodeKind};
+use trama_geom::{Point, Shape};
 
 const L_AREA: f64 = 34656.6;
 
@@ -37,7 +37,7 @@ fn l_group(s: &mut Session) -> NodeId {
 /// Whether the page point is inside the group's drawn result.
 fn covers(s: &Session, g: NodeId, x: f64, y: f64) -> bool {
     let doc = s.doc().unwrap();
-    let (path, _) = figcraft_render::node_outline(doc, doc.node(g).unwrap()).unwrap();
+    let (path, _) = trama_render::node_outline(doc, doc.node(g).unwrap()).unwrap();
     let p = doc.world_transform(g).inverse() * Point::new(x, y);
     path.winding(p) % 2 != 0
 }
@@ -51,9 +51,9 @@ fn a_boolean_group_rounds_every_sharp_corner_of_its_result() {
     assert!(!covers(&s, g, 1.0, 1.0) && covers(&s, g, 148.0, 102.0));
     assert!((area(&s, g) - L_AREA).abs() < 1.0, "{}", area(&s, g));
     let doc = s.doc().unwrap();
-    let svg = figcraft_svg::export_svg(doc, &[g], &figcraft_svg::SvgOptions::default()).unwrap();
+    let svg = trama_svg::export_svg(doc, &[g], &trama_svg::SvgOptions::default()).unwrap();
     let d = svg.split("d=\"").nth(1).and_then(|r| r.split('"').next()).unwrap();
-    let exported = figcraft_geom::svg_path(d).unwrap();
+    let exported = trama_geom::svg_path(d).unwrap();
     assert!((exported.area().abs() - L_AREA).abs() < 1.0, "{}", exported.area());
     s.undo().unwrap();
     assert_eq!(s.doc().unwrap().node(g).unwrap().corners.radii, [0.0; 4], "one undo step");
@@ -114,7 +114,7 @@ fn flatten_bakes_the_arcs_and_the_vector_has_no_radius() {
     let NodeKind::Vector { network } = &n.kind else { panic!("a vector: {:?}", n.kind) };
     assert_eq!(n.corners.radii, [0.0; 4]);
     assert!(network.vertices.iter().all(|v| v.radius == 0.0));
-    let path = figcraft_doc::geometry::shape_path(n).unwrap();
+    let path = trama_doc::geometry::shape_path(n).unwrap();
     assert!((path.area().abs() - L_AREA).abs() < 1.0, "{}", path.area());
     assert!((n.width - 250.0).abs() < 1e-6 && (n.height - 200.0).abs() < 1e-6);
 }

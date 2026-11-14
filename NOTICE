@@ -1,19 +1,20 @@
-FigCraft
+Trama
 Copyright (c) 2026 ArtCraft Team and the FigCraft contributors.
+Copyright (c) 2026 Nodalia.
 Licensed under the MIT License or the Apache License, Version 2.0, at your option
 (LICENSE-MIT, LICENSE-APACHE).
 
-The ArtCraft name, wordmark and logos in docs/brand/ are trademarks of the ArtCraft Team. They are
-not open source and are not covered by the license above; their terms are in
-docs/brand/LICENSE-brand.txt.
+Trama's code base began as FigCraft (https://github.com/storytold/figcraft), by the ArtCraft Team
+and the FigCraft contributors, under the same licences. Trama is developed by Nodalia; it carries
+none of ArtCraft's names, logos or marks, and uses none of its services.
 
 Third-party material
 
 This product bundles no third-party fonts, icons or images in the repository: every icon is
-drawn in code and original to FigCraft. The per-file list (author, source, license) of any bundled
+drawn in code and original, and the app icon is Nodalia's own. The per-file list (author, source, license) of any bundled
 asset is in ATTRIBUTION.md.
 
-Release builds made with the optional craft-fonts build input (CRAFT_FONTS_DIR) embed the fonts
+Release builds made with the optional craft-fonts build input (CRAFT_FONTS_DIR, getnodalia/foundation's vendor/craft-fonts/main branch) embed the fonts
 listed in ATTRIBUTION.md (Inter and others, SIL Open Font License 1.1); each package carries their
 licence texts.
 

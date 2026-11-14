@@ -3,9 +3,9 @@
 //! The assertions are the reporter's; the helper returns its findings instead of unwrapping, so
 //! that the crate's `unwrap_used`/`panic` lints hold outside a `#[test]` function.
 
-use figcraft_doc::NodeKind;
-use figcraft_format::rest;
 use serde_json::json;
+use trama_doc::NodeKind;
+use trama_format::rest;
 
 /// The link of the imported text, and the warnings the import reported. `None` for a link means
 /// the layer was missing, was not text, or carried no link at all.

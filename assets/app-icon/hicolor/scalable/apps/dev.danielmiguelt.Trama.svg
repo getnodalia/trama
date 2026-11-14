@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Trama app icon: a swatch of plain-weave cloth, the weft ("trama") in amber across and the
+     warp in white down, each crossing alternating over and under: threads laid on a grid, as an
+     interface is. Original work for Nodalia,
+     MIT OR Apache-2.0 (assets/app-icon/README.md). Plain vector shapes, no embedded images. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="224" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9A45E2"/>
+      <stop offset="1" stop-color="#7A26C9"/>
+    </linearGradient>
+  </defs>
+  <rect x="13.0" y="19.8" width="230.0" height="230.0" rx="54.5" fill="#000" opacity=".03"/>
+  <rect x="14.0" y="20.2" width="228.0" height="228.0" rx="53.5" fill="#000" opacity=".04"/>
+  <rect x="15.0" y="20.6" width="226.0" height="226.0" rx="52.5" fill="#000" opacity=".05"/>
+  <rect x="16.0" y="21.0" width="224.0" height="224.0" rx="51.5" fill="#000" opacity=".06"/>
+  <g transform="translate(16 16)">
+  <rect width="224" height="224" rx="51.5" fill="url(#tile)"/>
+  <path d="M0 172.5v-3.5a51.5 51.5 0 0 0 51.5 51.5h121.0a51.5 51.5 0 0 0 51.5-51.5v3.5a51.5 51.5 0 0 1-51.5 51.5h-121.0a51.5 51.5 0 0 1-51.5-51.5z" fill="#000" opacity=".15"/>
+  <path d="M0 51.5v3.5a51.5 51.5 0 0 1 51.5-51.5h121.0a51.5 51.5 0 0 1 51.5 51.5v-3.5a51.5 51.5 0 0 0-51.5-51.5h-121.0a51.5 51.5 0 0 0-51.5 51.5z" fill="#fff" opacity=".35"/>
+  <g>
+    <rect x="20" y="46.0" width="184" height="24" rx="12.0" fill="#FFC24D"/>
+    <rect x="20" y="100.0" width="184" height="24" rx="12.0" fill="#FFC24D"/>
+    <rect x="20" y="154.0" width="184" height="24" rx="12.0" fill="#FFC24D"/>
+    <rect x="46.0" y="20" width="24" height="184" rx="12.0" fill="#FFFFFF"/>
+    <rect x="100.0" y="20" width="24" height="184" rx="12.0" fill="#FFFFFF"/>
+    <rect x="154.0" y="20" width="24" height="184" rx="12.0" fill="#FFFFFF"/>
+    <rect x="45.5" y="40.0" width="25" height="36" fill="url(#tile)"/>
+    <rect x="39.0" y="46.0" width="38" height="24" fill="#FFC24D"/>
+    <rect x="94.0" y="45.5" width="36" height="25" fill="url(#tile)"/>
+    <rect x="100.0" y="39.0" width="24" height="38" fill="#FFFFFF"/>
+    <rect x="153.5" y="40.0" width="25" height="36" fill="url(#tile)"/>
+    <rect x="147.0" y="46.0" width="38" height="24" fill="#FFC24D"/>
+    <rect x="40.0" y="99.5" width="36" height="25" fill="url(#tile)"/>
+    <rect x="46.0" y="93.0" width="24" height="38" fill="#FFFFFF"/>
+    <rect x="99.5" y="94.0" width="25" height="36" fill="url(#tile)"/>
+    <rect x="93.0" y="100.0" width="38" height="24" fill="#FFC24D"/>
+    <rect x="148.0" y="99.5" width="36" height="25" fill="url(#tile)"/>
+    <rect x="154.0" y="93.0" width="24" height="38" fill="#FFFFFF"/>
+    <rect x="45.5" y="148.0" width="25" height="36" fill="url(#tile)"/>
+    <rect x="39.0" y="154.0" width="38" height="24" fill="#FFC24D"/>
+    <rect x="94.0" y="153.5" width="36" height="25" fill="url(#tile)"/>
+    <rect x="100.0" y="147.0" width="24" height="38" fill="#FFFFFF"/>
+    <rect x="153.5" y="148.0" width="25" height="36" fill="url(#tile)"/>
+    <rect x="147.0" y="154.0" width="38" height="24" fill="#FFC24D"/>
+  </g>
+  </g>
+</svg>

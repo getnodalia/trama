@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/figcraft-<version>-macos-<arch>.dmg          FigCraft.app on a drag-to-Applications DMG
-#   $DIST/figcraft-cli-<version>-macos-<arch>.zip      the headless CLI (when apps/figcraft-cli exists)
+#   $DIST/trama-<version>-macos-<arch>.dmg          Trama.app on a drag-to-Applications DMG
+#   $DIST/trama-cli-<version>-macos-<arch>.zip      the headless CLI (when apps/trama-cli exists)
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -39,9 +39,9 @@ export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/FigCraft.app"
-DMG="$DIST/figcraft-$VERSION-macos-$ARCH.dmg"
-CLI_ZIP="$DIST/figcraft-cli-$VERSION-macos-$ARCH.zip"
+APP="$WORK/Trama.app"
+DMG="$DIST/trama-$VERSION-macos-$ARCH.dmg"
+CLI_ZIP="$DIST/trama-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
 if [[ "$IDENTITY" = "-" ]]; then
@@ -52,7 +52,7 @@ else
   warn "macOS: APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID incomplete; signed but not notarized"
 fi
 
-echo "==> FigCraft $VERSION for macOS ($ARCH; ${BINS[*]}), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> Trama $VERSION for macOS ($ARCH; ${BINS[*]}), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [[ "$SKIP_BUILD" = 0 ]]; then
@@ -98,23 +98,23 @@ notarize() {
 }
 
 # ---- icon --------------------------------------------------------------------------------------
-# The .icns is generated here from the committed PNGs (assets/app-icon/figcraft-<size>.png, made by
+# The .icns is generated here from the committed PNGs (assets/app-icon/trama-<size>.png, made by
 # `cargo xtask icon`); it is never committed.
 ICONS="$ROOT/assets/app-icon"
-ICONSET="$WORK/FigCraft.iconset"
+ICONSET="$WORK/Trama.iconset"
 mkdir -p "$ICONSET"
 for s in 16 32 128 256 512; do
-  cp "$ICONS/figcraft-$s.png" "$ICONSET/icon_${s}x${s}.png"
-  cp "$ICONS/figcraft-$((s * 2)).png" "$ICONSET/icon_${s}x${s}@2x.png"
+  cp "$ICONS/trama-$s.png" "$ICONSET/icon_${s}x${s}.png"
+  cp "$ICONS/trama-$((s * 2)).png" "$ICONSET/icon_${s}x${s}@2x.png"
 done
-iconutil -c icns -o "$WORK/FigCraft.icns" "$ICONSET"
+iconutil -c icns -o "$WORK/Trama.icns" "$ICONSET"
 
-# ---- FigCraft.app ------------------------------------------------------------------------------
+# ---- Trama.app ------------------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/figcraft" "$APP/Contents/MacOS/FigCraft"
-cp "$WORK/FigCraft.icns" "$APP/Contents/Resources/FigCraft.icns"
+cp "$WORK/bin/trama" "$APP/Contents/MacOS/Trama"
+cp "$WORK/Trama.icns" "$APP/Contents/Resources/Trama.icns"
 cp "$ROOT/NOTICE" "$APP/Contents/Resources/"
 # Licences of the embedded craft-fonts fonts (only when built with CRAFT_FONTS_DIR).
 if [[ -n "${CRAFT_FONTS_DIR:-}" ]]; then
@@ -122,20 +122,20 @@ if [[ -n "${CRAFT_FONTS_DIR:-}" ]]; then
   copy_font_licences "$APP/Contents/Resources/Licenses"
 fi
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
-  -e "s/@BUILD_SHA@/${FIGCRAFT_BUILD_SHA:-unknown}/g" \
+  -e "s/@BUILD_SHA@/${TRAMA_BUILD_SHA:-unknown}/g" \
   "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
 plutil -lint "$APP/Contents/Info.plist"
 printf 'APPL????' >"$APP/Contents/PkgInfo"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/FigCraft"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/Trama"
 sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
 codesign --verify --strict --deep --verbose=2 "$APP"
 
 if [[ "$NOTARIZE" = 1 ]]; then
-  ditto -c -k --keepParent "$APP" "$WORK/FigCraft-notarize.zip"
-  notarize "$WORK/FigCraft-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$WORK/Trama-notarize.zip"
+  notarize "$WORK/Trama-notarize.zip"
   retry xcrun stapler staple "$APP"
   retry xcrun stapler validate "$APP"
   spctl --assess --type execute -vvv "$APP"
@@ -145,16 +145,45 @@ fi
 echo "==> building $DMG"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/FigCraft.app"
+ditto "$APP" "$STAGE/Trama.app"
 ln -s /Applications "$STAGE/Applications"
-rm -f "$DMG" "$WORK/raw.dmg"
-# makehybrid + convert builds the image without attaching a device, unlike `create -srcfolder`,
-# which is flaky on CI runners ("Resource busy") and hangs in sandboxed sessions.
-hdiutil makehybrid -hfs -hfs-volume-name "FigCraft" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
-hdiutil convert "$WORK/raw.dmg" -format UDZO -imagekey zlib-level=9 -o "$DMG"
-rm -f "$WORK/raw.dmg"
+# Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
+mkdir -p "$STAGE/.background"
+cp "$HERE/dmg/background.tiff" "$STAGE/.background/background.tiff"
+cp "$HERE/dmg/DS_Store" "$STAGE/.DS_Store"
+rm -f "$DMG"
+# `hdiutil create -srcfolder` writes the files as they are. `makehybrid -hfs` gave every file a
+# com.apple.FinderInfo, which `codesign --verify --strict` rejects as "Finder information, or
+# similar detritus" on the app in the image and on a copy installed from it. `create` attaches a
+# device while it copies, which fails now and then on CI runners ("Resource busy"), so it gets a
+# few tries. The volume name has no version: .DS_Store
+# finds the background through an alias that includes it.
+# Usage: hdiutil_retry <what> <hdiutil args…>; tries five times with growing pauses.
+hdiutil_retry() {
+  local what="$1" attempt
+  shift
+  for attempt in 1 2 3 4 5; do
+    if hdiutil "$@"; then
+      return 0
+    fi
+    [[ "$attempt" = 5 ]] && { echo "hdiutil $what failed 5 times" >&2; return 1; }
+    echo "hdiutil $what failed (attempt $attempt of 5); retrying in $((attempt * 10))s" >&2
+    sleep $((attempt * 10))
+  done
+}
+hdiutil_retry create create -srcfolder "$STAGE" -volname "Trama" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
 sign "$DMG"
 codesign --verify --strict --verbose=2 "$DMG"
+# The app inside the image must still pass --strict, so a makehybrid-style regression can't ship.
+MOUNT="$WORK/dmg-check"
+rm -rf "$MOUNT"
+mkdir -p "$MOUNT"
+hdiutil_retry attach attach -nobrowse -readonly -mountpoint "$MOUNT" "$DMG" >/dev/null
+if ! codesign --verify --strict --deep --verbose=2 "$MOUNT/Trama.app"; then
+  hdiutil_retry detach detach "$MOUNT" >/dev/null || true
+  exit 1
+fi
+hdiutil_retry detach detach "$MOUNT" >/dev/null
 if [[ "$NOTARIZE" = 1 ]]; then
   notarize "$DMG"
   retry xcrun stapler staple "$DMG"
@@ -165,25 +194,25 @@ fi
 # ---- CLI ---------------------------------------------------------------------------------------
 if [[ "$HAS_CLI" = 1 ]]; then
   echo "==> building $CLI_ZIP"
-  CLI_DIR="$WORK/figcraft-cli-$VERSION-macos-$ARCH"
+  CLI_DIR="$WORK/trama-cli-$VERSION-macos-$ARCH"
   mkdir -p "$CLI_DIR"
-  cp "$WORK/bin/figcraft-cli" "$CLI_DIR/"
+  cp "$WORK/bin/trama-cli" "$CLI_DIR/"
   copy_docs "$CLI_DIR"
   # Same Developer ID and hardened runtime as the app, with an explicit reverse-DNS identifier
   # (codesign would otherwise use the bare file name).
-  sign --options runtime --identifier ai.storyteller.figcraft-cli "$CLI_DIR/figcraft-cli"
-  codesign --verify --strict --verbose=2 "$CLI_DIR/figcraft-cli"
+  sign --options runtime --identifier dev.danielmiguelt.Trama-cli "$CLI_DIR/trama-cli"
+  codesign --verify --strict --verbose=2 "$CLI_DIR/trama-cli"
   rm -f "$CLI_ZIP"
   ditto -c -k --keepParent "$CLI_DIR" "$CLI_ZIP"
   # notarytool accepts a zip of the bare binary. A bare Mach-O can't carry a stapled ticket, so
   # Gatekeeper looks the notarization up online when a quarantined copy first runs.
   if [[ "$NOTARIZE" = 1 ]]; then notarize "$CLI_ZIP"; fi
-  "$WORK/bin/figcraft-cli" --version
+  "$WORK/bin/trama-cli" --version
 else
-  warn "apps/figcraft-cli is not in this workspace: no CLI zip"
+  warn "apps/trama-cli is not in this workspace: no CLI zip"
   rm -f "$CLI_ZIP"
 fi
 
-"$WORK/bin/figcraft" --version
+"$WORK/bin/trama" --version
 echo "==> done (check the artifacts as shipped with packaging/macos/verify.sh --arch $ARCH)"
-ls -lh "$DIST"/figcraft*-"$VERSION"-macos-"$ARCH".*
+ls -lh "$DIST"/trama*-"$VERSION"-macos-"$ARCH".*

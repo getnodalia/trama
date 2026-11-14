@@ -4,8 +4,8 @@
 
 use std::sync::{Arc, Mutex};
 
-use figcraft_collab::message::{Access, CatchUp, Peer, Presence, Processed, ServerMsg};
-use figcraft_engine::live::{Event, MAX_PEERS};
+use trama_collab::message::{Access, CatchUp, Peer, Presence, Processed, ServerMsg};
+use trama_engine::live::{Event, MAX_PEERS};
 
 use crate::guest::GuestConfig;
 use crate::inbox::Inbox;

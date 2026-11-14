@@ -1,5 +1,5 @@
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_engine::Session;
 
 /// Variable A is renamed to variable B's id; returns (session, B's id).
 fn renamed_to_other_id(a_type: &str, a_value: Value) -> (Session, String) {

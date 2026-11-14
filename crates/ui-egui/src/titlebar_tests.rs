@@ -3,8 +3,8 @@
 //! resize it. A system-drawn title bar leaves all of that to the system.
 
 use egui::{Event, PointerButton, Pos2, RawInput, Rect, ResizeDirection, ViewportCommand, ViewportId, pos2, vec2};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices, TitleBar};
 
@@ -68,9 +68,24 @@ impl Ui {
 }
 
 /// The middle of window button `k` (0 minimise, 1 maximise, 2 close) at the bar's right end.
+/// Windows draws its own square caption buttons; elsewhere they are Nodalia's round controls, 8
+/// points in from the edge.
+#[cfg(windows)]
 fn window_button(k: usize) -> Pos2 {
     pos2(SIZE.x - 46.0 * (3 - k) as f32 + 23.0, crate::tabs::HEIGHT / 2.0)
 }
+#[cfg(not(windows))]
+fn window_button(k: usize) -> Pos2 {
+    use nodalia_theme::{component::WINDOW_CONTROL_SIZE, space::XS, window_controls::WIDTH};
+    let left = SIZE.x - 8.0 - WIDTH;
+    pos2(left + (WINDOW_CONTROL_SIZE + XS) * k as f32 + WINDOW_CONTROL_SIZE / 2.0, crate::tabs::HEIGHT / 2.0)
+}
+
+/// The width the window buttons keep free at the bar's right end.
+#[cfg(windows)]
+const BUTTONS: f32 = 138.0;
+#[cfg(not(windows))]
+const BUTTONS: f32 = nodalia_theme::window_controls::WIDTH + 16.0;
 
 /// Empty title bar space, right of the tabs.
 const EMPTY: Pos2 = pos2(800.0, 20.0);
@@ -171,7 +186,7 @@ fn many_tabs_do_not_cover_the_window_buttons() {
     }
     u.frame(vec![]);
     let before = u.app.session.docs.len();
-    u.click(pos2(SIZE.x - 222.0, 20.0));
+    u.click(pos2(SIZE.x - BUTTONS - 84.0, 20.0));
     assert_eq!(u.app.session.docs.len(), before + 1, "the new-tab button must stay reachable");
     assert!(u.click(window_button(0)).contains(&ViewportCommand::Minimized(true)));
     assert!(u.click(window_button(1)).contains(&ViewportCommand::Maximized(true)));
@@ -313,9 +328,9 @@ fn closing_a_tab_with_unsaved_changes_asks() {
 /// where with Save as first and the tab stays open until it is saved.
 #[test]
 fn save_in_the_tab_question_saves_then_closes() {
-    let dir = std::env::temp_dir().join(format!("figcraft-tab-close-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-tab-close-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("kept.figcraft");
+    let path = dir.join("kept.trama");
     let mut u = Ui::new(TitleBar::Custom);
     u.app.session.execute("file.new", &json!({})).unwrap();
     u.app.session.execute("doc.switch", &json!({"index": 0})).unwrap();

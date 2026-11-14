@@ -1,7 +1,7 @@
 //! Text node data: characters plus a base style and styled runs.
 
-use figcraft_color::{Color, Paint};
 use serde::{Deserialize, Serialize};
+use trama_color::{Color, Paint};
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "unit", content = "value", rename_all = "camelCase")]
@@ -373,9 +373,9 @@ pub struct ParagraphStyle {
     pub features: std::collections::BTreeMap<String, bool>,
 }
 
-/// The font new text starts in. A build can name another (`FIGCRAFT_DEFAULT_FONT="Noto Sans Thai"`,
+/// The font new text starts in. A build can name another (`TRAMA_DEFAULT_FONT="Noto Sans Thai"`,
 /// for a distribution whose users mostly write a script Inter lacks); empty means Inter.
-pub const DEFAULT_FONT: &str = match option_env!("FIGCRAFT_DEFAULT_FONT") {
+pub const DEFAULT_FONT: &str = match option_env!("TRAMA_DEFAULT_FONT") {
     Some(family) if !family.is_empty() => family,
     _ => "Inter",
 };
@@ -594,13 +594,13 @@ pub struct TextPath {
 
 impl TextPath {
     /// A text path following `path` (layer space).
-    pub fn new(path: &figcraft_geom::BezPath) -> Self {
+    pub fn new(path: &trama_geom::BezPath) -> Self {
         Self { d: path.to_svg(), start: 0.0, flip: false }
     }
 
     /// The path (empty when `d` doesn't parse).
-    pub fn path(&self) -> figcraft_geom::BezPath {
-        figcraft_geom::svg_path(&self.d).unwrap_or_default()
+    pub fn path(&self) -> trama_geom::BezPath {
+        trama_geom::svg_path(&self.d).unwrap_or_default()
     }
 
     /// The start offset clamped into 0..1 (NaN: 0).
@@ -612,7 +612,7 @@ impl TextPath {
     pub fn scale(&mut self, sx: f64, sy: f64) {
         if sx.is_finite() && sy.is_finite() {
             let mut p = self.path();
-            p.apply_affine(figcraft_geom::Affine::scale_non_uniform(sx, sy));
+            p.apply_affine(trama_geom::Affine::scale_non_uniform(sx, sy));
             self.d = p.to_svg();
         }
     }
@@ -1155,8 +1155,8 @@ mod case_tests {
 
     #[test]
     fn new_text_starts_in_the_builds_default_font() {
-        // Inter, unless the build names another with `FIGCRAFT_DEFAULT_FONT` (empty means Inter).
-        let named = option_env!("FIGCRAFT_DEFAULT_FONT").filter(|f| !f.is_empty());
+        // Inter, unless the build names another with `TRAMA_DEFAULT_FONT` (empty means Inter).
+        let named = option_env!("TRAMA_DEFAULT_FONT").filter(|f| !f.is_empty());
         assert_eq!(DEFAULT_FONT, named.unwrap_or("Inter"));
         let st = TextStyle::default();
         assert_eq!(st.font_family, DEFAULT_FONT);
