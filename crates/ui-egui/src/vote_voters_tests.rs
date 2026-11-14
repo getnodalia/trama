@@ -1,8 +1,8 @@
 //! An ended vote's results say who voted for each object (as the reference board app shows how
 //! each participant voted once a vote ends); while it runs, nobody's votes but your own show.
 
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::export_preview_tests::{click, labelled};
 use crate::layers_drag_tests::Ui;

@@ -99,7 +99,7 @@ fn a_board_field_becomes_the_nodes_board_item() {
     let frame = json!({"id": "1:1", "name": "Note", "type": "FRAME", "relativeTransform": at(0.0, 0.0), "size": {"x": 200, "y": 200},
                        "board": {"type": "sticky", "author": "A\u{7}"}});
     let (doc, warnings) = import(&file(json!([frame])), &no_images).unwrap();
-    assert_eq!(named(&doc, "Note").board, Some(figcraft_doc::BoardItem::Sticky { author: "A".into() }));
+    assert_eq!(named(&doc, "Note").board, Some(trama_doc::BoardItem::Sticky { author: "A".into() }));
     assert!(!warnings.iter().any(|w| w.contains("board item")), "{warnings:?}");
 }
 

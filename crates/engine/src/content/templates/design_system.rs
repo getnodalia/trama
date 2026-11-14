@@ -3,8 +3,8 @@
 //! input component sets and a card, all bound to the variables, used in one form shown in both
 //! modes.
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use super::kit::{H, Kit, TYPE, V, merged};
 use crate::Result;

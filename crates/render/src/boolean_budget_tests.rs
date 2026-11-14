@@ -1,9 +1,9 @@
 //! A boolean group past the path operations' caps draws without its result (with a warning, once)
 //! and costs nothing the next time it is drawn; other groups are unchanged.
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{BoolOp, Document, NodeId, NodeKind, VectorNetwork};
-use figcraft_geom::kurbo::{BezPath, Rect, Shape};
+use trama_color::{Color, Paint};
+use trama_doc::{BoolOp, Document, NodeId, NodeKind, VectorNetwork};
+use trama_geom::kurbo::{BezPath, Rect, Shape};
 
 use crate::boolean::boolean_steps;
 use crate::{Options, View, node_outline, render_view};

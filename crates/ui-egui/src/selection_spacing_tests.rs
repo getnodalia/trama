@@ -1,9 +1,9 @@
 //! Real field and canvas gestures for #402; distances are checked in the engine document.
 use crate::layers_drag_tests::Ui;
 use egui::{Event, Id, Key, Modifiers, Pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 fn scene(grid: bool) -> (Ui, Vec<NodeId>) {
     let mut s = Session::new();

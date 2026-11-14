@@ -3,8 +3,8 @@
 //! keys, in one undo step, and optionally each copy exported as a file. Agents make a series with
 //! one call instead of a duplicate, a lookup and an edit per layer and an export per copy.
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use crate::cmd::CommandSpec;
 use crate::params::{get, id, id_of, num_or, string};
@@ -163,7 +163,7 @@ fn fill_layers(s: &mut Session, copy: NodeId, (key, value): (&str, &Value), miss
     };
     let mut texts = Vec::new();
     for t in targets {
-        let is_text = s.doc()?.node(t).is_some_and(|n| matches!(n.kind, figcraft_doc::NodeKind::Text(_)));
+        let is_text = s.doc()?.node(t).is_some_and(|n| matches!(n.kind, trama_doc::NodeKind::Text(_)));
         if let Some(text) = text.as_ref().filter(|_| is_text) {
             s.execute("text.set", &json!({"id": t, "characters": text}))?;
         }

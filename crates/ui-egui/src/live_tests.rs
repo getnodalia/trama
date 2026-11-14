@@ -7,10 +7,10 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use egui::{Color32, Event, PointerButton, Pos2, RawInput, Rect, Shape, ViewportId, pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
-use figcraft_engine::live::{Event as LiveEvent, HostOptions, LiveLink, Peer, Presence, Role, SessionInfo, Status};
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
+use trama_engine::live::{Event as LiveEvent, HostOptions, LiveLink, Peer, Presence, Role, SessionInfo, Status};
 
 use crate::present_tests::id;
 use crate::{FigApp, NoServices};
@@ -28,13 +28,13 @@ impl LiveLink for Mock {
         self.1 = session;
         Ok(())
     }
-    fn publish(&mut self, session: u64, _: figcraft_engine::live::PublishOptions) -> Result<(), String> {
+    fn publish(&mut self, session: u64, _: trama_engine::live::PublishOptions) -> Result<(), String> {
         self.1 = session;
         Ok(())
     }
     fn leave(&mut self, _: u64) {}
     fn presence(&mut self, _: u64, _: &Presence) {}
-    fn send(&mut self, _: u64, _: figcraft_engine::figcraft_collab::message::ClientMsg) {}
+    fn send(&mut self, _: u64, _: trama_engine::trama_collab::message::ClientMsg) {}
     fn poll(&mut self) -> Vec<(u64, LiveEvent)> {
         std::mem::take(&mut *self.0.lock().unwrap()).into_iter().map(|e| (self.1, e)).collect()
     }
@@ -113,7 +113,7 @@ impl Harness {
 
     /// Joined as Ada, with Hana (the host) already here.
     pub(crate) fn joined(&mut self) {
-        self.app.session.execute("collab.join", &json!({"link": "figcraft://join?host=127.0.0.1:47900&file=f&token=t"})).unwrap();
+        self.app.session.execute("collab.join", &json!({"link": "trama://join?host=127.0.0.1:47900&file=f&token=t"})).unwrap();
         self.welcome();
     }
 
@@ -126,11 +126,11 @@ impl Harness {
             color: "#14AE5C".into(),
             file_name: "Shared".into(),
             pages: vec![],
-            link: "figcraft://join?host=127.0.0.1:47900&file=f&token=t".into(),
+            link: "trama://join?host=127.0.0.1:47900&file=f&token=t".into(),
             url: String::new(),
             address: "127.0.0.1:47900".into(),
             network: false,
-            access: figcraft_engine::live::Access::Edit,
+            access: trama_engine::live::Access::Edit,
             view: None,
         };
         self.send(vec![LiveEvent::Welcome { info, peers: vec![Peer { client_id: 1, name: "Hana".into(), color: "#9747FF".into() }] }]);
@@ -139,8 +139,8 @@ impl Harness {
     /// The host's welcome with the document (a session server seeded with this document): it opens
     /// as a new tab, which is then the synced document.
     pub(crate) fn sync(&mut self) {
-        use figcraft_engine::figcraft_collab::message::{ClientMsg, ServerMsg};
-        use figcraft_engine::figcraft_collab::{Client, Limits, Outgoing, Server};
+        use trama_engine::trama_collab::message::{ClientMsg, ServerMsg};
+        use trama_engine::trama_collab::{Client, Limits, Outgoing, Server};
         let mut server = Server::new(self.app.session.doc().unwrap().clone(), "", Limits::default());
         let ClientMsg::Hello(host) = Client::hello("f", "", "Hana", "") else { panic!("no hello") };
         server.join(host).unwrap();

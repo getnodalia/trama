@@ -5,8 +5,8 @@
 use std::io::Cursor;
 
 use base64::Engine as _;
-use figcraft_doc::{NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, NodeKind};
 
 use crate::{Session, params};
 

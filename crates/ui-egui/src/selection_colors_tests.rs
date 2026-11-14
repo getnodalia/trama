@@ -3,9 +3,9 @@
 //! Driven through egui headless; each row has a "Select layers with this color" button.
 
 use egui::accesskit::Role;
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

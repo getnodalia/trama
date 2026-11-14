@@ -6,9 +6,9 @@
 use std::sync::Arc;
 
 use egui::{Color32, CornerRadius, Id, Pos2, Rect, Stroke, StrokeKind, pos2};
-use figcraft_doc::proto::{Action, MAX_ACTION_DEPTH, OverlayPosition};
-use figcraft_doc::{Document, NodeId};
 use serde_json::json;
+use trama_doc::proto::{Action, MAX_ACTION_DEPTH, OverlayPosition};
+use trama_doc::{Document, NodeId};
 
 use crate::FigApp;
 use crate::proto_editor::{Slot, run_at};
@@ -124,7 +124,7 @@ pub(super) fn draw(app: &FigApp, painter: &egui::Painter, doc: &Arc<Document>, p
     let Some(m) = editing(app, ctx, doc, page) else { return };
     let Some(r) = ghost_rect(app, doc, &m) else { return };
     let accent = crate::theme::canvas_accent(ctx);
-    let art = figcraft_render::export_bounds(doc, m.dest).zip(doc.world_bounds(m.dest));
+    let art = trama_render::export_bounds(doc, m.dest).zip(doc.world_bounds(m.dest));
     match (thumbnail(ctx, doc, m.dest), art) {
         (Some(tex), Some((e, b))) => {
             let at = [m.origin[0] + m.offset[0] + e.x0 - b.x0, m.origin[1] + m.offset[1] + e.y0 - b.y0];
@@ -191,10 +191,10 @@ pub(super) fn input(app: &mut FigApp, ctx: &egui::Context, pos: Option<Pos2>, ho
 #[cfg(test)]
 mod tests {
     use egui::{Event, PointerButton, vec2};
-    use figcraft_doc::NodeId;
-    use figcraft_doc::proto::{Action, OverlayAnchor, OverlayPosition};
-    use figcraft_engine::Session;
     use serde_json::json;
+    use trama_doc::NodeId;
+    use trama_doc::proto::{Action, OverlayAnchor, OverlayPosition};
+    use trama_engine::Session;
 
     use super::{find_manual, ghost_rect, manual};
     use crate::RightTab;
@@ -272,8 +272,8 @@ mod tests {
         assert!(path.is_empty());
         let nested = Action::Conditional {
             blocks: vec![
-                figcraft_doc::proto::ConditionalBlock { condition: None, actions: vec![centred.clone()] },
-                figcraft_doc::proto::ConditionalBlock { condition: None, actions: vec![Action::Back, overlay(d, OverlayPosition::Manual, None)] },
+                trama_doc::proto::ConditionalBlock { condition: None, actions: vec![centred.clone()] },
+                trama_doc::proto::ConditionalBlock { condition: None, actions: vec![Action::Back, overlay(d, OverlayPosition::Manual, None)] },
             ],
         };
         let found = find_manual(&[centred, nested], &mut path, 0);

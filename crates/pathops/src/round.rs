@@ -6,8 +6,8 @@
 //! vertex is judged by the turn it makes, and a corner that does not fit shrinks to what the edges
 //! beside it can hold ([`Ctx::corner`]).
 
-use figcraft_geom::kurbo::{BezPath, CubicBez, ParamCurve, ParamCurveArclen, ParamCurveDeriv, PathEl, PathSeg, Point, Shape, Vec2};
 use std::f64::consts::PI;
+use trama_geom::kurbo::{BezPath, CubicBez, ParamCurve, ParamCurveArclen, ParamCurveDeriv, PathEl, PathSeg, Point, Shape, Vec2};
 
 /// The smallest turn (radians) that counts as a corner. The sweep moves end points by up to its
 /// own 1e-6 accuracy, which can tilt a short piece by more than 1e-6 rad.
@@ -115,7 +115,7 @@ pub fn round_corners(path: &BezPath, radius: f64, smoothing: f64) -> BezPath {
     }
     let smoothing = if smoothing.is_finite() { smoothing.clamp(0.0, 1.0) } else { 0.0 };
     let mut out = BezPath::new();
-    for sub in figcraft_geom::split_subpaths(path) {
+    for sub in trama_geom::split_subpaths(path) {
         // Each contour's own size sets its cleanup tolerance, so a large contour can't weld away
         // the real short edges of a small island or hole beside it.
         let bb = sub.bounding_box();
@@ -244,7 +244,7 @@ impl Ctx<'_> {
 
     fn between_lines(&self, c1: &CubicBez, c2: &CubicBez, room: f64, (la, lb): (f64, f64)) -> Option<Corner> {
         let (u1, u2) = (start_dir(c1)?, start_dir(c2)?);
-        let curves = figcraft_geom::smoothed_corner(c1.p0, u1, u2, room, self.radius, self.smoothing)?;
+        let curves = trama_geom::smoothed_corner(c1.p0, u1, u2, room, self.radius, self.smoothing)?;
         let (first, last) = (curves.first()?, curves.last()?);
         let (t_in, t_out) = (1.0 - (first.p0 - c1.p0).hypot() / la, (last.p3 - c1.p0).hypot() / lb);
         (t_in.is_finite() && t_out.is_finite() && curves.iter().all(|c| [c.p0, c.p1, c.p2, c.p3].iter().all(|p| p.x.is_finite() && p.y.is_finite())))

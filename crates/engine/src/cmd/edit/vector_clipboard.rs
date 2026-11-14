@@ -8,7 +8,7 @@
 //! with its segments, a shape or boolean with its outline.
 
 use crate::bad;
-use figcraft_doc::{NodeKind, Region, VectorNetwork};
+use trama_doc::{NodeKind, Region, VectorNetwork};
 
 use super::clipboard::{collect_images, store_clipboard};
 use super::{Affine, BTreeMap, BTreeSet, Document, EngineError, Node, NodeId, Result, Session, Value, json, num};
@@ -121,12 +121,12 @@ fn copy_parts(s: &mut Session, cmd: &str, sel: &EditSelection) -> Result<usize> 
     let doc = s.doc()?;
     let mut nodes = Vec::new();
     let mut images = BTreeMap::new();
-    let mut bounds: Option<figcraft_geom::Rect> = None;
+    let mut bounds: Option<trama_geom::Rect> = None;
     let mut segments = 0;
     for (id, sub) in &sel.parts {
         segments += sub.segments.len();
         let Some(n) = clip_node(doc, *id, sub.clone()) else { continue };
-        let r = figcraft_geom::transform_rect_bbox(n.transform, n.local_rect());
+        let r = trama_geom::transform_rect_bbox(n.transform, n.local_rect());
         bounds = Some(bounds.map_or(r, |b| b.union(r)));
         collect_images(doc, std::slice::from_ref(&n), &mut images);
         nodes.push((*id, vec![n]));
@@ -172,7 +172,7 @@ pub fn clipboard_svg(s: &Session) -> Option<String> {
         let map: BTreeMap<NodeId, NodeId> = nodes.iter().map(|n| (n.id, scratch.alloc_id())).collect();
         ids.push(scratch.paste_nodes(nodes, &map, *root, page, None).ok()?);
     }
-    let bytes = crate::cmd::file::export_bytes(&scratch, &ids, figcraft_doc::ExportFormat::Svg, 1.0).ok()?;
+    let bytes = crate::cmd::file::export_bytes(&scratch, &ids, trama_doc::ExportFormat::Svg, 1.0).ok()?;
     String::from_utf8(bytes).ok()
 }
 
@@ -183,14 +183,14 @@ fn outline_network(doc: &Document, n: &Node) -> Option<VectorNetwork> {
     let net = match &n.kind {
         NodeKind::Vector { network } => network.clone(),
         k if k.is_shape() || matches!(k, NodeKind::BooleanOp { .. }) => {
-            let (path, rule) = figcraft_render::node_outline(doc, n)?;
+            let (path, rule) = trama_render::node_outline(doc, n)?;
             let mut net = VectorNetwork::from_path(&path);
             if matches!(n.kind, NodeKind::Line) {
                 net.regions.clear();
             }
-            if rule == figcraft_render::FillRule::EvenOdd {
+            if rule == trama_render::FillRule::EvenOdd {
                 for r in &mut net.regions {
-                    r.winding = figcraft_doc::WindingRule::EvenOdd;
+                    r.winding = trama_doc::WindingRule::EvenOdd;
                 }
             }
             net
@@ -214,7 +214,7 @@ fn placed(mut net: VectorNetwork, m: Affine) -> Option<VectorNetwork> {
         v.radius *= scale;
     }
     for sg in &mut net.segments {
-        let (ta, tb) = (linear * figcraft_geom::Point::new(sg.ta.0, sg.ta.1), linear * figcraft_geom::Point::new(sg.tb.0, sg.tb.1));
+        let (ta, tb) = (linear * trama_geom::Point::new(sg.ta.0, sg.ta.1), linear * trama_geom::Point::new(sg.tb.0, sg.tb.1));
         sg.ta = (ta.x, ta.y);
         sg.tb = (tb.x, tb.y);
     }

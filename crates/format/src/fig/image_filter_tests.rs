@@ -63,7 +63,7 @@ fn image_filters_import_from_current_container_and_skip_ambiguous_data() {
     let (doc, warnings) = import(&bytes, "ImageFilters.fig").unwrap();
     let get = |name: &str| {
         let node = doc.nodes().find(|node| node.name == name).unwrap();
-        let figcraft_doc::color::PaintKind::Image(image) = &node.fills[0].kind else { panic!("{name} is not an image fill") };
+        let trama_doc::color::PaintKind::Image(image) = &node.fills[0].kind else { panic!("{name} is not an image fill") };
         image
     };
     let current = get("Current");
@@ -111,17 +111,17 @@ fn warnings_naming_unknown_filter_fields_are_capped() {
 #[test]
 fn image_adjustments_survive_a_fig_export() {
     let (mut doc, _) = import(&image_filter_fixture(), "ImageFilters.fig").unwrap();
-    let filters_of = |doc: &figcraft_doc::Document, name: &str| {
+    let filters_of = |doc: &trama_doc::Document, name: &str| {
         let node = doc.nodes().find(|node| node.name == name).unwrap();
-        let figcraft_doc::color::PaintKind::Image(image) = &node.fills[0].kind else { panic!("{name} is not an image fill") };
+        let trama_doc::color::PaintKind::Image(image) = &node.fills[0].kind else { panic!("{name} is not an image fill") };
         image.filters
     };
     // Values a document can hold and the file can't: out of range, and not a number.
-    let ids: Vec<figcraft_doc::NodeId> = doc.ids().collect();
+    let ids: Vec<trama_doc::NodeId> = doc.ids().collect();
     for id in ids {
         let Some(node) = doc.node_mut(id) else { continue };
         let name = node.name.clone();
-        let Some(figcraft_doc::color::PaintKind::Image(image)) = node.fills.first_mut().map(|p| &mut p.kind) else { continue };
+        let Some(trama_doc::color::PaintKind::Image(image)) = node.fills.first_mut().map(|p| &mut p.kind) else { continue };
         match name.as_str() {
             "Legacy" => image.filters.exposure = 5.0,
             "Explicit neutral" => image.filters.contrast = f32::NAN,

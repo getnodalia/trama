@@ -5,9 +5,9 @@
 use egui::accesskit::Node;
 use egui::epaint::ColorMode;
 use egui::{Color32, Event, Order, PointerButton, Pos2, RawInput, Rect, Shape, pos2, vec2};
-use figcraft_doc::BoardShape;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::BoardShape;
+use trama_engine::Session;
 
 use crate::present_tests::Ui;
 use crate::right::{menu_check, menu_item, menu_popup};
@@ -22,8 +22,8 @@ fn press(p: Pos2, pressed: bool) -> Vec<Event> {
     vec![Event::PointerMoved(p), Event::PointerButton { pos: p, button: PointerButton::Primary, pressed, modifiers: Default::default() }]
 }
 
-fn color(x: Color32) -> figcraft_color::Color {
-    figcraft_color::Color::new(f32::from(x.r()) / 255.0, f32::from(x.g()) / 255.0, f32::from(x.b()) / 255.0, 1.0)
+fn color(x: Color32) -> trama_color::Color {
+    trama_color::Color::new(f32::from(x.r()) / 255.0, f32::from(x.g()) / 255.0, f32::from(x.b()) / 255.0, 1.0)
 }
 
 /// The text painted on the foreground (menu) layers: (text, colour).

@@ -5,9 +5,9 @@
 use super::proto_variable_tests::{FLAG, LABEL, SPACE, THEME, alias, at, variables_json};
 use super::tests::pointers;
 use super::*;
-use figcraft_doc::proto::{Action, ConditionalBlock, Expr, ExprOp, Transition, walk};
-use figcraft_doc::{VariableValue, Variables};
 use serde_json::json;
+use trama_doc::proto::{Action, ConditionalBlock, Expr, ExprOp, Transition, walk};
+use trama_doc::{VariableValue, Variables};
 
 fn data(ty: &str, value: Value) -> Value {
     json!({"type": ty, "value": value})

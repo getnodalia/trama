@@ -4,9 +4,9 @@
 
 use std::sync::Arc;
 
-use figcraft_color::{ImageScaleMode, Paint};
-use figcraft_doc::{Document, ImageData, NodeId, NodeKind};
 use tiny_skia::Pixmap;
+use trama_color::{ImageScaleMode, Paint};
+use trama_doc::{Document, ImageData, NodeId, NodeKind};
 
 use crate::images::{self, MAX_CACHED_BYTES};
 use crate::{Options, View, render_view};

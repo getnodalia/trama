@@ -2,9 +2,9 @@
 //! a click) and the table's part of the bar over the selection.
 
 use egui::{Event, Modifiers, PointerButton, Pos2, pos2};
-use figcraft_doc::{BoardItem, NodeId};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::{BoardItem, NodeId};
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::live_tests::{flat, has_text, text_center};

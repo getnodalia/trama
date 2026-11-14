@@ -1,9 +1,9 @@
 //! Parameter parsing helpers shared by commands (lenient: agents send numbers as strings, ids as
 //! "12" or "0:12", colours as hex or CSS).
 
-use figcraft_color::{BlendMode, Color, Paint};
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_color::{BlendMode, Color, Paint};
+use trama_doc::NodeId;
 
 use crate::{EngineError, Result, Session, bad};
 

@@ -2,9 +2,9 @@
 //! drawn, like text drawn with the Text tool: white on a dark page or a dark frame unless a fill is
 //! named. A session without an interface (CLI, MCP, exports) keeps the model's black everywhere.
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_color::{Color, Paint};
+use trama_doc::NodeId;
 
 use crate::Session;
 use crate::params::id_of;

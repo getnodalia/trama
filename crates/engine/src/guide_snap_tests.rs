@@ -2,9 +2,9 @@
 //! axis only, within five screen pixels at any zoom (page guides see the page's top-level layers;
 //! frame guides see the frame's box, layout grids and every layer in it).
 
-use figcraft_doc::NodeId;
-use figcraft_geom::Affine;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_geom::Affine;
 
 use crate::Session;
 use crate::params::id_of;

@@ -8,8 +8,8 @@ pub(super) fn layers_at(s: &mut Session, p: &Value) -> Result<Value> {
     let zoom = s.ds()?.view.zoom.max(1e-6);
     let sel = s.selection();
     let result = crate::booleans::result_outline(doc, &sel);
-    let opts = figcraft_doc::geometry::HitOpts { locked: true };
-    let layers: Vec<Value> = figcraft_doc::geometry::layers_at_opts(doc, s.page()?, figcraft_geom::Point::new(x, y), 2.0 / zoom, Some(&result), opts)
+    let opts = trama_doc::geometry::HitOpts { locked: true };
+    let layers: Vec<Value> = trama_doc::geometry::layers_at_opts(doc, s.page()?, trama_geom::Point::new(x, y), 2.0 / zoom, Some(&result), opts)
         .into_iter()
         .filter_map(|(id, depth)| {
             doc.node(id)
@@ -53,8 +53,8 @@ pub(super) fn select_area(s: &mut Session, p: &Value) -> Result<Value> {
     if ![x, y, w, h].iter().all(|v| v.is_finite() && v.abs() < 1e9) {
         return Err(bad(cmd, "the box is out of range"));
     }
-    let start = figcraft_geom::Point::new(x, y);
-    let r = figcraft_geom::Rect::from_points(start, figcraft_geom::Point::new(x + w, y + h));
+    let start = trama_geom::Point::new(x, y);
+    let r = trama_geom::Rect::from_points(start, trama_geom::Point::new(x + w, y + h));
     let add = boolean(p, "add") == Some(true);
     let base = if add { s.selection() } else { Vec::new() };
     let within = s.marquee_within(start)?;

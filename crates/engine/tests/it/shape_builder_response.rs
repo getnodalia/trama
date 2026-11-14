@@ -1,5 +1,5 @@
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_engine::Session;
 
 fn rectangle(s: &mut Session, x: f64) -> Value {
     s.execute("shape.rectangle", &json!({"x": x, "y": 0, "width": 100, "height": 100})).unwrap()["id"].clone()

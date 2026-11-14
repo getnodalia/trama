@@ -110,7 +110,7 @@ fn other_content_is_refused_without_changes() {
 // The next three pin the paste-placement rules measured in Figma's web app on 2026-11-08 (a
 // synthetic file): in place when the original is in view, at the view's centre when it is off
 // screen, and in a selected frame's centre when the frame is elsewhere. The fourth pins
-// FigCraft's own branch for a selected frame that contains the original (in place inside it),
+// Trama's own branch for a selected frame that contains the original (in place inside it),
 // which was not measured.
 
 fn copied_rect(s: &mut Session) -> NodeId {

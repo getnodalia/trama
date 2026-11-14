@@ -1,4 +1,4 @@
-use figcraft_doc::AutoLayout;
+use trama_doc::AutoLayout;
 
 use super::swift::one_line;
 use super::{
@@ -76,7 +76,7 @@ fn flutter_padding(n: &Node) -> Option<String> {
 }
 
 /// A gradient's colours and stops, the tail of every Flutter gradient constructor.
-fn flutter_colors(g: &figcraft_color::Gradient, opacity: f32) -> String {
+fn flutter_colors(g: &trama_color::Gradient, opacity: f32) -> String {
     let stops = gradient_stops(g, opacity);
     let colors = stops.iter().map(|(_, c)| kotlin_color(*c)).collect::<Vec<_>>().join(", ");
     let at = stops.iter().map(|(at, _)| num(*at)).collect::<Vec<_>>().join(", ");
@@ -89,7 +89,7 @@ fn flutter_alignment(p: (f64, f64)) -> String {
 }
 
 /// A gradient fill on a layer of `w` x `h` as a Flutter gradient.
-fn flutter_gradient(g: &figcraft_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
+fn flutter_gradient(g: &trama_color::Gradient, w: f64, h: f64, opacity: f32) -> String {
     let (dx, dy) = gradient_axis(g, w, h);
     let (tail, from) = (flutter_colors(g, opacity), flutter_alignment(g.from));
     match native_gradient_kind(g) {

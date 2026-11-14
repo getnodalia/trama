@@ -85,7 +85,7 @@ fn encoded_fig_maps_paragraph_list_fields_through_native_round_trip() {
     assert_eq!(text.list_spacing, 18.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::CapHeight);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::CapHeight);
     assert_eq!(text.style.font_family, "Inter");
 
     let reset = vec![
@@ -100,7 +100,7 @@ fn encoded_fig_maps_paragraph_list_fields_through_native_round_trip() {
     assert_eq!(text.list_spacing, 0.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::None);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::None);
     assert_eq!(text.style.font_family, "Inter");
 
     let bytes = crate::save_bytes(&inherited, None).unwrap();
@@ -110,7 +110,7 @@ fn encoded_fig_maps_paragraph_list_fields_through_native_round_trip() {
     assert_eq!(text.list_spacing, 18.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::CapHeight);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::CapHeight);
 }
 
 #[test]
@@ -132,7 +132,7 @@ fn exported_paragraph_options_survive_a_fig_round_trip() {
     // All four off their defaults: the export writes them and the import reads them back.
     let mut styled = inherited.clone();
     let id = styled.nodes().find(|node| node.name == "Label").unwrap().id;
-    if let Some(figcraft_doc::NodeKind::Text(td)) = styled.node_mut(id).map(|node| &mut node.kind) {
+    if let Some(trama_doc::NodeKind::Text(td)) = styled.node_mut(id).map(|node| &mut node.kind) {
         td.hanging_punctuation = true;
         td.hanging_list = true;
     }
@@ -143,7 +143,7 @@ fn exported_paragraph_options_survive_a_fig_round_trip() {
     assert_eq!(text.list_spacing, 18.0);
     assert!(text.hanging_list);
     assert!(text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::CapHeight);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::CapHeight);
 
     // Everything at its default: nothing is carried over.
     let (bytes, export_warnings) = export(&cleared, None).unwrap();
@@ -153,11 +153,11 @@ fn exported_paragraph_options_survive_a_fig_round_trip() {
     assert_eq!(text.list_spacing, 0.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::None);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::None);
 
     // OpenType features are still left out, and only a text that has some warns.
     let id = styled.nodes().find(|node| node.name == "Label").unwrap().id;
-    if let Some(figcraft_doc::NodeKind::Text(td)) = styled.node_mut(id).map(|node| &mut node.kind) {
+    if let Some(trama_doc::NodeKind::Text(td)) = styled.node_mut(id).map(|node| &mut node.kind) {
         td.features.insert("liga".into(), false);
     }
     let (_, with_features) = export(&styled, None).unwrap();
@@ -298,7 +298,7 @@ fn encoded_instance_paragraph_overrides_fall_back_only_when_invalid() {
     assert_eq!(text.list_spacing, 24.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::None);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::None);
 
     let reset = vec![
         ("listSpacing", Kv::Float(0.0)),
@@ -314,7 +314,7 @@ fn encoded_instance_paragraph_overrides_fall_back_only_when_invalid() {
     assert_eq!(text.list_spacing, 0.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::None);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::None);
 
     let invalid = vec![
         ("listSpacing", Kv::Float(37.0)),
@@ -330,7 +330,7 @@ fn encoded_instance_paragraph_overrides_fall_back_only_when_invalid() {
     assert_eq!(text.list_spacing, 18.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::CapHeight);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::CapHeight);
 
     let bytes = crate::save_bytes(&doc, None).unwrap();
     let (back, warnings) = crate::load_bytes(&bytes).unwrap();
@@ -341,7 +341,7 @@ fn encoded_instance_paragraph_overrides_fall_back_only_when_invalid() {
     assert_eq!(text.list_spacing, 18.0);
     assert!(!text.hanging_list);
     assert!(!text.hanging_punctuation);
-    assert_eq!(text.leading_trim, figcraft_doc::LeadingTrim::CapHeight);
+    assert_eq!(text.leading_trim, trama_doc::LeadingTrim::CapHeight);
 }
 
 #[test]
@@ -361,7 +361,7 @@ fn an_instance_layer_set_back_to_the_defaults_survives_a_fig_round_trip() {
         let text = back.node(*parent.children.first().unwrap()).unwrap().kind.text().unwrap();
         (text.list_spacing, text.hanging_list, text.hanging_punctuation, text.leading_trim)
     };
-    assert_eq!(options("Main"), (18.0, true, true, figcraft_doc::LeadingTrim::CapHeight));
+    assert_eq!(options("Main"), (18.0, true, true, trama_doc::LeadingTrim::CapHeight));
     // The override row clears each field; without it the instance's text takes the main's values again.
-    assert_eq!(options("Copy"), (0.0, false, false, figcraft_doc::LeadingTrim::None));
+    assert_eq!(options("Copy"), (0.0, false, false, trama_doc::LeadingTrim::None));
 }

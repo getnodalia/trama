@@ -1,9 +1,9 @@
 //! A boolean group past the path operations' caps: it stays a boolean group, flattening it is
 //! refused with the reason, and the document is unchanged.
 
-use figcraft_doc::{NodeKind, VectorNetwork};
-use figcraft_geom::kurbo::{BezPath, Rect, Shape};
 use serde_json::json;
+use trama_doc::{NodeKind, VectorNetwork};
+use trama_geom::kurbo::{BezPath, Rect, Shape};
 
 use crate::Session;
 use crate::params::id_of;

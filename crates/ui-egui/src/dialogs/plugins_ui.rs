@@ -5,9 +5,9 @@
 //! `plugin.directory.*` and `widget.*` commands.
 
 use egui::{Align2, Context, Id, RichText, Ui};
-use figcraft_engine::plugin_directory::{PluginEntry, installed_version, newer_version};
-use figcraft_engine::plugins::{Access, InstalledPlugin, Param, ParamKind};
 use serde_json::{Map, Value, json};
+use trama_engine::plugin_directory::{PluginEntry, installed_version, newer_version};
+use trama_engine::plugins::{Access, InstalledPlugin, Param, ParamKind};
 
 use crate::FigApp;
 use crate::colorpicker::PickerTarget;
@@ -116,7 +116,7 @@ pub fn start(app: &mut FigApp, id: &str, command: &str) {
 }
 
 /// A plugin offered a file to save (`dialog.pluginSave`: `name`, `data` as base64): the user picks
-/// where it goes in FigCraft's own save dialog, or the browser downloads it. The plugin never learns
+/// where it goes in Trama's own save dialog, or the browser downloads it. The plugin never learns
 /// the path.
 pub(crate) fn save_file(app: &mut FigApp, data: &Value) {
     use base64::Engine as _;
@@ -138,7 +138,7 @@ pub(crate) fn save_file(app: &mut FigApp, data: &Value) {
     let shown = name.clone();
     app.pick_save(tr("Save file"), &name, &exts, move |app, path| {
         let file = path.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or(shown);
-        match figcraft_engine::file_access::write(&path, &bytes) {
+        match trama_engine::file_access::write(&path, &bytes) {
             Ok(()) => app.toast(trf("Saved {name}", &[("name", &file)])),
             Err(_) => app.toast(tr("Couldn't save the file")),
         }
@@ -157,7 +157,7 @@ fn run(app: &mut FigApp, cmd: &str, params: Value) {
     }
 }
 
-/// Plugins ▸ Development ▸ Import plugin from manifest…: pick a `figcraft-plugin.json`.
+/// Plugins ▸ Development ▸ Import plugin from manifest…: pick a `trama-plugin.json`.
 pub fn import_dialog(app: &mut FigApp) {
     app.pick_open(tr("Import plugin from manifest"), &["json"], |app, p| {
         if let Some(v) = app.run("plugin.import", json!({"path": p.to_string_lossy()})) {
@@ -328,7 +328,7 @@ fn installed_tab(app: &FigApp, ui: &mut Ui, t: &Tokens) -> Option<Manage> {
     let mut asked = None;
     let plugins = &app.session.prefs.plugins;
     if plugins.is_empty() {
-        widgets::label(ui, tr("No plugins yet. Import a development plugin from its figcraft-plugin.json."), t.text_secondary);
+        widgets::label(ui, tr("No plugins yet. Import a development plugin from its trama-plugin.json."), t.text_secondary);
     }
     for (i, p) in plugins.iter().enumerate() {
         if i > 0 {
@@ -385,7 +385,7 @@ fn browse_tab(app: &mut FigApp, ui: &mut Ui, t: &Tokens) -> Option<Manage> {
     }
     let Some(listing) = app.session.plugins.directory.as_ref() else {
         ui.add_space(8.0);
-        widgets::label(ui, tr("Enter the address of a figcraft-server and press Browse to see the plugins it offers."), t.text_secondary);
+        widgets::label(ui, tr("Enter the address of a trama-server and press Browse to see the plugins it offers."), t.text_secondary);
         return asked;
     };
     ui.add_space(8.0);
@@ -495,11 +495,7 @@ fn confirm_window(app: &mut FigApp, ctx: &Context, t: &Tokens) {
             ui.add(egui::Label::new(RichText::new(format!("•  {a}")).font(regular(11.0)).color(t.text)).wrap());
         }
         ui.add_space(8.0);
-        widgets::label(
-            ui,
-            tr("Plugins run in FigCraft's sandbox, without files, network or clock. Install only plugins you trust."),
-            t.text_secondary,
-        );
+        widgets::label(ui, tr("Plugins run in Trama's sandbox, without files, network or clock. Install only plugins you trust."), t.text_secondary);
         ui.add_space(4.0);
         widgets::label(ui, &trf("SHA-256: {sha}…", &[("sha", &e.sha256.get(..16).unwrap_or_default())]), t.text_secondary);
         ui.add_space(12.0);
@@ -692,11 +688,11 @@ fn image(ui: &mut Ui, p: &Param, t: &Tokens) {
 fn decode_image(ctx: &Context, data: &str) -> Option<egui::TextureHandle> {
     use base64::Engine as _;
     let bytes = base64::engine::general_purpose::STANDARD.decode(data.trim()).ok()?;
-    let (w, h) = figcraft_render::images::dimensions(&bytes)?;
+    let (w, h) = trama_render::images::dimensions(&bytes)?;
     if w > IMAGE_MAX_SIDE || h > IMAGE_MAX_SIDE {
         return None;
     }
-    let pic = figcraft_format::thumbnail::decode_thumbnail(&bytes, (FIELD_W * 2.0) as u32)?;
+    let pic = trama_format::thumbnail::decode_thumbnail(&bytes, (FIELD_W * 2.0) as u32)?;
     let image = egui::ColorImage::from_rgba_unmultiplied([pic.width as usize, pic.height as usize], &pic.rgba);
     Some(ctx.load_texture("plugin-panel-image", image, egui::TextureOptions::LINEAR))
 }
@@ -772,9 +768,9 @@ fn field(ui: &mut Ui, id: Id, p: &Param, current: &Value) -> Option<Used> {
             let hex = current.as_str().unwrap_or_default();
             let (picked, typed) = ui
                 .horizontal(|ui| {
-                    let color = figcraft_color::Color::from_hex(hex).unwrap_or(figcraft_color::Color::BLACK);
+                    let color = trama_color::Color::from_hex(hex).unwrap_or(trama_color::Color::BLACK);
                     let label = format!("{name} {}", tr("Color"));
-                    let picked = widgets::swatch_named(ui, &figcraft_color::Paint::solid(color), widgets::FIELD_H, &label).clicked();
+                    let picked = widgets::swatch_named(ui, &trama_color::Paint::solid(color), widgets::FIELD_H, &label).clicked();
                     (picked, widgets::text_field_named(ui, id, hex, FIELD_W - widgets::FIELD_H - 8.0, name).and_then(|s| p.coerce(&json!(s)).ok()))
                 })
                 .inner;

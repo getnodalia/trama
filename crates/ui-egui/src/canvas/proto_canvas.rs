@@ -5,8 +5,8 @@
 use std::sync::Arc;
 
 use egui::{Color32, CornerRadius, Id, Pos2, Rect, Shape, Stroke, StrokeKind, pos2, vec2};
-use figcraft_doc::{Document, NodeId};
 use serde_json::{Value, json};
+use trama_doc::{Document, NodeId};
 
 use crate::{FigApp, RightTab};
 
@@ -81,7 +81,7 @@ fn noodles(app: &FigApp, ctx: &egui::Context, doc: &Arc<Document>, page: NodeId)
         let Some(n) = doc.node(id) else { continue };
         let Some(from) = screen_rect(app, doc, id) else { continue };
         for (k, it) in n.interactions.iter().enumerate() {
-            let Some(dest) = figcraft_doc::proto::walk(&it.actions).find_map(|a| a.dest()) else { continue };
+            let Some(dest) = trama_doc::proto::walk(&it.actions).find_map(|a| a.dest()) else { continue };
             // Change-to targets are variants; draw to them as they are.
             let Some(to) = screen_rect(app, doc, dest) else { continue };
             if doc.page_of(dest) != Some(page) {
@@ -154,7 +154,7 @@ impl Target {
 
 /// The variant (a child of a component set) the layer is, or sits inside.
 fn variant_of(doc: &Document, source: NodeId) -> Option<NodeId> {
-    let is_set = |i: NodeId| doc.node(i).is_some_and(|n| matches!(n.kind, figcraft_doc::NodeKind::ComponentSet { .. }));
+    let is_set = |i: NodeId| doc.node(i).is_some_and(|n| matches!(n.kind, trama_doc::NodeKind::ComponentSet { .. }));
     std::iter::once(source).chain(doc.ancestors(source)).find(|v| doc.node(*v).and_then(|n| n.parent).is_some_and(is_set))
 }
 
@@ -165,7 +165,7 @@ fn variant_of(doc: &Document, source: NodeId) -> Option<NodeId> {
 fn target_at(app: &FigApp, doc: &Document, page: NodeId, source: NodeId, p: Pos2) -> Option<Target> {
     if let Some(v) = variant_of(doc, source)
         && let Some(set) = doc.node(v).and_then(|n| n.parent)
-        && doc.node(set).is_some_and(|n| matches!(n.kind, figcraft_doc::NodeKind::ComponentSet { .. }))
+        && doc.node(set).is_some_and(|n| matches!(n.kind, trama_doc::NodeKind::ComponentSet { .. }))
     {
         let pt = app.to_page(p);
         let siblings = doc.node(set).map(|n| n.children.clone()).unwrap_or_default();
@@ -229,7 +229,7 @@ pub fn draw(app: &FigApp, painter: &egui::Painter) {
             && let Some(dest) = doc
                 .node(nd.source)
                 .and_then(|n| n.interactions.get(nd.index))
-                .and_then(|it| figcraft_doc::proto::walk(&it.actions).find_map(|a| a.dest()))
+                .and_then(|it| trama_doc::proto::walk(&it.actions).find_map(|a| a.dest()))
             && let Some(r) = screen_rect(app, doc, dest)
         {
             painter.rect_stroke(
@@ -357,7 +357,7 @@ mod tests {
     /// else on the canvas does, so a later Delete can't take the page (#859).
     #[test]
     fn a_press_on_a_connection_handle_ends_the_pages_list_focus() {
-        let mut s = figcraft_engine::Session::new();
+        let mut s = trama_engine::Session::new();
         let a = s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 200, "height": 150})).unwrap();
         let a = crate::present_tests::id(&a);
         s.execute("select.set", &json!({"ids": [a]})).unwrap();

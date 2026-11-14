@@ -2,16 +2,16 @@
 //! buttons play key/gamepad triggers (from the system's controllers and injected through the
 //! control channel; no physical controller needed), and widgets react to clicks in a presented
 //! prototype. Each case states the rule and a one-line derivation; "docs silent" cases pin what
-//! FigCraft does. The model's side is the engine's `proto_tail_tests`.
+//! Trama does. The model's side is the engine's `proto_tail_tests`.
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, AtomicUsize, Ordering};
 
 use base64::Engine as _;
 use egui::{Event, PointerButton, Rect, pos2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::Services;
 use crate::present_tests::{Ui as Harness, id};
@@ -162,15 +162,15 @@ fn widget_setup() -> (Harness, NodeId, NodeId) {
     let w = id(&ex(&mut s, "widget.insert", json!({"plugin": "org.test.tally", "x": 40, "y": 40})));
     ex(&mut s, "node.reparent", json!({"ids": [w], "parent": a}));
     let doc = s.doc().unwrap();
-    let square = doc.subtree(w).into_iter().find(|i| doc.node(*i).is_some_and(|n| n.plugin_data.contains_key("figcraft.widget.target"))).unwrap();
+    let square = doc.subtree(w).into_iter().find(|i| doc.node(*i).is_some_and(|n| n.plugin_data.contains_key("trama.widget.target"))).unwrap();
     let mut u = Harness::new(s);
     u.run("proto.present", json!({"start": a}));
     u.frames(2, Vec::new);
     (u, w, square)
 }
 
-fn state(doc: &figcraft_doc::Document, w: NodeId) -> String {
-    doc.node(w).and_then(|n| n.plugin_data.get("figcraft.widget.state").cloned()).unwrap_or_default()
+fn state(doc: &trama_doc::Document, w: NodeId) -> String {
+    doc.node(w).and_then(|n| n.plugin_data.get("trama.widget.state").cloned()).unwrap_or_default()
 }
 
 /// Where layer `id` shows in the presenter.
@@ -258,5 +258,5 @@ fn the_interaction_editor_picks_a_controller_button() {
     }
     at(&mut u, "Gamepad Menu");
     let trigger = u.app.session.doc().unwrap().node(layer).unwrap().interactions[0].trigger.clone();
-    assert_eq!(trigger, figcraft_doc::proto::Trigger::KeyPress { key: "Gamepad Menu".into() });
+    assert_eq!(trigger, trama_doc::proto::Trigger::KeyPress { key: "Gamepad Menu".into() });
 }

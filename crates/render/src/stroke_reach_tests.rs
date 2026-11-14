@@ -2,8 +2,8 @@
 //! that stand out round a curve, brush shapes past half the weight and brush copies that stray
 //! further than a width profile thins them included.
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Brush, Document, Node, NodeKind, StrokeAlign, StrokeCap, StrokeJoin, WidthProfile};
+use trama_color::{Color, Paint};
+use trama_doc::{Brush, Document, Node, NodeKind, StrokeAlign, StrokeCap, StrokeJoin, WidthProfile};
 
 use super::*;
 

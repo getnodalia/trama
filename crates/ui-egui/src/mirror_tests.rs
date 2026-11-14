@@ -4,8 +4,8 @@
 //! bars, submenus) mirrors with it, and an English window is as it was.
 
 use egui::pos2;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::{PANEL_DEFAULT, layers};

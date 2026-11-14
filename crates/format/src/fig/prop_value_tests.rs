@@ -2,8 +2,8 @@
 //! set's definitions each variant keeps (`parentPropDefId`, no name or type of its own), and
 //! assignments that carry their value only in the variable form (`varValue`).
 
-use figcraft_doc::NodeKind;
 use serde_json::Value;
+use trama_doc::NodeKind;
 
 use super::kiwi::Kv;
 use super::map::to_rest;
@@ -67,7 +67,7 @@ fn by_id<'v>(v: &'v Value, id: &str) -> &'v Value {
     find(v, id).unwrap_or_else(|| panic!("no layer {id}"))
 }
 
-fn instance_props(doc: &figcraft_doc::Document) -> &std::collections::BTreeMap<String, Value> {
+fn instance_props(doc: &trama_doc::Document) -> &std::collections::BTreeMap<String, Value> {
     let instance = doc.ids().filter_map(|id| doc.node(id)).find(|n| n.name == "Instance").unwrap();
     let NodeKind::Instance { props, .. } = &instance.kind else { panic!("not an instance") };
     props

@@ -1,8 +1,8 @@
-//! Sketch shared styles → FigCraft styles; Color Variables (swatches) → colour variables.
+//! Sketch shared styles → Trama styles; Color Variables (swatches) → colour variables.
 
-use figcraft_doc::color::PaintKind;
-use figcraft_doc::{Document, Node, StyleKind};
 use serde_json::{Value, json};
+use trama_doc::color::PaintKind;
+use trama_doc::{Document, Node, StyleKind};
 
 use super::fixture::*;
 use super::import;
@@ -18,7 +18,7 @@ fn node<'d>(doc: &'d Document, name: &str) -> &'d Node {
     doc.nodes().find(|n| n.name == name).unwrap_or_else(|| panic!("no {name}"))
 }
 
-fn style<'d>(doc: &'d Document, id: &str) -> &'d figcraft_doc::Style {
+fn style<'d>(doc: &'d Document, id: &str) -> &'d trama_doc::Style {
     doc.styles.iter().find(|s| s.id == id).unwrap_or_else(|| panic!("no style {id}: {:?}", doc.styles.iter().map(|s| &s.id).collect::<Vec<_>>()))
 }
 

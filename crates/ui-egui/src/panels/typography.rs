@@ -8,11 +8,11 @@
 use std::sync::Arc;
 
 use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
-use figcraft_doc::{
+use serde_json::{Value, json};
+use trama_doc::{
     DecorationLength, Document, LeadingTrim, LetterSpacing, LineHeight, ListStyle, NodeId, NodeKind, TextAlignH, TextAlignV, TextAutoResize,
     TextCase, TextData, TextDecoration, TextDirection, TextStyle, VariableType, trim_num,
 };
-use serde_json::{Value, json};
 
 use crate::FigApp;
 use crate::i18n::{tr, tr_noop, trf};
@@ -98,7 +98,7 @@ pub fn typography(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId])
         return;
     }
     // While editing a range, character edits apply to it.
-    let range = figcraft_engine::textedit::selected_range(&app.session);
+    let range = trama_engine::textedit::selected_range(&app.session);
     let editing = range.is_some();
     let styles = target_styles(doc, &ids, range);
     let apply_style = |app: &mut FigApp, key: &str, v: Value| commit_text(app, &ids, range, json!({ key: v }));
@@ -128,7 +128,7 @@ fn path_row(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId], ids: 
         ids.iter().map(|i| doc.node(*i).and_then(|n| n.kind.text()).and_then(|t| t.path.as_ref()).map(|p| (p.start(), p.flip))).collect();
     let Some(paths) = paths else {
         let other = sel.iter().find(|i| !ids.contains(i)).and_then(|i| doc.node(*i));
-        if ids.len() == 1 && sel.len() == 2 && other.is_some_and(|n| figcraft_doc::geometry::stroke_geometry(n).is_some()) {
+        if ids.len() == 1 && sel.len() == 2 && other.is_some_and(|n| trama_doc::geometry::stroke_geometry(n).is_some()) {
             row(ui, 32.0, |ui| {
                 if widgets::button(ui, tr("Put text on path"), false, true).clicked() {
                     app.run("text.onPath", json!({ "ids": sel }));
@@ -210,8 +210,8 @@ pub(crate) fn field_row<R>(ui: &mut Ui, label: &str, add: impl FnOnce(&mut Ui, f
 #[cfg(test)]
 mod variable_tests {
     use egui::{Event, Modifiers, PointerButton, Pos2, RawInput};
-    use figcraft_doc::WrapStyle;
-    use figcraft_engine::Session;
+    use trama_doc::WrapStyle;
+    use trama_engine::Session;
 
     use super::*;
     use crate::NoServices;
@@ -340,13 +340,13 @@ mod variable_tests {
         assert!(shows(&texts, "Heading font") && shows(&texts, "Heading weight"), "the chips are drawn in place of the dropdowns");
         assert!(!shows(&texts, "Inter"), "the family dropdown is not drawn");
         // While characters are selected in the text, the dropdowns show the values, with no Apply variable.
-        figcraft_engine::textedit::begin(&mut p.app.session, p.text, Some(1), false).unwrap();
-        figcraft_engine::textedit::set_caret(&mut p.app.session, 3, true).unwrap();
+        trama_engine::textedit::begin(&mut p.app.session, p.text, Some(1), false).unwrap();
+        trama_engine::textedit::set_caret(&mut p.app.session, 3, true).unwrap();
         let texts = p.frame(vec![]);
         let texts = p.click(at(&texts, "Inter"));
         assert!(!shows(&texts, "Apply variable"), "a selected range takes a font, not a variable");
         p.frame(vec![Event::Key { key: egui::Key::Escape, physical_key: None, pressed: true, repeat: false, modifiers: Modifiers::NONE }]);
-        figcraft_engine::textedit::end(&mut p.app.session).unwrap();
+        trama_engine::textedit::end(&mut p.app.session).unwrap();
         p.frame(vec![]);
         for field in ["fontFamily", "fontStyle"] {
             let rect = p.ctx.read_response(Id::unique(("bound_chip", field, &ids[..])).with("bound")).expect("the chip").rect;
@@ -394,7 +394,7 @@ mod variable_tests {
         // #1827: with the caret in one paragraph the control shows and sets that paragraph's style.
         let mut p = settings_panel();
         assert_eq!(wrap_on(&p), ["Auto"], "the layer's style when not editing");
-        figcraft_engine::textedit::begin(&mut p.app.session, p.text, Some(5), false).unwrap();
+        trama_engine::textedit::begin(&mut p.app.session, p.text, Some(5), false).unwrap();
         p.frame(vec![]);
         assert_eq!(wrap_on(&p), ["Auto"]);
         let at = node_center(&p, WRAP[1]);
@@ -403,7 +403,7 @@ mod variable_tests {
         assert_eq!((td(&p).para_wrap_style(0), td(&p).para_wrap_style(1)), (WrapStyle::Auto, WrapStyle::Balance), "only the caret's paragraph");
         assert_eq!(td(&p).wrap_style, WrapStyle::Auto);
         assert_eq!(wrap_on(&p), ["Balance"], "the control shows the paragraph's value");
-        figcraft_engine::textedit::set_caret(&mut p.app.session, 1, false).unwrap();
+        trama_engine::textedit::set_caret(&mut p.app.session, 1, false).unwrap();
         p.frame(vec![]);
         assert_eq!(wrap_on(&p), ["Auto"], "another paragraph shows its own");
         assert!(p.app.ui.last_error.is_none(), "{:?}", p.app.ui.last_error);
@@ -412,14 +412,14 @@ mod variable_tests {
     #[test]
     fn wrap_style_control_has_nothing_active_for_mixed_paragraphs() {
         let mut p = settings_panel();
-        figcraft_engine::textedit::begin(&mut p.app.session, p.text, Some(5), false).unwrap();
+        trama_engine::textedit::begin(&mut p.app.session, p.text, Some(5), false).unwrap();
         p.frame(vec![]);
         let at = node_center(&p, WRAP[2]);
         p.click(at);
         assert_eq!(wrap_on(&p), ["Pretty"]);
         // A selection across both paragraphs, which differ: none is on.
-        figcraft_engine::textedit::set_caret(&mut p.app.session, 1, false).unwrap();
-        figcraft_engine::textedit::set_caret(&mut p.app.session, 6, true).unwrap();
+        trama_engine::textedit::set_caret(&mut p.app.session, 1, false).unwrap();
+        trama_engine::textedit::set_caret(&mut p.app.session, 6, true).unwrap();
         p.frame(vec![]);
         assert!(wrap_on(&p).is_empty(), "{:?}", wrap_on(&p));
         // Choosing one sets both paragraphs.

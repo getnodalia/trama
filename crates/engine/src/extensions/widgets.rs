@@ -1,6 +1,6 @@
 //! Widgets: layers on the canvas that a plugin draws (plugin API 3). A widget is a frame owned by
 //! its plugin: the plugin describes it ([`WidgetRender`]: frames with auto layout, text, shapes and
-//! images) and FigCraft builds the layers inside it, locked, so the widget moves as one layer.
+//! images) and Trama builds the layers inside it, locked, so the widget moves as one layer.
 //! Each widget keeps its plugin's id and a small state (a JSON object) in its own layer data, so it
 //! is saved, copied, undone, exported and synced in a live session like any layer. Clicking a part
 //! of it the plugin named as a target calls the plugin back with that state, in a fresh sandbox
@@ -13,32 +13,32 @@
 //! callback can open the plugin's panel, whose callbacks get the widget and can redraw it
 //! ([`panel_callback`]). See `docs/plugins.md`.
 
-use figcraft_color::{ImageScaleMode, Paint};
-use figcraft_doc::{Document, Node, NodeId, NodeKind, TextData};
-use figcraft_geom::{Affine, Point};
-use figcraft_plugin::widget::{MAX_IMAGE_BYTES, MAX_NODES, MAX_STATE_BYTES, check_menu, check_state, clean_field};
-use figcraft_plugin::{Instance, Manifest, RunOutput, UiChange, WidgetHover, WidgetKind, WidgetNode, WidgetRender};
-pub use figcraft_plugin::{MenuItem, MenuKind};
 use serde_json::{Map, Value, json};
+use trama_color::{ImageScaleMode, Paint};
+use trama_doc::{Document, Node, NodeId, NodeKind, TextData};
+use trama_geom::{Affine, Point};
+use trama_plugin::widget::{MAX_IMAGE_BYTES, MAX_NODES, MAX_STATE_BYTES, check_menu, check_state, clean_field};
+use trama_plugin::{Instance, Manifest, RunOutput, UiChange, WidgetHover, WidgetKind, WidgetNode, WidgetRender};
+pub use trama_plugin::{MenuItem, MenuKind};
 
 use crate::cmd::CommandSpec;
 use crate::params::{id, num, string};
 use crate::plugins::{InstalledPlugin, call_plugin, close_panel, installed, limits, module_of, open_panel, plugin_error};
 use crate::{Result, Session, bad, spec};
 
-/// Layer data FigCraft keeps for widgets starts with this; plugins can't write it.
-pub const DATA_PREFIX: &str = "figcraft.widget";
+/// Layer data Trama keeps for widgets starts with this; plugins can't write it.
+pub const DATA_PREFIX: &str = "trama.widget";
 /// On a widget's own layer: its plugin's id, and its state (JSON).
-const PLUGIN: &str = "figcraft.widget";
-const STATE: &str = "figcraft.widget.state";
+const PLUGIN: &str = "trama.widget";
+const STATE: &str = "trama.widget.state";
 /// On a widget's own layer: its property menu (JSON).
-const MENU: &str = "figcraft.widget.menu";
+const MENU: &str = "trama.widget.menu";
 /// On a layer inside a widget: the name its plugin gets when it's clicked.
-const TARGET: &str = "figcraft.widget.target";
+const TARGET: &str = "trama.widget.target";
 /// On a text layer inside a widget: the name of the editable field it is.
-const FIELD: &str = "figcraft.widget.field";
+const FIELD: &str = "trama.widget.field";
 /// On a widget or a layer inside one: how it looks while the pointer is over it (JSON).
-const HOVER: &str = "figcraft.widget.hover";
+const HOVER: &str = "trama.widget.hover";
 /// Images in a widget are at most this many pixels on a side.
 const MAX_IMAGE_SIDE: u32 = 4096;
 /// All images of one widget together are at most this many pixels once decoded (four of the largest).
@@ -296,7 +296,7 @@ fn add(doc: &mut Document, parent: NodeId, d: &WidgetNode, cmd: &str, pixels: &m
             return Err(bad(cmd, format!("an image is larger than {} KB", MAX_IMAGE_BYTES / 1024)));
         }
         // From the header, before anything is decoded: a small file can hold billions of pixels.
-        if let Some((w, h)) = figcraft_render::images::dimensions(&bytes) {
+        if let Some((w, h)) = trama_render::images::dimensions(&bytes) {
             if w > MAX_IMAGE_SIDE || h > MAX_IMAGE_SIDE {
                 return Err(bad(cmd, format!("an image is larger than {MAX_IMAGE_SIDE} pixels on a side")));
             }
@@ -322,7 +322,7 @@ fn add(doc: &mut Document, parent: NodeId, d: &WidgetNode, cmd: &str, pixels: &m
 /// like the rest. A `width` or `height` scales the picture to fit, keeping its proportions.
 fn add_svg(doc: &mut Document, parent: NodeId, d: &WidgetNode, cmd: &str) -> Result<()> {
     let name = if d.name.is_empty() { "SVG" } else { &d.name };
-    let id = figcraft_svg::import_svg(doc, d.src.as_bytes(), parent, 0.0, 0.0, name).map_err(|e| bad(cmd, e.to_string()))?;
+    let id = trama_svg::import_svg(doc, d.src.as_bytes(), parent, 0.0, 0.0, name).map_err(|e| bad(cmd, e.to_string()))?;
     let n = doc.get(id)?;
     let scales = [d.width.map(|w| w / n.width), d.height.map(|h| h / n.height)];
     if let Some(k) = scales.into_iter().flatten().reduce(f64::min) {
@@ -535,7 +535,7 @@ fn menu(s: &mut Session, p: &Value) -> Result<Value> {
         MenuKind::Action => Value::Null,
         MenuKind::Toggle => json!(p.get("value").and_then(Value::as_bool).unwrap_or(!m.checked)),
         MenuKind::Color => {
-            let hex = string(p, "value").filter(|v| v.len() <= 9).and_then(|v| figcraft_color::Color::from_hex(&v)).map(|c| c.to_css_hex());
+            let hex = string(p, "value").filter(|v| v.len() <= 9).and_then(|v| trama_color::Color::from_hex(&v)).map(|c| c.to_css_hex());
             json!(hex.filter(|h| m.options.contains(h)).ok_or_else(|| bad(cmd, format!("`value` must be one of {}", m.options.join(", "))))?)
         }
     };
@@ -625,8 +625,8 @@ mod pixel_budget_tests {
 
     /// A `side` x `side` blank PNG (a few KB however many pixels).
     fn png(side: u32) -> String {
-        let pix = figcraft_render::Pixmap::new(side, side).unwrap();
-        base64::engine::general_purpose::STANDARD.encode(figcraft_render::encode_png(&pix).unwrap())
+        let pix = trama_render::Pixmap::new(side, side).unwrap();
+        base64::engine::general_purpose::STANDARD.encode(trama_render::encode_png(&pix).unwrap())
     }
 
     #[test]

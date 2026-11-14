@@ -2,9 +2,9 @@
 
 use std::sync::Arc;
 
-use figcraft_color::{BlendMode, Color, Gradient, GradientKind, ImagePaint, ImageScaleMode, Paint, PaintKind};
-use figcraft_doc::{Document, ImageData};
 use tiny_skia::{FilterQuality, GradientStop, Pixmap, Point, Shader, SpreadMode, Transform};
+use trama_color::{BlendMode, Color, Gradient, GradientKind, ImagePaint, ImageScaleMode, Paint, PaintKind};
+use trama_doc::{Document, ImageData};
 
 pub fn ts_color(c: Color) -> tiny_skia::Color {
     tiny_skia::Color::from_rgba(c.r, c.g, c.b, c.a).unwrap_or(tiny_skia::Color::BLACK)
@@ -85,7 +85,7 @@ fn diamond_pixmap(g: &Gradient, opacity: f32) -> Option<Arc<Pixmap>> {
         let x = ((i as u32 % N) as f64 + 0.5 - half) / half;
         let y = ((i as u32 / N) as f64 + 0.5 - half) / half;
         let t = (x.abs() + y.abs()) as f32;
-        let c = figcraft_color::sample_sorted(&stops, t);
+        let c = trama_color::sample_sorted(&stops, t);
         let a = c.a * opacity;
         let q = |v: f32| (v * a * 255.0).round().clamp(0.0, 255.0) as u8;
         px.copy_from_slice(&[q(c.r), q(c.g), q(c.b), (a * 255.0).round().clamp(0.0, 255.0) as u8]);

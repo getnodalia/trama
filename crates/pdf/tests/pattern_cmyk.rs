@@ -2,10 +2,10 @@
 
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Document, NodeKind, PrintSettings};
-use figcraft_pdf::{PdfOptions, export_pdf};
 use std::io::Read;
+use trama_color::{Color, Paint};
+use trama_doc::{Document, NodeKind, PrintSettings};
+use trama_pdf::{PdfOptions, export_pdf};
 
 /// Every zlib stream of `pdf`, inflated and joined.
 fn streams(pdf: &[u8]) -> String {

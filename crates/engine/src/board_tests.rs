@@ -1,11 +1,9 @@
 //! Boards: the file kind, sticky notes, shapes with text, connectors that follow what they join
 //! (locally, through undo and in live sessions), stamps, ink and the eraser, and refusals.
 
-use figcraft_doc::{
-    BOARD_PAGE, BoardItem, BoardShape, Connector, End, FileKind, Node, NodeId, NodeKind, Routing, Side, Stamp, StrokeCap, board_color,
-};
-use figcraft_geom::Point;
 use serde_json::{Value, json};
+use trama_doc::{BOARD_PAGE, BoardItem, BoardShape, Connector, End, FileKind, Node, NodeId, NodeKind, Routing, Side, Stamp, StrokeCap, board_color};
+use trama_geom::Point;
 
 use crate::board::{STICKY_TEXT_SIZE, route};
 use crate::collab_live_tests::Room;
@@ -51,14 +49,14 @@ fn a_board_is_a_kind_of_file_that_saves_and_reopens() {
     let doc = s.doc().unwrap();
     assert_eq!(doc.kind, FileKind::Board);
     assert!(matches!(doc.node(doc.pages[0]).unwrap().kind, NodeKind::Page { background, .. } if background == BOARD_PAGE));
-    let (back, _) = figcraft_format::from_json(&figcraft_format::to_json(doc).unwrap().to_string()).unwrap();
+    let (back, _) = trama_format::from_json(&trama_format::to_json(doc).unwrap().to_string()).unwrap();
     assert_eq!(back.kind, FileKind::Board);
     // Files from before boards (no kind) are design files, and design files don't write one.
     let mut d = Session::new();
     d.execute("file.new", &json!({})).unwrap();
-    let json = figcraft_format::to_json(d.doc().unwrap()).unwrap();
+    let json = trama_format::to_json(d.doc().unwrap()).unwrap();
     assert!(json.get("kind").is_none());
-    assert_eq!(figcraft_format::from_json(&json.to_string()).unwrap().0.kind, FileKind::Design);
+    assert_eq!(trama_format::from_json(&json.to_string()).unwrap().0.kind, FileKind::Design);
     assert_eq!(crate::inspect::document(&s, 0, false)["kind"], "board", "inspect shows the kind");
 }
 
@@ -91,7 +89,7 @@ fn a_sticky_is_a_square_frame_whose_note_grows_taller_as_it_fills() {
     assert_eq!(node(&s, note).kind.text().unwrap().style.font_size, 16.0);
     // A click on the note picks the sticky whole.
     let doc = s.doc().unwrap();
-    assert_eq!(figcraft_doc::geometry::select_target(doc, note, &[], false), st);
+    assert_eq!(trama_doc::geometry::select_target(doc, note, &[], false), st);
     // A long note keeps the size; a very long one grows the sticky past its square.
     let long = "word ".repeat(120);
     s.execute("node.set", &json!({"id": note, "props": {"characters": long}})).unwrap();
@@ -151,7 +149,7 @@ fn the_sticky_tool_remembers_the_last_size() {
 
 #[test]
 fn a_huge_sticky_grows_taller_and_shrinks_back() {
-    figcraft_text::scan_system_fonts();
+    trama_text::scan_system_fonts();
     let mut s = board();
     let r = s.execute("board.sticky", &json!({"x": 0, "y": 0, "text": "Alpha"})).unwrap();
     let st = id(&r, "id");
@@ -168,7 +166,7 @@ fn a_huge_sticky_grows_taller_and_shrinks_back() {
 fn a_sticky_keeps_its_text_size_as_text_is_added() {
     // The note's growth needs text measured: without craft-fonts that is with a system font,
     // scanned here rather than by whichever test happens to run first (#333).
-    figcraft_text::scan_system_fonts();
+    trama_text::scan_system_fonts();
     let mut s = board();
     let r = s.execute("board.sticky", &json!({"x": 0, "y": 0, "text": "one"})).unwrap();
     let (st, note) = (id(&r, "id"), id(&r, "text"));
@@ -184,7 +182,7 @@ fn a_sticky_keeps_its_text_size_as_text_is_added() {
     assert_eq!(ten.style.font_size, 16.0);
     assert!(node(&s, note).height > text_height, "ten lines make the text taller");
     assert!(node(&s, st).height > height, "and the note");
-    assert_eq!(node(&s, st).child_layout.sizing_v, figcraft_doc::Sizing::Hug, "the note hugs its text");
+    assert_eq!(node(&s, st).child_layout.sizing_v, trama_doc::Sizing::Hug, "the note hugs its text");
     let (w, h10) = (node(&s, st).width, node(&s, st).height);
     crate::textedit::insert(&mut s, &"a long paragraph ".repeat(15)).unwrap();
     crate::textedit::end(&mut s).unwrap();

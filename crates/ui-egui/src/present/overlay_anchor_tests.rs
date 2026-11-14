@@ -1,8 +1,8 @@
 use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_doc::proto::{OverlayAnchor, OverlayPosition};
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
+use trama_doc::proto::{OverlayAnchor, OverlayPosition};
+use trama_engine::Session;
 
 use super::anchored_overlay_rect;
 use crate::present_tests::{Ui as Harness, id};

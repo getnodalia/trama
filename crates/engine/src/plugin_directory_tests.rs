@@ -1,5 +1,5 @@
 //! Installing from and publishing to a plugin directory, against a scripted directory (the real
-//! server, over the network, is tested in `figcraft-server`): nothing is fetched without
+//! server, over the network, is tested in `trama-server`): nothing is fetched without
 //! `confirm: true`, a download that doesn't match its SHA-256 or its entry is never installed,
 //! installed plugins run in the sandbox, update and are removed with their folder, and publishing
 //! sends a plugin folder as a checked bundle.
@@ -7,9 +7,9 @@
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
-use figcraft_collab::message::{ClientMsg, PluginEntry, PluginReply, PluginReq};
-use figcraft_plugin::bundle::{Asset, Bundle, sha256_hex};
 use serde_json::{Value, json};
+use trama_collab::message::{ClientMsg, PluginEntry, PluginReply, PluginReq};
+use trama_plugin::bundle::{Asset, Bundle, sha256_hex};
 
 use crate::live::{Event, HostOptions, LiveLink, Presence, SessionInfo};
 use crate::{EngineError, Session};
@@ -117,7 +117,7 @@ fn fetches(d: &Arc<Mutex<Dir>>) -> usize {
 }
 
 fn temp(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("figcraft-plugdir-{tag}-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-plugdir-{tag}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     dir
@@ -219,7 +219,7 @@ fn publishing_sends_a_checked_folder() {
     std::fs::create_dir_all(dir.join("assets")).unwrap();
     std::fs::write(dir.join("build").join("tiny.wasm"), wasm()).unwrap();
     let text = json!({"id": ID, "name": "Tiny", "version": "1.0.0", "main": "build/tiny.wasm"}).to_string();
-    std::fs::write(dir.join("figcraft-plugin.json"), &text).unwrap();
+    std::fs::write(dir.join("trama-plugin.json"), &text).unwrap();
     std::fs::write(dir.join("assets").join("icon.png"), [1, 2, 3]).unwrap();
     let e = s.execute("plugin.directory.publish", &json!({"path": dir.to_string_lossy()})).unwrap_err().to_string();
     assert!(e.contains("server"), "{e}");
@@ -239,7 +239,7 @@ fn publishing_sends_a_checked_folder() {
             .contains("asset")
     );
     std::fs::remove_file(dir.join("assets").join(".secret")).unwrap();
-    std::fs::write(dir.join("figcraft-plugin.json"), text.replace("1.0.0", "next")).unwrap();
+    std::fs::write(dir.join("trama-plugin.json"), text.replace("1.0.0", "next")).unwrap();
     assert!(
         s.execute("plugin.directory.publish", &json!({"path": dir.to_string_lossy(), "server": "ws://h:1/"}))
             .unwrap_err()
@@ -261,7 +261,7 @@ fn publishing_refuses_a_linked_asset_instead_of_bundling_what_it_points_at() {
     std::fs::create_dir_all(dir.join("build")).unwrap();
     std::fs::create_dir_all(dir.join("assets")).unwrap();
     std::fs::write(dir.join("build").join("tiny.wasm"), wasm()).unwrap();
-    std::fs::write(dir.join("figcraft-plugin.json"), json!({"id": ID, "name": "Tiny", "version": "1.0.0", "main": "build/tiny.wasm"}).to_string())
+    std::fs::write(dir.join("trama-plugin.json"), json!({"id": ID, "name": "Tiny", "version": "1.0.0", "main": "build/tiny.wasm"}).to_string())
         .unwrap();
     // A private file outside the plugin folder, reached through a link in its assets.
     let secret = temp("publish-link-secret").join("token.txt");

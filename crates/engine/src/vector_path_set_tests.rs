@@ -4,8 +4,8 @@
 //! `x`/`y` plus the box's offset, as create places it), undo brings the old path back, and data that
 //! can't draw, layers that aren't vectors and layers inside an instance are refused.
 
-use figcraft_doc::{NodeId, NodeKind, VectorNetwork};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, NodeKind, VectorNetwork};
 
 use crate::{EngineError, Session};
 

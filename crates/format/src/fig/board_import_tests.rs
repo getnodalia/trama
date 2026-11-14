@@ -102,7 +102,7 @@ fn imported(layer: Kv<'static>) -> (Document, Vec<String>) {
 fn generated_stickies_and_shapes_keep_their_background_text_and_author() {
     for ty in ["STICKY", "SHAPE_WITH_TEXT"] {
         let (doc, warnings) = imported(board_node(ty));
-        assert_eq!(doc.kind, figcraft_doc::FileKind::Design, "the same layers in a .fig stay a design file");
+        assert_eq!(doc.kind, trama_doc::FileKind::Design, "the same layers in a .fig stay a design file");
         let frame = named(&doc, "Board object");
         assert!(matches!(frame.kind, NodeKind::Frame));
         assert_eq!(frame.opacity, 0.5);
@@ -117,14 +117,14 @@ fn generated_stickies_and_shapes_keep_their_background_text_and_author() {
         assert_eq!(t.style.font_size, 24.0);
         assert_eq!(t.style.font_family, "Synthetic Sans");
         assert_eq!(note.fills[0].solid_color().unwrap().to_rgba8(), [0, 0, 0, 255]);
-        assert_eq!(note.transform.translation(), figcraft_doc::geom::Vec2::new(20.0, 20.0));
+        assert_eq!(note.transform.translation(), trama_doc::geom::Vec2::new(20.0, 20.0));
         assert_eq!((note.width, note.height), (200.0, 160.0));
         assert!(t.runs.iter().any(|r| r.style.font_size == 18.0), "inline styles survive");
         if ty == "STICKY" {
             let author = doc.node(frame.children[2]).unwrap();
             assert_eq!(author.kind.text().unwrap().characters, "Test Author");
             assert_eq!(author.kind.text().unwrap().style.font_size, 12.0);
-            assert_eq!(author.transform.translation(), figcraft_doc::geom::Vec2::new(20.0, 204.0));
+            assert_eq!(author.transform.translation(), trama_doc::geom::Vec2::new(20.0, 204.0));
         }
         assert!(!warnings.iter().any(|w| w.contains("skipped")), "{warnings:?}");
     }
@@ -444,10 +444,10 @@ fn a_jam_file_imports_like_a_fig() {
     for bytes in [jam.clone(), zip_file(&jam)] {
         assert!(is_fig(&bytes), "read as the same archive");
         let (doc, warnings) = import(&bytes, "Synthetic board").unwrap();
-        assert_eq!(doc.kind, figcraft_doc::FileKind::Board, "a FigJam whiteboard opens as a board");
+        assert_eq!(doc.kind, trama_doc::FileKind::Board, "a FigJam whiteboard opens as a board");
         let note = named(&doc, "Board object");
         assert!(matches!(note.kind, NodeKind::Frame) && note.children.len() == 2, "the sticky is native: its note and author");
-        assert_eq!(note.board, Some(figcraft_doc::BoardItem::Sticky { author: "Test Author".into() }));
+        assert_eq!(note.board, Some(trama_doc::BoardItem::Sticky { author: "Test Author".into() }));
         assert!(matches!(named(&doc, "Synthetic table").kind, NodeKind::Frame));
         assert!(doc.nodes().all(|n| n.name != "Unknown object"), "left out");
         assert!(warnings.iter().any(|w| w.contains("table layers import as")), "{warnings:?}");
@@ -466,9 +466,9 @@ fn jam(layer: Kv<'static>) -> (Document, Vec<String>) {
 #[test]
 fn a_jam_sticky_is_a_native_sticky_with_its_colour_text_and_author() {
     let (doc, warnings) = jam(board_node("STICKY"));
-    assert_eq!(doc.kind, figcraft_doc::FileKind::Board);
+    assert_eq!(doc.kind, trama_doc::FileKind::Board);
     let frame = named(&doc, "Board object");
-    assert_eq!(frame.board, Some(figcraft_doc::BoardItem::Sticky { author: "Test Author".into() }));
+    assert_eq!(frame.board, Some(trama_doc::BoardItem::Sticky { author: "Test Author".into() }));
     assert_eq!(frame.fills[0].solid_color().unwrap().to_rgba8(), [255, 191, 64, 255]);
     assert_eq!((frame.width, frame.height), (240.0, 240.0));
     assert_eq!(frame.opacity, 0.5);
@@ -497,7 +497,7 @@ fn a_jam_sticky_without_an_author_line_has_no_author() {
     let (doc, _) = jam(layer);
     let frame = named(&doc, "Board object");
     assert_eq!(frame.children.len(), 1);
-    let Some(figcraft_doc::BoardItem::Sticky { author }) = &frame.board else { panic!("{:?}", frame.board) };
+    let Some(trama_doc::BoardItem::Sticky { author }) = &frame.board else { panic!("{:?}", frame.board) };
     assert!(author.is_empty());
 }
 
@@ -557,31 +557,31 @@ fn shape_node(kind: &'static str) -> Kv<'static> {
     layer
 }
 
-/// On a whiteboard a diamond is a native shape: FigCraft draws its outline and its text sits inside.
+/// On a whiteboard a diamond is a native shape: Trama draws its outline and its text sits inside.
 #[test]
-fn a_jam_diamond_is_a_native_shape_drawn_by_figcraft() {
+fn a_jam_diamond_is_a_native_shape_drawn_by_trama() {
     let (doc, warnings) = jam(shape_node("DIAMOND"));
     let frame = named(&doc, "Board object");
-    assert_eq!(frame.board, Some(figcraft_doc::BoardItem::Shape { shape: figcraft_doc::BoardShape::Diamond }));
+    assert_eq!(frame.board, Some(trama_doc::BoardItem::Shape { shape: trama_doc::BoardShape::Diamond }));
     assert!(frame.fills.is_empty());
     assert_eq!((frame.width, frame.height), (240.0, 240.0));
     assert_eq!(frame.layout.as_ref().expect("shape auto layout").padding, [0.25 * 240.0; 4]);
     assert_eq!(
         (frame.child_layout.sizing_h, frame.child_layout.sizing_v),
-        (figcraft_doc::Sizing::Fixed, figcraft_doc::Sizing::Fixed),
+        (trama_doc::Sizing::Fixed, trama_doc::Sizing::Fixed),
         "a fixed box, as a shape made here: it must not hug its text"
     );
     assert_eq!(frame.children.len(), 2, "the outline and the text: {warnings:?}");
     let outline = doc.node(frame.children[0]).unwrap();
     let NodeKind::Vector { network } = &outline.kind else { panic!("{:?}", outline.kind) };
-    assert_eq!(*network, figcraft_doc::VectorNetwork::from_path(&figcraft_doc::BoardShape::Diamond.path(240.0, 240.0)));
+    assert_eq!(*network, trama_doc::VectorNetwork::from_path(&trama_doc::BoardShape::Diamond.path(240.0, 240.0)));
     assert_eq!(outline.fills[0].solid_color().unwrap().to_rgba8(), [255, 191, 64, 255]);
     assert!(outline.child_layout.absolute);
-    assert_eq!(outline.constraints.horizontal, figcraft_doc::HConstraint::Scale);
-    assert_eq!(outline.constraints.vertical, figcraft_doc::VConstraint::Scale);
+    assert_eq!(outline.constraints.horizontal, trama_doc::HConstraint::Scale);
+    assert_eq!(outline.constraints.vertical, trama_doc::VConstraint::Scale);
     let label = doc.node(frame.children[1]).unwrap().kind.text().unwrap();
     assert_eq!(label.characters, "Olá\nIdea");
-    assert_eq!(label.align_h, figcraft_doc::TextAlignH::Center);
+    assert_eq!(label.align_h, trama_doc::TextAlignH::Center);
 }
 
 /// A shape past the importer's size cap is drawn at the capped size, so its outline stays inside
@@ -592,14 +592,14 @@ fn a_jam_shape_past_the_size_cap_draws_its_outline_at_the_cap() {
     set(&mut layer, "size", xy(2_000_000.0, 2_000_000.0));
     let (doc, warnings) = jam(layer);
     let frame = named(&doc, "Board object");
-    assert_eq!(frame.board, Some(figcraft_doc::BoardItem::Shape { shape: figcraft_doc::BoardShape::Diamond }), "{warnings:?}");
+    assert_eq!(frame.board, Some(trama_doc::BoardItem::Shape { shape: trama_doc::BoardShape::Diamond }), "{warnings:?}");
     assert_eq!((frame.width, frame.height), (1e6, 1e6));
     let outline = doc.node(frame.children[0]).unwrap();
     let NodeKind::Vector { network } = &outline.kind else { panic!("{:?}", outline.kind) };
-    assert_eq!(*network, figcraft_doc::VectorNetwork::from_path(&figcraft_doc::BoardShape::Diamond.path(1e6, 1e6)));
+    assert_eq!(*network, trama_doc::VectorNetwork::from_path(&trama_doc::BoardShape::Diamond.path(1e6, 1e6)));
 }
 
-/// 23 of FigJam's 30 shape kinds have a FigCraft outline; the other 7 stay frames and say which.
+/// 23 of FigJam's 30 shape kinds have a Trama outline; the other 7 stay frames and say which.
 #[test]
 fn every_figjam_shape_kind_maps_or_stays_a_frame() {
     let kinds = [
@@ -642,10 +642,10 @@ fn every_figjam_shape_kind_maps_or_stays_a_frame() {
         let frame = named(&doc, "Board object");
         if let Some(shape) = table {
             mapped += 1;
-            assert_eq!(frame.board, Some(figcraft_doc::BoardItem::Shape { shape }), "{kind}");
+            assert_eq!(frame.board, Some(trama_doc::BoardItem::Shape { shape }), "{kind}");
         } else {
             assert!(frame.board.is_none(), "{kind}");
-            assert!(warnings.iter().any(|w| w.contains(kind) && w.contains("no FigCraft outline")), "{kind}: {warnings:?}");
+            assert!(warnings.iter().any(|w| w.contains(kind) && w.contains("no Trama outline")), "{kind}: {warnings:?}");
         }
     }
     assert_eq!(mapped, 23);
@@ -660,7 +660,7 @@ fn a_square_keeps_its_paints_and_weight() {
     set(&mut layer, "nodeGenerationData", o(vec![("overrides", arr(vec![background, record(1, text("Olá", 16.0))]))]));
     let (doc, _) = jam(layer);
     let frame = named(&doc, "Board object");
-    assert_eq!(frame.board, Some(figcraft_doc::BoardItem::Shape { shape: figcraft_doc::BoardShape::Rectangle }));
+    assert_eq!(frame.board, Some(trama_doc::BoardItem::Shape { shape: trama_doc::BoardShape::Rectangle }));
     let outline = doc.node(frame.children[0]).unwrap();
     assert_eq!(outline.fills[0].solid_color().unwrap().to_rgba8(), [255, 255, 255, 255]);
     assert_eq!(outline.strokes[0].solid_color().unwrap().to_rgba8(), [128, 128, 128, 255]);
@@ -703,7 +703,7 @@ fn a_jam_shape_without_text_is_still_a_native_shape() {
     set(&mut layer, "nodeGenerationData", o(vec![("overrides", arr(vec![background, record(1, text("", 16.0))]))]));
     let (doc, _) = jam(layer);
     let frame = named(&doc, "Board object");
-    assert_eq!(frame.board, Some(figcraft_doc::BoardItem::Shape { shape: figcraft_doc::BoardShape::Rectangle }));
+    assert_eq!(frame.board, Some(trama_doc::BoardItem::Shape { shape: trama_doc::BoardShape::Rectangle }));
     assert_eq!(doc.node(frame.children[1]).unwrap().kind.text().unwrap().characters, "");
 }
 

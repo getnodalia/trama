@@ -6,9 +6,9 @@ use serde_json::{Value, json};
 use crate::Session;
 use crate::params::id_of;
 use crate::tools::{PointerEvent, PointerKind, pressure_profile};
-use figcraft_doc::{NodeId, NodeKind};
-use figcraft_geom::Point;
-use figcraft_geom::kurbo::PathEl;
+use trama_doc::{NodeId, NodeKind};
+use trama_geom::Point;
+use trama_geom::kurbo::PathEl;
 
 fn id(v: Value) -> NodeId {
     id_of(&v["id"]).unwrap()
@@ -24,9 +24,9 @@ fn line(s: &mut Session) -> NodeId {
 /// The alpha of the page's layers at page point (`x`, `y`), rendered at 1x without the page colour.
 fn alpha(s: &Session, x: f64, y: f64) -> u8 {
     let doc = s.doc().unwrap();
-    let view = figcraft_render::View { origin: (x - 1.0, y - 1.0), scale: 1.0, width: 3, height: 3 };
-    let mut pix = figcraft_render::Pixmap::new(3, 3).unwrap();
-    figcraft_render::render_nodes_into(doc, &doc.node(s.page().unwrap()).unwrap().children, &view, &mut pix);
+    let view = trama_render::View { origin: (x - 1.0, y - 1.0), scale: 1.0, width: 3, height: 3 };
+    let mut pix = trama_render::Pixmap::new(3, 3).unwrap();
+    trama_render::render_nodes_into(doc, &doc.node(s.page().unwrap()).unwrap().children, &view, &mut pix);
     pix.data()[(3 + 1) * 4 + 3]
 }
 
@@ -61,8 +61,8 @@ fn brushes_draw_along_the_stroke_and_outline_to_vectors() {
     // Exports draw it too.
     s.execute("stroke.brush", &json!({"ids": [v], "preset": "stars"})).unwrap();
     let doc = s.doc().unwrap();
-    assert!(figcraft_svg::export_svg(doc, &[v], &figcraft_svg::SvgOptions::default()).unwrap().contains("<path"));
-    assert!(figcraft_pdf::export_nodes_pdf(doc, &[v]).is_ok());
+    assert!(trama_svg::export_svg(doc, &[v], &trama_svg::SvgOptions::default()).unwrap().contains("<path"));
+    assert!(trama_pdf::export_nodes_pdf(doc, &[v]).is_ok());
 }
 
 #[test]
@@ -114,7 +114,7 @@ fn the_pencil_records_pressure_and_its_brush() {
 /// frame"), and the stroke in progress previews in that colour.
 #[test]
 fn the_pencil_draws_white_on_a_dark_background() {
-    use figcraft_color::Color;
+    use trama_color::Color;
     let mut s = Session::new();
     s.execute("tool.set", &json!({"tool": "pencil"})).unwrap();
     // A stroke from (x, y); its colour, and the preview colour the overlay carried while drawing.
@@ -185,12 +185,11 @@ fn the_pencil_keeps_its_stroke_where_it_was_drawn() {
             s.pointer(&PointerEvent::at(PointerKind::Up, last.0, last.1, 1.0)).unwrap();
             // The layer the stroke made, and only it.
             let doc = s.doc().unwrap();
-            let made: Vec<&figcraft_doc::Node> =
-                doc.nodes().filter(|n| !before.contains(&n.id) && matches!(n.kind, NodeKind::Vector { .. })).collect();
+            let made: Vec<&trama_doc::Node> = doc.nodes().filter(|n| !before.contains(&n.id) && matches!(n.kind, NodeKind::Vector { .. })).collect();
             let [n] = made[..] else { panic!("{what}: {} vectors made", made.len()) };
             let NodeKind::Vector { network } = &n.kind else { panic!("{what}: not a vector") };
             let drawn = doc.world_transform(n.id) * network.stroke_path();
-            let polyline = figcraft_geom::BezPath::from_vec(
+            let polyline = trama_geom::BezPath::from_vec(
                 samples
                     .iter()
                     .enumerate()
@@ -199,7 +198,7 @@ fn the_pencil_keeps_its_stroke_where_it_was_drawn() {
             );
             let d = crate::vector_behaviour_tests::strays(&drawn, &polyline);
             assert!(d <= 1.5, "{what}: the stroke strays {d} from the samples: {}", drawn.to_svg());
-            let samples_box = figcraft_geom::points_bounds(samples.iter().map(|(x, y)| Point::new(*x, *y))).unwrap();
+            let samples_box = trama_geom::points_bounds(samples.iter().map(|(x, y)| Point::new(*x, *y))).unwrap();
             let node_box = doc.world_bounds(n.id).unwrap();
             if tool == "pencil" {
                 assert!(samples_box.inflate(1.5, 1.5).contains_rect(node_box), "{what}: the layer {node_box:?}, the samples {samples_box:?}");

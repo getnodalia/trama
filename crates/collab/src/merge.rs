@@ -20,9 +20,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
-use figcraft_doc::{Document, Node, NodeId, NodeKind, Sizing, TextAutoResize};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+use trama_doc::{Document, Node, NodeId, NodeKind, Sizing, TextAutoResize};
 
 use crate::change::{Change, DocProp, Entry, Json, Prop};
 use crate::replica::{Mode, Positions, Replica, create_change};

@@ -1,6 +1,6 @@
 use crate::{Session, selection_reorder::ReorderLayout};
-use figcraft_doc::NodeId;
 use serde_json::json;
+use trama_doc::NodeId;
 
 fn rect(s: &mut Session, x: f64, y: f64, w: f64, h: f64, parent: Option<NodeId>) -> NodeId {
     NodeId(s.execute("shape.rectangle", &json!({"x":x,"y":y,"width":w,"height":h,"parent":parent})).unwrap()["id"].as_u64().unwrap())

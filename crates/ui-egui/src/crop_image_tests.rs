@@ -5,10 +5,10 @@
 
 use base64::Engine as _;
 use egui::{Event, Key, Modifiers, Pos2, vec2};
-use figcraft_color::{ImageScaleMode, PaintKind};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_color::{ImageScaleMode, PaintKind};
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::live_tests::{flat, has_text, text_center};
@@ -245,11 +245,11 @@ fn a_drag_whose_gesture_was_committed_under_the_button_shows_no_message() {
 }
 
 /// The first paint, an image, of `id`'s fills (`fills`) or strokes, or of region `region` of a vector.
-fn image_at(u: &Ui, id: NodeId, fills: bool, region: Option<usize>) -> figcraft_color::ImagePaint {
+fn image_at(u: &Ui, id: NodeId, fills: bool, region: Option<usize>) -> trama_color::ImagePaint {
     let n = u.app.session.doc().unwrap().node(id).unwrap();
     let list = match region {
         Some(r) => match &n.kind {
-            figcraft_doc::NodeKind::Vector { network } => network.regions[r].fills.clone().unwrap(),
+            trama_doc::NodeKind::Vector { network } => network.regions[r].fills.clone().unwrap(),
             _ => panic!("not a vector"),
         },
         None if fills => n.fills.clone(),

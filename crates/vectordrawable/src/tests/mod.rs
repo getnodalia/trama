@@ -7,8 +7,8 @@ mod shapes;
 mod strokes;
 mod xml_out;
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Document, NodeId, NodeKind};
+use trama_color::{Color, Paint};
+use trama_doc::{Document, NodeId, NodeKind};
 
 use crate::{Compat, VdExport, VdOptions, try_export};
 

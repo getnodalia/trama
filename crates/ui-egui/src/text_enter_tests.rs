@@ -4,10 +4,10 @@
 //! selected; File ▸ New in the dark theme makes a dark page.
 
 use egui::{Event, Key, Modifiers};
-use figcraft_color::Color;
-use figcraft_doc::{NodeId, NodeKind};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_color::Color;
+use trama_doc::{NodeId, NodeKind};
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

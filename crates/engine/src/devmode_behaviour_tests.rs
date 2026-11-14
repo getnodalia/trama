@@ -6,8 +6,8 @@ use crate::Session;
 use crate::components::tests::{ex, idv};
 use crate::devinspect::dev_mode_allows;
 use crate::tools::{PointerEvent, PointerKind, ToolId};
-use figcraft_doc::{DevStatus, NodeId};
 use serde_json::{Value, json};
+use trama_doc::{DevStatus, NodeId};
 
 fn ev(kind: PointerKind, x: f64, y: f64) -> PointerEvent {
     PointerEvent::at(kind, x, y, 1.0)

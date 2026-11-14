@@ -4,10 +4,10 @@
 
 use std::sync::Arc;
 
-use figcraft_collab::Replica;
-use figcraft_collab::message::{Access, Admin, AdminReply, NewLink};
-use figcraft_doc::Document;
-use figcraft_engine::live::{Published, Shared, SharedLink};
+use trama_collab::Replica;
+use trama_collab::message::{Access, Admin, AdminReply, NewLink};
+use trama_doc::Document;
+use trama_engine::live::{Published, Shared, SharedLink};
 
 use crate::invite::{Endpoint, Invite};
 
@@ -20,7 +20,7 @@ pub struct Publish {
     pub name: String,
     pub doc: Arc<Document>,
     /// Share the file once it is there: links and join codes for others
-    /// ([`Event::Shared`](figcraft_engine::live::Event::Shared)).
+    /// ([`Event::Shared`](trama_engine::live::Event::Shared)).
     pub share: bool,
 }
 

@@ -4,8 +4,8 @@
 use crate::Session;
 use crate::components::tests::{button, copy_of, ex, fill, healthy, idv, kids, node};
 use crate::components::*;
-use figcraft_doc::*;
 use serde_json::json;
+use trama_doc::*;
 
 /// A 24×24 icon component at (`x`, 300) with one 20×20 rectangle named `layer`.
 fn icon(s: &mut Session, x: f64, name: &str, layer: &str) -> NodeId {

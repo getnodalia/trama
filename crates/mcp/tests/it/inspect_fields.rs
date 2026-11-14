@@ -1,8 +1,8 @@
 //! Compact trees are built by the backend, including every size-budget retry.
 
 use crate::common::Client;
-use figcraft_mcp::{Backend, Headless, call_tool};
 use serde_json::{Value, json};
+use trama_mcp::{Backend, Headless, call_tool};
 
 fn tree(mut create: impl FnMut(Value) -> Value) -> Value {
     let root = create(json!({"type": "frame", "name": "Product list", "width": 1200, "height": 2400}));

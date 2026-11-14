@@ -2,9 +2,9 @@
 //! its top-left at the point); in a design file, or text that isn't a grid of cells, a text layer as
 //! before.
 
-use figcraft_doc::{BoardItem, Document, NodeKind};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::{BoardItem, Document, NodeKind};
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices};
 
@@ -18,7 +18,7 @@ fn app(board: bool) -> FigApp {
     FigApp::new(s, Box::new(NoServices))
 }
 
-fn tables(doc: &Document) -> Vec<figcraft_doc::NodeId> {
+fn tables(doc: &Document) -> Vec<trama_doc::NodeId> {
     doc.ids().filter(|i| doc.node(*i).is_some_and(|n| n.board == Some(BoardItem::Table))).collect()
 }
 

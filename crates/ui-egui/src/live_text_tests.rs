@@ -3,10 +3,10 @@
 //! `collab.peers` reports, and no frames while nothing moves.
 
 use egui::{Color32, Pos2, Shape};
-use figcraft_doc::NodeId;
-use figcraft_engine::figcraft_collab::EditingText;
-use figcraft_engine::live::{Event as LiveEvent, Presence, editing_hint};
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::live::{Event as LiveEvent, Presence, editing_hint};
+use trama_engine::trama_collab::EditingText;
 
 use crate::canvas::TextOnScreen;
 use crate::live_tests::{HANA, Harness, filled, has_text};

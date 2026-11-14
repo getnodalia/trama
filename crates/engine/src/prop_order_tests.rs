@@ -1,8 +1,8 @@
 //! Component properties keep the order they were made in: renaming one never moves it (#1536),
 //! and Make slot takes the name it is given (#1537).
 
-use figcraft_doc::{NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, NodeKind};
 
 use crate::Session;
 
@@ -63,7 +63,7 @@ fn renaming_a_slot_keeps_its_place() {
     assert_eq!(names(&mut s, card), ["Icone 1", "Slot 3", "Slot 4", "Slot 5"]);
     // The order is saved with the file.
     let saved = serde_json::to_string(s.doc().unwrap()).unwrap();
-    let back: figcraft_doc::Document = serde_json::from_str(&saved).unwrap();
+    let back: trama_doc::Document = serde_json::from_str(&saved).unwrap();
     assert_eq!(back.node(card).map(|n| &n.kind), s.doc().unwrap().node(card).map(|n| &n.kind));
 }
 

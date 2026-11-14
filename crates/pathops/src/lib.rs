@@ -1,4 +1,4 @@
-//! FigCraft path operations.
+//! Trama path operations.
 //!
 //! - [`boolean`]: Union, Subtract, Intersect and Exclude over any number of closed paths (robust
 //!   sweep-line topology from `linesweeper`); results use the even-odd rule.
@@ -37,8 +37,8 @@ pub mod width;
 #[cfg(test)]
 mod width_tests;
 
-use figcraft_doc::{BoolOp, StrokeAlign, StrokeCap, StrokeJoin, StrokeProps, VectorNetwork, WindingRule};
-use figcraft_geom::kurbo::{self, BezPath, Cap, Join, PathEl, PathSeg, Point, Shape, Vec2};
+use trama_doc::{BoolOp, StrokeAlign, StrokeCap, StrokeJoin, StrokeProps, VectorNetwork, WindingRule};
+use trama_geom::kurbo::{self, BezPath, Cap, Join, PathEl, PathSeg, Point, Shape, Vec2};
 
 pub use budget::{Complexity, FoldBudget, MAX_CROSSINGS, MAX_FOLD_SEGMENTS, MAX_SEGMENTS, complexity};
 pub use round::round_corners;
@@ -94,12 +94,12 @@ pub fn closed(path: &BezPath) -> BezPath {
 }
 
 /// Every coordinate is finite and of a sane magnitude (the sweep needs bounded input).
-pub use figcraft_geom::measure::finite_path as finite;
+pub use trama_geom::measure::finite_path as finite;
 
 /// Run the sweep library on `f`. Version 0.4 can panic on rare near-degenerate input (an internal
 /// `unwrap` while ordering curves, hit by some font outlines): that is bad input, not a crash.
 // shortcut: wasm32 can't catch it (panics abort there): the page stops and its panic hook keeps the
-// unsaved files (apps/figcraft-web/src/recovery.rs); drop this once linesweeper no longer panics.
+// unsaved files (apps/trama-web/src/recovery.rs); drop this once linesweeper no longer panics.
 fn sweep<T>(f: impl FnOnce() -> Result<T, PathOpsError>) -> Result<T, PathOpsError> {
     std::panic::catch_unwind(std::panic::AssertUnwindSafe(f)).unwrap_or(Err(PathOpsError::BadInput))
 }
@@ -374,7 +374,7 @@ pub fn stroke_center(path: &BezPath, width: f64, props: &StrokeProps) -> BezPath
     };
     // Each subpath fits the pattern to its own length.
     let mut out = BezPath::new();
-    for sub in figcraft_geom::split_subpaths(path) {
+    for sub in trama_geom::split_subpaths(path) {
         let (dashes, offset) = width::subpath_dashes(&sub, &pat);
         out.extend(kurbo::stroke(sub.iter(), &style.clone().with_dashes(offset, dashes), &opts, 0.05));
     }
@@ -527,7 +527,7 @@ pub fn rect_side_strokes(w: f64, h: f64, sides: [f64; 4], align: StrokeAlign) ->
         StrokeAlign::Center => 0.5,
         StrokeAlign::Outside => 1.0,
     };
-    let rect = |x0: f64, y0: f64, x1: f64, y1: f64| figcraft_geom::Rect::new(x0, y0, x1, y1).to_path(0.1);
+    let rect = |x0: f64, y0: f64, x1: f64, y1: f64| trama_geom::Rect::new(x0, y0, x1, y1).to_path(0.1);
     let mut p = BezPath::new();
     // Outer box edges.
     let (ox0, oy0, ox1, oy1) = (-l * f, -t * f, w + r * f, h + b * f);
@@ -568,13 +568,13 @@ pub fn rounded_side_strokes(w: f64, h: f64, radii: [f64; 4], smoothing: f64, sid
     // Each corner's radius with the weights across and down it, clockwise from the top-left.
     let corners = [(radii[0], l, t), (radii[1], r, t), (radii[2], r, b), (radii[3], l, b)];
     let outer = if align == StrokeAlign::Inside {
-        figcraft_geom::rounded_rect(w, h, radii, smoothing)
+        trama_geom::rounded_rect(w, h, radii, smoothing)
     } else {
         let grown = corners.map(|(rr, x, y)| if rr > 0.0 { (rr + x * f, rr + y * f) } else { (0.0, 0.0) });
-        corner_rect(figcraft_geom::Rect::new(-l * f, -t * f, w + r * f, h + b * f), grown, smoothing)
+        corner_rect(trama_geom::Rect::new(-l * f, -t * f, w + r * f, h + b * f), grown, smoothing)
     };
     let k = 1.0 - f;
-    let inner = figcraft_geom::Rect::new(l * k, t * k, w - r * k, h - b * k);
+    let inner = trama_geom::Rect::new(l * k, t * k, w - r * k, h - b * k);
     if inner.width() <= 0.0 || inner.height() <= 0.0 {
         return outer;
     }
@@ -584,11 +584,11 @@ pub fn rounded_side_strokes(w: f64, h: f64, radii: [f64; 4], smoothing: f64, sid
     ring(outer, &corner_rect(inner, inset, smoothing), fit < 1.0 || smoothing > 0.0)
 }
 
-/// Rectangle `r` with `(rx, ry)` corners, smoothed like `figcraft_geom::rounded_rect` where every
+/// Rectangle `r` with `(rx, ry)` corners, smoothed like `trama_geom::rounded_rect` where every
 /// corner is circular (smoothing is defined for those only).
-fn corner_rect(r: figcraft_geom::Rect, corners: [(f64, f64); 4], smoothing: f64) -> BezPath {
+fn corner_rect(r: trama_geom::Rect, corners: [(f64, f64); 4], smoothing: f64) -> BezPath {
     if smoothing > 0.0 && corners.iter().all(|(rx, ry)| rx == ry) {
-        return kurbo::Affine::translate((r.x0, r.y0)) * figcraft_geom::rounded_rect(r.width(), r.height(), corners.map(|c| c.0), smoothing);
+        return kurbo::Affine::translate((r.x0, r.y0)) * trama_geom::rounded_rect(r.width(), r.height(), corners.map(|c| c.0), smoothing);
     }
     elliptical_rect(r, corners)
 }
@@ -610,7 +610,7 @@ fn ring(outer: BezPath, hole: &BezPath, cut: bool) -> BezPath {
 
 /// Corner radii `(rx, ry)` for the inner box `inner`, square where either is 0, all shrunk by one
 /// factor (returned too) where two on an edge add up to more than it, as CSS shrinks radii.
-fn fit_corners(inner: figcraft_geom::Rect, corners: [(f64, f64); 4]) -> ([(f64, f64); 4], f64) {
+fn fit_corners(inner: trama_geom::Rect, corners: [(f64, f64); 4]) -> ([(f64, f64); 4], f64) {
     let c = corners.map(|(rx, ry)| if rx > 0.0 && ry > 0.0 { (rx, ry) } else { (0.0, 0.0) });
     let [tl, tr, br, bl] = c;
     let edges = [(inner.width(), tl.0 + tr.0), (inner.width(), bl.0 + br.0), (inner.height(), tl.1 + bl.1), (inner.height(), tr.1 + br.1)];
@@ -619,8 +619,8 @@ fn fit_corners(inner: figcraft_geom::Rect, corners: [(f64, f64); 4]) -> ([(f64, 
 }
 
 /// Rectangle `r` with an `(rx, ry)` quarter ellipse at each corner `[tl, tr, br, bl]`, drawn like
-/// `figcraft_geom::rounded_rect` (circular corners come out the same).
-fn elliptical_rect(r: figcraft_geom::Rect, [tl, tr, br, bl]: [(f64, f64); 4]) -> BezPath {
+/// `trama_geom::rounded_rect` (circular corners come out the same).
+fn elliptical_rect(r: trama_geom::Rect, [tl, tr, br, bl]: [(f64, f64); 4]) -> BezPath {
     use std::f64::consts::{FRAC_PI_2, PI};
     // Each corner, the direction of its ellipse centre from it, and the angle its quarter starts at.
     let quarters = [
@@ -636,7 +636,7 @@ fn elliptical_rect(r: figcraft_geom::Rect, [tl, tr, br, bl]: [(f64, f64); 4]) ->
             let c = Point::new(corner.x + sx * rx, corner.y + sy * ry);
             p.line_to((c.x + rx * start.cos(), c.y + ry * start.sin()));
             kurbo::Arc::new(c, (rx, ry), start, FRAC_PI_2, 0.0)
-                .to_cubic_beziers(figcraft_geom::arc_tolerance(rx.max(ry)), |a, b, e| p.curve_to(a, b, e));
+                .to_cubic_beziers(trama_geom::arc_tolerance(rx.max(ry)), |a, b, e| p.curve_to(a, b, e));
         } else {
             p.line_to(corner);
         }
@@ -648,7 +648,7 @@ fn elliptical_rect(r: figcraft_geom::Rect, [tl, tr, br, bl]: [(f64, f64); 4]) ->
 #[cfg(test)]
 mod tests {
     use super::*;
-    use figcraft_geom::Rect;
+    use trama_geom::Rect;
 
     fn sq(x: f64, y: f64, s: f64) -> BezPath {
         Rect::new(x, y, x + s, y + s).to_path(0.1)
@@ -688,7 +688,7 @@ mod tests {
         assert_eq!(got, vec![vec![0], vec![0, 1], vec![1]], "the star's inside, its stroke's inner half, its outer half");
         // Faces never overlap: no face's interior point is inside another face.
         for (i, a) in f.iter().enumerate() {
-            let Some(p) = figcraft_doc::vector_faces::interior_point(&a.path) else { continue };
+            let Some(p) = trama_doc::vector_faces::interior_point(&a.path) else { continue };
             for (j, b) in f.iter().enumerate() {
                 assert!(i == j || b.path.winding(p) == 0, "faces {i} and {j} overlap at {p:?}");
             }
@@ -807,11 +807,11 @@ mod tests {
         path.line_to((20.0, 0.0));
         let net = VectorNetwork {
             vertices: vec![
-                figcraft_doc::Vertex { cap: Some(StrokeCap::Square), ..figcraft_doc::Vertex::new(0.0, 0.0) },
-                figcraft_doc::Vertex { x: 10.0, y: 10.0, radius: 2.0, join: Some(StrokeJoin::Miter), ..figcraft_doc::Vertex::new(10.0, 10.0) },
-                figcraft_doc::Vertex { cap: Some(StrokeCap::Square), ..figcraft_doc::Vertex::new(20.0, 0.0) },
+                trama_doc::Vertex { cap: Some(StrokeCap::Square), ..trama_doc::Vertex::new(0.0, 0.0) },
+                trama_doc::Vertex { x: 10.0, y: 10.0, radius: 2.0, join: Some(StrokeJoin::Miter), ..trama_doc::Vertex::new(10.0, 10.0) },
+                trama_doc::Vertex { cap: Some(StrokeCap::Square), ..trama_doc::Vertex::new(20.0, 0.0) },
             ],
-            segments: vec![figcraft_doc::Segment::line(0, 1), figcraft_doc::Segment::line(1, 2)],
+            segments: vec![trama_doc::Segment::line(0, 1), trama_doc::Segment::line(1, 2)],
             ..Default::default()
         };
         let props = StrokeProps { weight: 4.0, ..Default::default() };
@@ -834,13 +834,13 @@ mod tests {
             vertices: verts
                 .iter()
                 .enumerate()
-                .map(|(i, &(x, y))| figcraft_doc::Vertex { cap: (i == 0).then_some(StrokeCap::Round), ..figcraft_doc::Vertex::new(x, y) })
+                .map(|(i, &(x, y))| trama_doc::Vertex { cap: (i == 0).then_some(StrokeCap::Round), ..trama_doc::Vertex::new(x, y) })
                 .collect(),
             segments: vec![
-                figcraft_doc::Segment::line(0, 1),
-                figcraft_doc::Segment::line(2, 3),
-                figcraft_doc::Segment::line(3, 4),
-                figcraft_doc::Segment::line(4, 2),
+                trama_doc::Segment::line(0, 1),
+                trama_doc::Segment::line(2, 3),
+                trama_doc::Segment::line(3, 4),
+                trama_doc::Segment::line(4, 2),
             ],
             ..Default::default()
         };
@@ -912,7 +912,7 @@ mod tests {
         ring.extend(sq(30.0, 30.0, 40.0).elements().iter().copied());
         let mut net = VectorNetwork::from_path(&ring);
         for r in &mut net.regions {
-            r.winding = figcraft_doc::WindingRule::EvenOdd;
+            r.winding = trama_doc::WindingRule::EvenOdd;
         }
         let (material, hole) = (Point::new(29.0, 50.0), Point::new(31.0, 50.0));
         let inside = StrokeProps { weight: 4.0, align: StrokeAlign::Inside, ..Default::default() };

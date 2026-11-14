@@ -2,8 +2,8 @@
 //! compare it with what it was when it was marked, and the focus view on one frame.
 //! (Wrapping layers in a new section is `object.wrapInSection`, with the other wrappers.)
 
-use figcraft_doc::{DevStatus, NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{DevStatus, NodeId, NodeKind};
 
 use super::CommandSpec;
 use crate::devinspect::{dev_items, has_status};

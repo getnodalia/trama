@@ -1,24 +1,24 @@
 [package]
-name = "figcraft-ui-egui"
+name = "trama-ui-egui"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "FigCraft egui frontend (the Figma-style UI: canvas, toolbar, layers, design and prototype panels, menus); swappable: nothing below depends on it"
+description = "Trama egui frontend (the Figma-style UI: canvas, toolbar, layers, design and prototype panels, menus); swappable: nothing below depends on it"
 
 [lints]
 workspace = true
 
 [dependencies]
 craft-ui = { workspace = true }
-figcraft-geom = { workspace = true }
-figcraft-color = { workspace = true }
-figcraft-doc = { workspace = true }
-figcraft-text = { workspace = true }
-figcraft-layout = { workspace = true }
-figcraft-render = { workspace = true }
-figcraft-pathops = { workspace = true }
-figcraft-engine = { workspace = true }
-figcraft-format = { workspace = true }
+trama-geom = { workspace = true }
+trama-color = { workspace = true }
+trama-doc = { workspace = true }
+trama-text = { workspace = true }
+trama-layout = { workspace = true }
+trama-render = { workspace = true }
+trama-pathops = { workspace = true }
+trama-engine = { workspace = true }
+trama-format = { workspace = true }
 egui = { workspace = true, features = ["default_fonts", "monochrome_emoji_fonts"] }
 serde = { workspace = true }
 serde_json = { workspace = true }

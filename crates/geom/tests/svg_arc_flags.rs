@@ -1,4 +1,4 @@
-use figcraft_geom::svg_path;
+use trama_geom::svg_path;
 
 #[test]
 fn compact_arc_flags_are_not_part_of_the_next_number() {

@@ -3,8 +3,8 @@
 
 use std::time::Duration;
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use crate::Session;
 use crate::agent::LINGER;

@@ -6,9 +6,9 @@
 
 use std::sync::{Arc, Mutex};
 
-use figcraft_collab::message::{ClientMsg, LibraryReply, LibraryReq, PluginEntry, PluginReply, PluginReq};
-use figcraft_plugin::bundle::{Bundle, sha256_hex};
 use serde_json::json;
+use trama_collab::message::{ClientMsg, LibraryReply, LibraryReq, PluginEntry, PluginReply, PluginReq};
+use trama_plugin::bundle::{Bundle, sha256_hex};
 
 use crate::library_server::{archive, read_archive};
 use crate::live::{Event, HostOptions, LiveLink, NetReply, NetRequest, Presence, SessionInfo};
@@ -285,7 +285,7 @@ fn a_link_without_background_requests_is_waited_on() {
 /// request reaches the server as before.
 #[test]
 fn commands_confined_to_automation_roots_reach_no_server() {
-    let dir = std::env::temp_dir().join(format!("figcraft-roots-network-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-roots-network-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let roots = Arc::new(crate::file_access::Roots::new(&[], &[dir.to_string_lossy().into_owned()]).unwrap());
     let (mut s, wire) = session(false);
@@ -320,7 +320,7 @@ fn a_confined_update_check_reports_the_refusal_not_the_cached_library() {
     s.execute("library.add", &json!({"path": LINK})).unwrap();
     assert!(matches!(s.libraries.cached(LINK), Some(Ok(_))));
     let waited = wire.lock().unwrap().waited;
-    let dir = std::env::temp_dir().join(format!("figcraft-roots-updates-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-roots-updates-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let roots = Arc::new(crate::file_access::Roots::new(&[], &[dir.to_string_lossy().into_owned()]).unwrap());
     crate::file_access::confined(Some(&roots), || {

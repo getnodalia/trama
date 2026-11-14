@@ -3,14 +3,14 @@
 use std::sync::Arc;
 
 use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Sense, Stroke, Ui, pos2, vec2};
-use figcraft_color::{BlendMode, Paint, PaintKind};
-use figcraft_doc::{
+use serde_json::{Value, json};
+use trama_color::{BlendMode, Paint, PaintKind};
+use trama_doc::{
     Blur, BlurType, BoolOp, Brush, Document, Effect, EffectKind, ExportFormat, ExportSetting, Glass, GridAlign, GridKind, LayoutGrid,
     MAX_BLUR_RADIUS, MaskType, Node, NodeId, NodeKind, Noise, NoiseMode, Shadow, StrokeAlign, StrokeCap, StrokeJoin, StrokeProps, Texture,
     VariableType, WidthPoint, WidthPreset, WidthProfile,
 };
-use figcraft_engine::cmd::lists::{moved_index, removed_index};
-use serde_json::{Value, json};
+use trama_engine::cmd::lists::{moved_index, removed_index};
 
 use crate::a11y::{self, Tip};
 use crate::i18n::{tr, trf, trn};
@@ -242,14 +242,14 @@ pub fn right_panel(app: &mut FigApp, ui: &mut Ui) {
     ui.painter().line_segment([tabs.left_bottom(), tabs.right_bottom()], Stroke::new(1.0, t.border));
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
         ui.spacing_mut().item_spacing = vec2(8.0, 0.0);
-        if app.session.tool.tool == figcraft_engine::ToolId::Comment {
+        if app.session.tool.tool == trama_engine::ToolId::Comment {
             crate::comments::panel(app, ui);
             ui.add_space(80.0);
             return;
         }
         match app.ui.right_tab {
             // The Frame tool shows the frame presets.
-            RightTab::Design if app.session.tool.tool == figcraft_engine::ToolId::Frame => crate::frame_presets::panel(app, ui),
+            RightTab::Design if app.session.tool.tool == trama_engine::ToolId::Frame => crate::frame_presets::panel(app, ui),
             RightTab::Design => design(app, ui),
             RightTab::Prototype => crate::proto_panel::prototype(app, ui),
             RightTab::Inspect => inspect(app, ui),
@@ -269,7 +269,7 @@ fn design(app: &mut FigApp, ui: &mut Ui) {
     let sel = ds.selection.clone();
     let vector_edit = ds.vector_edit.clone();
     if sel.is_empty() {
-        if app.session.tool.tool == figcraft_engine::ToolId::Scale {
+        if app.session.tool.tool == trama_engine::ToolId::Scale {
             crate::scale_panel::note_no_selection(ui);
         }
         page_section(app, ui, &doc);
@@ -286,7 +286,7 @@ fn design(app: &mut FigApp, ui: &mut Ui) {
         Some(ve) => crate::vector_panel::points(app, ui, &shown, &ve),
         None => {
             crate::section_panel::section(app, ui, &shown, &sel);
-            if app.session.tool.tool == figcraft_engine::ToolId::Scale {
+            if app.session.tool.tool == trama_engine::ToolId::Scale {
                 crate::scale_panel::section(app, ui, &shown, &sel);
                 widgets::separator(ui);
             }
@@ -330,11 +330,11 @@ fn page_section(app: &mut FigApp, ui: &mut Ui, doc: &Document) {
     let Ok(page) = app.session.page() else { return };
     let bg = match doc.node(page).map(|n| &n.kind) {
         Some(NodeKind::Page { background, .. }) => *background,
-        _ => figcraft_color::Color::DEFAULT_PAGE,
+        _ => trama_color::Color::DEFAULT_PAGE,
     };
     widgets::section_header(ui, tr("Page"), &[], false);
     // The new colour and, from a scrub, whether the scrub is over (live edits stay one undo step).
-    let mut new_color: Option<(figcraft_color::Color, Option<bool>)> = None;
+    let mut new_color: Option<(trama_color::Color, Option<bool>)> = None;
     row(ui, 32.0, |ui| {
         let p = Paint::solid(bg);
         let (sw, opacity) =
@@ -342,7 +342,7 @@ fn page_section(app: &mut FigApp, ui: &mut Ui, doc: &Document) {
                 // A typed colour keeps the page's opacity unless it carries one: 4 or 8 hex digits
                 // (`FF000080`; `FF0000FF` asks for opaque).
                 if let Some(h) = widgets::text_field_inline(child, Id::unique("pagebg"), &bg.to_hex(), text_r.shrink2(vec2(0.0, 4.0)), regular(11.0))
-                    && let Some(c) = figcraft_color::Color::from_hex_or_name(&h)
+                    && let Some(c) = trama_color::Color::from_hex_or_name(&h)
                 {
                     let digits = h.trim().trim_start_matches('#');
                     let carries_alpha = matches!(digits.len(), 4 | 8) && digits.chars().all(|ch| ch.is_ascii_hexdigit());
@@ -381,7 +381,7 @@ fn page_section(app: &mut FigApp, ui: &mut Ui, doc: &Document) {
     row(ui, 32.0, |ui| {
         let resp = widgets::dropdown(ui, doc.color_profile.label(), 140.0, None);
         menu_popup(&resp).show(|ui| {
-            for p in figcraft_color::ColorProfile::ALL {
+            for p in trama_color::ColorProfile::ALL {
                 if menu_item(ui, p.label(), "") {
                     if p != doc.color_profile {
                         app.ui.color_profile = Some(p);
@@ -393,7 +393,7 @@ fn page_section(app: &mut FigApp, ui: &mut Ui, doc: &Document) {
     });
     widgets::separator(ui);
     // Local variables & styles.
-    let vars = doc.variables.variables.iter().filter(|v| !figcraft_engine::library::is_remote_variable(doc, &v.id)).count();
+    let vars = doc.variables.variables.iter().filter(|v| !trama_engine::library::is_remote_variable(doc, &v.id)).count();
     widgets::section_header(ui, tr("Local variables"), &[], vars == 0);
     row(ui, 32.0, |ui| {
         let r = widgets::dropdown(ui, &trf("Open variables ({count})", &[("count", &vars)]), 200.0, Some(Icon::Styles));
@@ -404,7 +404,7 @@ fn page_section(app: &mut FigApp, ui: &mut Ui, doc: &Document) {
         }
     });
     widgets::separator(ui);
-    widgets::section_header(ui, tr("Local styles"), &[], figcraft_engine::library::local_styles(doc).next().is_none());
+    widgets::section_header(ui, tr("Local styles"), &[], trama_engine::library::local_styles(doc).next().is_none());
     crate::style_picker::local_styles(app, ui, doc);
     widgets::separator(ui);
     crate::export_panel::page_section(app, ui, doc, page);
@@ -474,7 +474,7 @@ fn header(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId]) {
         if widgets::icon_button_at(ui, ui.scope_id().with("frame_fit_contents"), fit_r, Icon::FitContents, fit_tip) {
             app.run("object.resizeToFit", json!({"ids": sel}));
         }
-        if figcraft_engine::devinspect::has_status(doc, sel[0]) {
+        if trama_engine::devinspect::has_status(doc, sel[0]) {
             crate::section_panel::status_icon(app, ui, doc, sel, fit_r.translate(vec2(26.0, 0.0)));
         }
         let ids: Vec<NodeId> = sel.to_vec();
@@ -483,7 +483,7 @@ fn header(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId]) {
                 kind_items(app, ui, true);
                 ui.separator();
                 let mut cat = "";
-                for (c, name, pw, ph) in figcraft_engine::cmd::create::FRAME_PRESETS {
+                for (c, name, pw, ph) in trama_engine::cmd::create::FRAME_PRESETS {
                     if *c != cat {
                         cat = c;
                         ui.label(egui::RichText::new(tr(c)).font(semibold(11.0)).color(t.text_secondary));
@@ -504,7 +504,7 @@ fn header(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId]) {
         (Icon::Union, tr("Boolean groups"), "bool.union"),
     ];
     // Layers in boolean groups, or one boolean group: the operation they use (checked in the menu).
-    let current = figcraft_engine::booleans::shown_op(doc, sel);
+    let current = trama_engine::booleans::shown_op(doc, sel);
     for (icon, label, cmd) in actions.into_iter().rev() {
         // With several layers the component button is a dropdown: a small chevron sits beside its icon.
         let dropdown = cmd == "component.create" && sel.len() > 1;
@@ -554,7 +554,7 @@ fn header(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId]) {
             let multiple = crate::i18n::command("component.createMultiple", "Create multiple components");
             let set = crate::i18n::command("component.createSet", "Create component set");
             // Like the layers menu, leave out what the selection can't use.
-            let can_set = figcraft_engine::cmd::component::can_create_set(doc, sel);
+            let can_set = trama_engine::cmd::component::can_create_set(doc, sel);
             let mut entries = vec![("component.create", &create), ("component.createMultiple", &multiple)];
             if can_set {
                 entries.push(("component.createSet", &set));
@@ -591,7 +591,7 @@ pub(crate) struct InInstance {
 }
 
 pub(crate) fn in_instance(ctx: &egui::Context, doc: &Arc<Document>, sel: &[NodeId]) -> InInstance {
-    use figcraft_engine::components::{inside_instance, owning_instance};
+    use trama_engine::components::{inside_instance, owning_instance};
     crate::selection_cache::cached(ctx, "in instance", doc, sel, &[], || InInstance {
         any: sel.iter().any(|i| owning_instance(doc, *i).is_some()),
         nested: sel.iter().any(|i| inside_instance(doc, *i)),
@@ -624,7 +624,7 @@ pub(crate) struct PositionValues {
     pub absolute: Option<bool>,
     /// Every selected layer is in a frame that places it by constraints, and those constraints.
     pub in_frame: bool,
-    pub constraints: Option<figcraft_doc::Constraints>,
+    pub constraints: Option<trama_doc::Constraints>,
 }
 
 /// What the X field shows of a layer (in its frame's space: groups have none of their own); a
@@ -639,14 +639,14 @@ fn y_of(doc: &Document, n: &Node) -> f64 {
 
 /// The layer's rotation on the page (its own angle plus its parents'), what the field shows.
 fn rot_of(doc: &Document, n: &Node) -> f64 {
-    (figcraft_geom::rotation_degrees(doc.world_transform(n.id)) * 100.0).round() / 100.0
+    (trama_geom::rotation_degrees(doc.world_transform(n.id)) * 100.0).round() / 100.0
 }
 
 pub(crate) fn position_values(ctx: &egui::Context, doc: &Arc<Document>, sel: &[NodeId]) -> PositionValues {
     let parent = |n: &Node| n.parent.and_then(|p| doc.node(p));
     crate::selection_cache::cached(ctx, "position", doc, sel, &[], || PositionValues {
-        can_align: figcraft_engine::cmd::arrange::can_align(doc, sel),
-        align_blocked: figcraft_engine::cmd::arrange::align_blocked_by_auto_layout(doc, sel),
+        can_align: trama_engine::cmd::arrange::can_align(doc, sel),
+        align_blocked: trama_engine::cmd::arrange::align_blocked_by_auto_layout(doc, sel),
         x: common(doc, sel, |n| x_of(doc, n)),
         y: common(doc, sel, |n| y_of(doc, n)),
         rot: common(doc, sel, |n| rot_of(doc, n)),
@@ -663,7 +663,7 @@ pub(crate) fn position_values(ctx: &egui::Context, doc: &Arc<Document>, sel: &[N
 /// Whether the Design panel offers Tidy up for `sel`: three or more layers forming a row, a column
 /// or a full grid, none in an auto layout flow (`can_tidy`).
 pub(crate) fn tidy_available(ctx: &egui::Context, doc: &Arc<Document>, sel: &[NodeId]) -> bool {
-    crate::selection_cache::cached(ctx, "tidy", doc, sel, &[], || figcraft_engine::tidy::can_tidy(doc, sel))
+    crate::selection_cache::cached(ctx, "tidy", doc, sel, &[], || trama_engine::tidy::can_tidy(doc, sel))
 }
 
 /// Draw alignment and distribution, X/Y and rotation with flip/rotate controls, the
@@ -779,7 +779,7 @@ fn rotation_row(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId], r
 }
 
 /// The horizontal and vertical constraints of children of frames without auto layout.
-fn constraints_row(app: &mut FigApp, ui: &mut Ui, sel: &[NodeId], c: Option<figcraft_doc::Constraints>, col: f32) {
+fn constraints_row(app: &mut FigApp, ui: &mut Ui, sel: &[NodeId], c: Option<trama_doc::Constraints>, col: f32) {
     let ids = sel.to_vec();
     widgets::sublabels(ui, tr("Constraints"), None);
     row(ui, 32.0, |ui| {

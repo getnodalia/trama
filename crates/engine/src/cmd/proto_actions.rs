@@ -10,9 +10,9 @@
 
 use std::collections::BTreeMap;
 
-use figcraft_doc::proto::{Action, ConditionalBlock, Expr, ExprOp, MAX_ACTION_DEPTH, walk};
-use figcraft_doc::{Variable, VariableType, VariableValue, Variables};
 use serde_json::{Value, json};
+use trama_doc::proto::{Action, ConditionalBlock, Expr, ExprOp, MAX_ACTION_DEPTH, walk};
+use trama_doc::{Variable, VariableType, VariableValue, Variables};
 
 use super::CommandSpec;
 use crate::params::{bool_of, f64_of, get, id, parse, req_index, req_targets, string};
@@ -140,7 +140,7 @@ pub fn placeholder(kind: VariableType) -> VariableValue {
         VariableType::Number => VariableValue::Number(0.0),
         VariableType::String => VariableValue::String(String::new()),
         VariableType::Boolean => VariableValue::Boolean(true),
-        VariableType::Color => VariableValue::Color(figcraft_color::Color::BLACK),
+        VariableType::Color => VariableValue::Color(trama_color::Color::BLACK),
     }
 }
 

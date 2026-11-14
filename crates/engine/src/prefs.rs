@@ -65,7 +65,7 @@ pub struct Prefs {
     pub auto_save: bool,
     /// The desktop app starts on the Home screen instead of in a new file.
     pub start_on_home: bool,
-    /// `figcraft://` invite links open this app (`collab.registerLinks`); `None`: on for installed
+    /// `trama://` invite links open this app (`collab.registerLinks`); `None`: on for installed
     /// builds, off for development builds.
     pub invite_links: Option<bool>,
     /// Installed plugins (Plugins menu), in menu order.
@@ -193,22 +193,22 @@ pub struct DefaultProps {
 #[derive(Clone, Debug, Default)]
 pub struct Clipboard {
     /// Copied subtrees: (root, nodes) in z-order.
-    pub nodes: Vec<(NodeId, Vec<figcraft_doc::Node>)>,
-    pub images: std::collections::BTreeMap<String, figcraft_doc::ImageData>,
+    pub nodes: Vec<(NodeId, Vec<trama_doc::Node>)>,
+    pub images: std::collections::BTreeMap<String, trama_doc::ImageData>,
     /// Copied properties (Copy properties / Paste properties).
     pub props: Option<Value>,
     /// A copied fill or stroke row (`fill.copy`, `stroke.copy`): whether it's a fill, and the paint.
-    pub paint: Option<(bool, figcraft_color::Paint)>,
+    pub paint: Option<(bool, trama_color::Paint)>,
     /// The stroke settings (`weight`, alignment, sides…) copied with a stroke's paint.
-    pub stroke: Option<figcraft_doc::StrokeProps>,
+    pub stroke: Option<trama_doc::StrokeProps>,
     /// The image data the copied paint names, carried so a paste into another file has it.
-    pub paint_images: std::collections::BTreeMap<String, figcraft_doc::ImageData>,
+    pub paint_images: std::collections::BTreeMap<String, trama_doc::ImageData>,
     /// The file the copied paint came from: a pattern's node id only means anything there.
     pub paint_source_doc: u64,
     /// A copied effect row (`effect.copy`).
-    pub effect: Option<figcraft_doc::Effect>,
+    pub effect: Option<trama_doc::Effect>,
     /// The page-space bounds of the copied selection.
-    pub bounds: Option<figcraft_geom::Rect>,
+    pub bounds: Option<trama_geom::Rect>,
     pub source_doc: u64,
     /// Copied component/set roots, excluding cuts and originals discarded by undo (ids are reused).
     pub copied_components: std::collections::BTreeSet<NodeId>,

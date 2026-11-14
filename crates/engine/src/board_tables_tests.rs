@@ -1,8 +1,8 @@
 //! Boards: templates (each placed as board objects in one undo step) and tables (made from auto
 //! layout frames, edited by rows and columns, typed into with the text tools, synced live).
 
-use figcraft_doc::{BoardItem, NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{BoardItem, NodeId, NodeKind};
 
 use crate::board_tests::{board, id, node};
 use crate::collab_live_tests::Room;
@@ -129,7 +129,7 @@ fn a_table_is_auto_layout_frames_with_a_header_and_column_lines() {
     assert!(s.execute("board.table", &json!({"rows": 50, "columns": 20})).is_ok(), "the largest table");
     // It saves and reopens.
     let doc = s.doc().unwrap();
-    let (back, _) = figcraft_format::from_json(&figcraft_format::to_json(doc).unwrap().to_string()).unwrap();
+    let (back, _) = trama_format::from_json(&trama_format::to_json(doc).unwrap().to_string()).unwrap();
     assert_eq!(back.node(t).unwrap().board, Some(BoardItem::Table));
 }
 
@@ -184,7 +184,7 @@ fn table_edits_add_and_remove_rows_and_columns_keeping_text() {
 fn a_double_click_types_in_the_cell_and_its_row_grows_with_the_text() {
     // Measure with system fonts when the optional craft-fonts checkout is absent,
     // without depending on another test having scanned them first.
-    figcraft_text::scan_system_fonts();
+    trama_text::scan_system_fonts();
     let mut s = board();
     let r = s.execute("board.table", &json!({"x": 0, "y": 0})).unwrap();
     let t = id(&r, "id");
@@ -299,7 +299,7 @@ fn all_near(got: &[f64], want: &[f64]) -> bool {
 }
 
 fn is_hug(s: &Session, t: NodeId) -> bool {
-    node(s, t).child_layout.sizing_v == figcraft_doc::Sizing::Hug
+    node(s, t).child_layout.sizing_v == trama_doc::Sizing::Hug
 }
 
 #[test]
@@ -379,7 +379,7 @@ fn a_table_never_shrinks_below_its_cells() {
 fn a_resized_table_still_grows_with_its_text_and_undoes_in_one_step() {
     // Text measures only once system fonts are scanned (without craft-fonts), so scan them here
     // without depending on another test having scanned them first.
-    figcraft_text::scan_system_fonts();
+    trama_text::scan_system_fonts();
     let (mut s, t) = table_3x3(["", "", ""]);
     drag(&mut s, (240.0, 122.0), (240.0, 272.0));
     assert!(near(node(&s, t).height, 272.0));
@@ -416,7 +416,7 @@ fn table_resizes_sync_in_live_sessions() {
         doc.node(t).unwrap().children.iter().map(|c| doc.node(*c).unwrap()).filter(|n| !n.child_layout.absolute).map(|n| n.height).collect();
     assert!(all_near(&heights, &[41.0, 41.0, 190.0]), "{heights:?}");
     assert!(near(doc.node(t).unwrap().height, 272.0));
-    assert_eq!(doc.node(t).unwrap().child_layout.sizing_v, figcraft_doc::Sizing::Hug);
+    assert_eq!(doc.node(t).unwrap().child_layout.sizing_v, trama_doc::Sizing::Hug);
 }
 
 #[test]
@@ -437,7 +437,7 @@ fn resizing_a_table_survives_junk_and_saves_the_rows() {
     let (mut s, t) = table_3x3(["", "", ""]);
     s.execute("node.set", &json!({"id": t, "props": {"height": 272}})).unwrap();
     let doc = s.doc().unwrap();
-    let (back, _) = figcraft_format::from_json(&figcraft_format::to_json(doc).unwrap().to_string()).unwrap();
+    let (back, _) = trama_format::from_json(&trama_format::to_json(doc).unwrap().to_string()).unwrap();
     let heights: Vec<f64> =
         back.node(t).unwrap().children.iter().map(|c| back.node(*c).unwrap()).filter(|n| !n.child_layout.absolute).map(|n| n.height).collect();
     assert!(all_near(&heights, &[41.0, 41.0, 190.0]), "{heights:?}");

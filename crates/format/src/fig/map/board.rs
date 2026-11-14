@@ -5,7 +5,7 @@
 use super::layer::{own_text, valid_size};
 use super::paint::paint;
 use super::{Affine, Kv, MAX_DEPTH, Mapper, Obj, Value, View, generated_record, json, num};
-use figcraft_doc::BoardShape;
+use trama_doc::BoardShape;
 
 impl<'a> Mapper<'a> {
     /// A sticky as a native board sticky: its frame (size, place, opacity and shadows as saved,
@@ -103,14 +103,14 @@ impl<'a> Mapper<'a> {
 }
 
 impl<'a> Mapper<'a> {
-    /// A shape with text as a native board shape: an empty frame holding FigCraft's own outline
+    /// A shape with text as a native board shape: an empty frame holding Trama's own outline
     /// (the file's paints and weight) and the text, centred. `None` (nothing changed) when the kind
-    /// has no FigCraft outline or a generated record is damaged: then the caller keeps the
+    /// has no Trama outline or a generated record is damaged: then the caller keeps the
     /// generated layers.
     pub(super) fn native_shape(&mut self, o: &mut Obj, v: &View<'a>, rest_id: &str, depth: usize) -> Option<Vec<Value>> {
         let kind = v.str("shapeWithTextType").unwrap_or("SQUARE");
         let Some(shape) = board_shape(kind) else {
-            self.warn(format!("shape with text kind {} has no FigCraft outline; kept as a frame", crate::rest::props::clip_str(kind)));
+            self.warn(format!("shape with text kind {} has no Trama outline; kept as a frame", crate::rest::props::clip_str(kind)));
             return None;
         };
         if v.get("nodeGenerationData").is_none() || v.get("derivedImmutableFrameData").and_then(|d| num(d, "version")) != Some(1.0) {
@@ -146,7 +146,7 @@ impl<'a> Mapper<'a> {
         self.common(&mut outline, &background, "VECTOR", Affine::IDENTITY, None);
         outline.insert("size".into(), json!({"x": w, "y": h}));
         outline.insert("relativeTransform".into(), json!([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]));
-        outline.insert("vectorNetwork".into(), serde_json::to_value(figcraft_doc::VectorNetwork::from_path(&shape.path(w, h))).ok()?);
+        outline.insert("vectorNetwork".into(), serde_json::to_value(trama_doc::VectorNetwork::from_path(&shape.path(w, h))).ok()?);
         outline.insert("layoutPositioning".into(), json!("ABSOLUTE"));
         outline.insert("constraints".into(), json!({"horizontal": "SCALE", "vertical": "SCALE"}));
         outline.remove("cornerRadius");
@@ -185,7 +185,7 @@ impl<'a> Mapper<'a> {
     }
 }
 
-/// FigJam's `shapeWithTextType` as the outline FigCraft draws for it; `None` for the kinds it has none for.
+/// FigJam's `shapeWithTextType` as the outline Trama draws for it; `None` for the kinds it has none for.
 pub(in crate::fig) fn board_shape(kind: &str) -> Option<BoardShape> {
     Some(match kind {
         "SQUARE" => BoardShape::Rectangle,

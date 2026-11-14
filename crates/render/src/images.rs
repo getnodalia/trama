@@ -13,9 +13,9 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use figcraft_color::{ColorProfile, ImageFilters, PaintKind};
-use figcraft_doc::{Document, ImageData, NodeId};
 use tiny_skia::Pixmap;
+use trama_color::{ColorProfile, ImageFilters, PaintKind};
+use trama_doc::{Document, ImageData, NodeId};
 
 /// Image, filters, colour profile and the largest side it was decoded at.
 pub(crate) type Key = (String, [i32; 7], ColorProfile, u32);
@@ -118,7 +118,7 @@ fn decode_in(bytes: &[u8], target: ColorProfile) -> Option<(Pixmap, bool)> {
 /// tall.
 pub(crate) fn decode_within(bytes: &[u8], target: ColorProfile, max_side: u32, max_bytes: u64) -> Option<(Pixmap, bool)> {
     use image::ImageDecoder;
-    if figcraft_format::jpeg::finer_than_first(bytes) {
+    if trama_format::jpeg::finer_than_first(bytes) {
         return None;
     }
     let mut reader = image::ImageReader::new(std::io::Cursor::new(bytes)).with_guessed_format().ok()?;

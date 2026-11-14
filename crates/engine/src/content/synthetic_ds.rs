@@ -1,5 +1,5 @@
 //! A synthetic design system and a file using it, for scale tests and benchmarks
-//! (`figcraft-cli perf`). Everything is generated: no third-party content.
+//! (`trama-cli perf`). Everything is generated: no third-party content.
 //!
 //! [`design_system`] builds icon components and component sets (buttons, inputs, cards, navs,
 //! badges) whose variants span size × state × type × theme, with boolean, text, instance swap and
@@ -10,12 +10,12 @@
 
 use std::collections::BTreeMap;
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{
+use serde_json::Value;
+use trama_color::{Color, Paint};
+use trama_doc::{
     AutoLayout, Collection, CollectionId, CrossAlign, DocError, DocResult, Document, LayoutMode, Mode, ModeId, Node, NodeId, NodeKind, PropDef,
     Sizing, Style, StyleKind, TextAutoResize, TextData, TextStyle, Variable, VariableType, VariableValue,
 };
-use serde_json::Value;
 
 use crate::components::{create_instance, sync_instance};
 
@@ -262,7 +262,7 @@ fn component_set(
 ) -> DocResult<(NodeId, usize)> {
     let set = doc.alloc_id();
     let mut n = Node::new(set, NodeKind::ComponentSet { description: format!("Synthetic {name} component set") }, name, 100.0, 100.0);
-    n.transform = figcraft_geom::Affine::translate((x, y));
+    n.transform = trama_geom::Affine::translate((x, y));
     n.fills.clear();
     doc.insert(n, page, None)?;
     let mut combos: Vec<BTreeMap<&str, &str>> = vec![BTreeMap::new()];

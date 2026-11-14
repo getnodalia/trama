@@ -1,4 +1,4 @@
-//! Text drawn in its own font by FigCraft's text engine, as textures for the panels: font family
+//! Text drawn in its own font by Trama's text engine, as textures for the panels: font family
 //! names in the font picker, text styles in the style browser. Rendered lazily (a few per frame:
 //! callers pass a budget) and cached for the session. Textures are white; paint them tinted.
 
@@ -7,8 +7,8 @@ use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex};
 
 use egui::Id;
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Document, Node, NodeKind, TextData, TextStyle};
+use trama_color::{Color, Paint};
+use trama_doc::{Document, Node, NodeKind, TextData, TextStyle};
 
 /// Most previews kept before the cache starts over.
 const MAX: usize = 2000;
@@ -54,12 +54,12 @@ pub fn texture(ctx: &egui::Context, style: &TextStyle, text: &str, budget: &mut 
 /// fonts, or it resolves to another family).
 pub fn family(ctx: &egui::Context, family: &str, size: f64, budget: &mut usize) -> Option<egui::TextureHandle> {
     // A font on this computer that the browser named is read when text uses it, not to preview it.
-    if figcraft_text::local_only(family) {
+    if trama_text::local_only(family) {
         return None;
     }
-    let styles = figcraft_text::family_styles(family);
+    let styles = trama_text::family_styles(family);
     let style = styles.iter().find(|s| s.eq_ignore_ascii_case("Regular")).or(styles.first())?.clone();
-    let face = figcraft_text::find_face(family, &style)?;
+    let face = trama_text::find_face(family, &style)?;
     if !face.family.eq_ignore_ascii_case(family) || !family.chars().all(|c| c == ' ' || face.has_char(c)) {
         return None;
     }
@@ -75,13 +75,13 @@ fn render(ctx: &egui::Context, style: &TextStyle, text: &str, ppp: f64) -> Optio
     td.style = TextStyle { fills: None, link: None, style_id: None, ..style.clone() };
     let mut n = Node::new(id, NodeKind::Text(td), "preview", 1.0, 1.0);
     n.fills = vec![Paint::solid(Color::WHITE)];
-    let (w, h) = figcraft_text::auto_size(&n)?;
+    let (w, h) = trama_text::auto_size(&n)?;
     n.width = w.min(400.0);
     n.height = h.min(60.0);
     doc.insert(n, page, None).ok()?;
-    let pix = figcraft_render::render_node(&doc, id, ppp.clamp(1.0, 3.0))?;
+    let pix = trama_render::render_node(&doc, id, ppp.clamp(1.0, 3.0))?;
     let (pw, ph) = (pix.width() as usize, pix.height() as usize);
-    let rgba = figcraft_render::to_rgba8(&pix);
+    let rgba = trama_render::to_rgba8(&pix);
     if rgba.len() != pw * ph * 4 || pw == 0 || ph == 0 {
         return None;
     }

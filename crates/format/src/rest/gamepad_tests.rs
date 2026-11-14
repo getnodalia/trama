@@ -3,8 +3,8 @@
 
 use super::proto_variable_tests::at;
 use super::*;
-use figcraft_doc::proto::{GAMEPAD_BUTTONS, Trigger};
 use serde_json::json;
+use trama_doc::proto::{GAMEPAD_BUTTONS, Trigger};
 
 fn import_trigger(trigger: Value) -> (Option<Trigger>, Vec<String>) {
     let file = json!({"name": "Pad", "document": {"id": "0:0", "type": "DOCUMENT", "children": [

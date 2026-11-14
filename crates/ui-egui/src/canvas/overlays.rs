@@ -7,7 +7,7 @@ use super::{
     Align2, COMPONENT, Color32, CornerRadius, Document, FigApp, NodeId, NodeKind, Point, Pos2, Rect, Shape, Stroke, StrokeKind, Tokens, ToolId,
     doc_c32, pos2, selection_box, selection_frame, semibold, tr, vec2,
 };
-use figcraft_doc::{HConstraint, VConstraint};
+use trama_doc::{HConstraint, VConstraint};
 
 /// Everything drawn over the rendered page; returns the frame labels drawn (frame, corners on the
 /// page) for the engine to hit-test.
@@ -34,7 +34,7 @@ pub(super) fn overlays(app: &FigApp, painter: &egui::Painter, t: &Tokens) -> Vec
         if !on_screen.intersects(app.canvas.rect) {
             continue;
         }
-        if view.layout_grids && !n.grids.is_empty() && figcraft_layout::grids_shown(&doc, *c) {
+        if view.layout_grids && !n.grids.is_empty() && trama_layout::grids_shown(&doc, *c) {
             layout_grids(app, painter, &doc, *c, n);
         }
         // The focus view's bar names its frame.
@@ -62,7 +62,7 @@ pub(super) fn overlays(app: &FigApp, painter: &egui::Painter, t: &Tokens) -> Vec
     let unmoved = crate::selection_cache::unmoved(ds, &doc);
     let key: Vec<u64> = editing.map(|e| e.0).into_iter().collect();
     let operands = crate::selection_cache::cached(painter.ctx(), "operands", &unmoved, &sel, &key, || {
-        figcraft_engine::booleans::outlined_operands(&unmoved, &sel, editing)
+        trama_engine::booleans::outlined_operands(&unmoved, &sel, editing)
     });
     for id in operands.iter().filter(|o| !sel.contains(o)) {
         draw_outline(app, painter, &doc, *id, stroke(outline_colour(&doc, *id, accent(painter)).gamma_multiply(0.6), 1.0));
@@ -76,7 +76,7 @@ pub(super) fn overlays(app: &FigApp, painter: &egui::Painter, t: &Tokens) -> Vec
     if let Some(d) = ov.drop_target
         && let Some(q) = node_quad(app, &doc, d)
     {
-        quad(painter, q, stroke(if figcraft_engine::components::is_slot(&doc, d) { COMPONENT } else { accent(painter) }, 1.0));
+        quad(painter, q, stroke(if trama_engine::components::is_slot(&doc, d) { COMPONENT } else { accent(painter) }, 1.0));
     }
     // Boards: the object a stamp would stick to, outlined as a hovered layer is.
     if let Some(s) = ov.stamp_target {
@@ -100,15 +100,15 @@ pub(super) fn overlays(app: &FigApp, painter: &egui::Painter, t: &Tokens) -> Vec
     // The selection's size label, which measurement labels keep clear of.
     let mut size_label = None;
     if let Some(ve) = ds.vector_edit.clone()
-        && let Some(o) = figcraft_engine::vectoredit::overlay(&doc, &ve)
+        && let Some(o) = trama_engine::vectoredit::overlay(&doc, &ve)
     {
         // The Variable width tool shows width points in place of the path's points.
-        let width_tool = ve.tool == figcraft_engine::vectoredit::VTool::Width;
+        let width_tool = ve.tool == trama_engine::vectoredit::VTool::Width;
         // Other layers edited at once go under the active one; the hover shows on its own layer.
         let ov = &app.session.tool.overlay;
         let hover_on = |id| ov.vector_hover.filter(|_| ov.vector_hover_on.unwrap_or(ve.id) == id);
         for part in &ve.others {
-            if let Some(po) = figcraft_engine::vectoredit::overlay(&doc, &ve.view(part)) {
+            if let Some(po) = trama_engine::vectoredit::overlay(&doc, &ve.view(part)) {
                 vector_overlay(app, painter, &po, !width_tool, hover_on(part.id), false, None);
             }
         }
@@ -128,7 +128,7 @@ pub(super) fn overlays(app: &FigApp, painter: &egui::Painter, t: &Tokens) -> Vec
         size_label = selection_overlay(app, painter, ds, &doc, &sel, zoom);
     }
     if app.session.tool.tool == ToolId::ShapeBuilder
-        && let Some(arr) = figcraft_engine::shapebuilder::current(&app.session)
+        && let Some(arr) = trama_engine::shapebuilder::current(&app.session)
     {
         builder_overlay(app, painter, t, &arr);
     }
@@ -192,15 +192,15 @@ fn pixel_grid(app: &FigApp, painter: &egui::Painter) {
 }
 
 /// The layout grids of frame `c` (`n`).
-fn layout_grids(app: &FigApp, painter: &egui::Painter, doc: &Document, c: NodeId, n: &figcraft_doc::Node) {
+fn layout_grids(app: &FigApp, painter: &egui::Painter, doc: &Document, c: NodeId, n: &trama_doc::Node) {
     let w = doc.world_transform(c);
     for g in n.grids.iter().filter(|g| g.visible) {
         let col = doc_c32(painter.ctx(), g.color);
-        for r in figcraft_layout::grid_lines(g, n.width, n.height) {
+        for r in trama_layout::grid_lines(g, n.width, n.height) {
             let a = w * Point::new(r.x0, r.y0);
             let b = w * Point::new(r.x1, r.y1);
             let (sa, sb) = (app.to_screen(a.x, a.y), app.to_screen(b.x, b.y));
-            if g.kind == figcraft_doc::GridKind::Grid {
+            if g.kind == trama_doc::GridKind::Grid {
                 painter.line_segment([sa, sb], stroke(col, 1.0));
             } else {
                 painter.rect_filled(Rect::from_two_pos(sa, sb), CornerRadius::ZERO, col);
@@ -214,18 +214,18 @@ fn layout_grids(app: &FigApp, painter: &egui::Painter, doc: &Document, c: NodeId
 /// them, else the layer's. `None` when the topmost visible paint isn't a solid (gradient, image,
 /// no visible fill), so the caller uses [`caret_fallback`]. Opaque on purpose: Figma's caret
 /// is one colour, and the fill's and paint's opacity weren't measured, so it must stay visible.
-fn caret_fill(n: &figcraft_doc::Node, caret: usize) -> Option<figcraft_color::Color> {
+fn caret_fill(n: &trama_doc::Node, caret: usize) -> Option<trama_color::Color> {
     let t = n.kind.text()?;
     let style = t.style_at(caret.saturating_sub(1));
     let paints = style.fills.as_ref().unwrap_or(&n.fills);
     paints.iter().rev().find(|p| p.visible).and_then(|p| match &p.kind {
-        figcraft_color::PaintKind::Solid { color } => Some(color.with_alpha(1.0)),
+        trama_color::PaintKind::Solid { color } => Some(color.with_alpha(1.0)),
         _ => None,
     })
 }
 
 /// [`caret_fill`] as a screen colour.
-fn caret_color(ctx: &egui::Context, n: &figcraft_doc::Node, caret: usize) -> Option<Color32> {
+fn caret_color(ctx: &egui::Context, n: &trama_doc::Node, caret: usize) -> Option<Color32> {
     caret_fill(n, caret).map(|c| doc_c32(ctx, c))
 }
 
@@ -256,7 +256,7 @@ fn caret_fallback(doc: &Document, id: NodeId) -> Color32 {
         match &n.kind {
             NodeKind::Page { background, .. } => Some(*background),
             _ => n.fills.iter().rev().find(|p| p.visible).and_then(|p| match &p.kind {
-                figcraft_color::PaintKind::Solid { color } if color.a * p.opacity * alpha >= 0.5 => Some(*color),
+                trama_color::PaintKind::Solid { color } if color.a * p.opacity * alpha >= 0.5 => Some(*color),
                 _ => None,
             }),
         }
@@ -264,7 +264,7 @@ fn caret_fallback(doc: &Document, id: NodeId) -> Color32 {
     if under.is_some_and(|c| c.is_dark()) { Color32::WHITE } else { Color32::BLACK }
 }
 
-fn text_edit_overlay(app: &FigApp, painter: &egui::Painter, t: &Tokens, doc: &Document, te: &figcraft_engine::TextEdit, zoom: f64) {
+fn text_edit_overlay(app: &FigApp, painter: &egui::Painter, t: &Tokens, doc: &Document, te: &trama_engine::TextEdit, zoom: f64) {
     let preedit = app.preedit_view();
     let edoc: &Document = preedit.map(|p| &*p.doc).unwrap_or(doc);
     let Some(text) = TextOnScreen::of(edoc, te.id) else { return };
@@ -330,7 +330,7 @@ pub(super) fn selection_geometry(app: &FigApp, painter: &egui::Painter, doc: &Ar
             outlines: Arc::new(outlines),
             bbox: selection_box(doc, sel),
             size: selection_frame(doc, sel).map(|(_, w, h)| (w, h)),
-            locked: sel.iter().any(|i| figcraft_engine::tools::locked_in(doc, *i)),
+            locked: sel.iter().any(|i| trama_engine::tools::locked_in(doc, *i)),
         }
     })
 }
@@ -341,16 +341,16 @@ pub(super) fn selection_geometry(app: &FigApp, painter: &egui::Painter, doc: &Ar
 fn shown_geometry(
     app: &FigApp,
     painter: &egui::Painter,
-    ds: &figcraft_engine::DocState,
+    ds: &trama_engine::DocState,
     doc: &Arc<Document>,
     sel: &[NodeId],
-) -> (SelectionGeometry, egui::Vec2, figcraft_geom::Vec2) {
+) -> (SelectionGeometry, egui::Vec2, trama_geom::Vec2) {
     match crate::selection_cache::moved(ds) {
         Some((base, (dx, dy))) => {
             let on_screen = app.to_screen(dx, dy) - app.to_screen(0.0, 0.0);
-            (selection_geometry(app, painter, &base, sel), on_screen, figcraft_geom::Vec2::new(dx, dy))
+            (selection_geometry(app, painter, &base, sel), on_screen, trama_geom::Vec2::new(dx, dy))
         }
-        None => (selection_geometry(app, painter, doc, sel), egui::Vec2::ZERO, figcraft_geom::Vec2::ZERO),
+        None => (selection_geometry(app, painter, doc, sel), egui::Vec2::ZERO, trama_geom::Vec2::ZERO),
     }
 }
 
@@ -358,7 +358,7 @@ fn shown_geometry(
 fn selection_overlay(
     app: &FigApp,
     painter: &egui::Painter,
-    ds: &figcraft_engine::DocState,
+    ds: &trama_engine::DocState,
     doc: &Arc<Document>,
     sel: &[NodeId],
     zoom: f64,
@@ -386,7 +386,7 @@ fn selection_overlay(
     {
         let is_line = sel.len() == 1 && matches!(sel.first().and_then(|i| doc.node(*i)).map(|n| &n.kind), Some(NodeKind::Line));
         // A selected connector's handles are its two ends (drag one onto another object).
-        let connector = figcraft_engine::board::selected_connector_ends(doc, sel).map(|(_, ends)| ends);
+        let connector = trama_engine::board::selected_connector_ends(doc, sel).map(|(_, ends)| ends);
         let mut label = if is_line { fmt(w) } else { format!("{} × {}", fmt(w), fmt(h)) };
         let scale = app.session.tool.overlay.scale;
         if let Some(hint) = scale {
@@ -394,7 +394,7 @@ fn selection_overlay(
         }
         // A layer smaller than its handles on screen shows just its outline (they still answer
         // just outside it).
-        let tiny = figcraft_engine::tools::box_sides_px(&b, zoom).1 < figcraft_engine::tools::SMALL_BOX_PX;
+        let tiny = trama_engine::tools::box_sides_px(&b, zoom).1 < trama_engine::tools::SMALL_BOX_PX;
         // Measuring to another layer (Alt held) shows just the outlines: no handles or size.
         let measuring = app.session.tool.overlay.measure_box.is_some();
         // Locked layers (selected in the layers panel) can't be resized, nor anything in Dev
@@ -420,7 +420,7 @@ fn selection_overlay(
             (!measuring && connector.is_none()).then_some(label),
         );
         // Its path handles, one for each portion that can be dragged.
-        let paths = if app.session.tool.dev_mode { Vec::new() } else { figcraft_engine::board::selected_connector_handles(doc, sel, zoom) };
+        let paths = if app.session.tool.dev_mode { Vec::new() } else { trama_engine::board::selected_connector_handles(doc, sel, zoom) };
         for (_, at) in paths {
             let c = app.to_screen(at.x, at.y);
             painter.circle_filled(c, 3.5, col);
@@ -439,7 +439,7 @@ fn selection_overlay(
             // The point that stays put: the dragged pivot, else the anchor.
             let pivot = scale
                 .map(|h| Point::new(h.pivot[0], h.pivot[1]))
-                .or_else(|| figcraft_engine::tools::scale_anchor_point(doc, sel, app.session.tool.scale_anchor));
+                .or_else(|| trama_engine::tools::scale_anchor_point(doc, sel, app.session.tool.scale_anchor));
             if let Some(p) = pivot {
                 let c = app.to_screen(p.x, p.y);
                 painter.circle_filled(c, 4.0, Color32::WHITE);
@@ -493,7 +493,7 @@ fn pen_overlay(app: &FigApp, painter: &egui::Painter, zoom: f64) {
         if app.session.tool.tool == ToolId::Pencil {
             // The stroke it will make, in its colour and weight (at least a point when zoomed out):
             // white over a dark page or frame, as the stroke will be (#1741).
-            let (default, weight) = figcraft_engine::tools::PENCIL_STROKE;
+            let (default, weight) = trama_engine::tools::PENCIL_STROKE;
             let color = ov.pen_color.unwrap_or(default);
             painter.add(Shape::line(pts, stroke(doc_c32(painter.ctx(), color), ((weight * zoom) as f32).max(1.0))));
         } else {
@@ -531,7 +531,7 @@ fn pen_overlay(app: &FigApp, painter: &egui::Painter, zoom: f64) {
 }
 
 /// Mask outlines, frame outlines and slices, as the View menu shows.
-fn view_outlines(app: &FigApp, painter: &egui::Painter, t: &Tokens, ds: &figcraft_engine::DocState, doc: &Document) {
+fn view_outlines(app: &FigApp, painter: &egui::Painter, t: &Tokens, ds: &trama_engine::DocState, doc: &Document) {
     let (view, page) = (&ds.view, ds.page);
     for id in doc.subtree(page) {
         let Some(n) = doc.node(id).filter(|n| n.visible) else { continue };
@@ -582,12 +582,12 @@ fn transform_box(
 /// short bar through the layer's middle — a horizontal one, a vertical one, or both (a cross when
 /// the layer is centred on both axes). Auto-layout frames ignore constraints, so no guides are
 /// drawn there, except for a layer that ignores the auto layout (absolute position).
-fn constraint_lines(app: &FigApp, painter: &egui::Painter, ds: &figcraft_engine::DocState, doc: &Arc<Document>, sel: &[NodeId]) {
+fn constraint_lines(app: &FigApp, painter: &egui::Painter, ds: &trama_engine::DocState, doc: &Arc<Document>, sel: &[NodeId]) {
     // Constraints bind a layer only to a frame it sits inside: one without auto layout, or one
     // whose auto layout the layer ignores (absolute position). A move changes neither.
     let unmoved = crate::selection_cache::unmoved(ds, doc);
     let bound = crate::selection_cache::cached(painter.ctx(), "constrained", &unmoved, sel, &[], || -> Vec<NodeId> {
-        let binds = |n: &figcraft_doc::Node, p: &figcraft_doc::Node| p.kind.is_frame_like() && (p.layout.is_none() || n.child_layout.absolute);
+        let binds = |n: &trama_doc::Node, p: &trama_doc::Node| p.kind.is_frame_like() && (p.layout.is_none() || n.child_layout.absolute);
         sel.iter()
             .copied()
             .filter(|i| unmoved.node(*i).is_some_and(|n| n.parent.and_then(|p| unmoved.node(p)).is_some_and(|p| binds(n, p))))
@@ -666,7 +666,7 @@ fn pill(painter: &egui::Painter, at: Pos2, align: Align2, text: String, col: Col
 /// The selected ellipse's arc handles (the hovered or dragged one larger, Start with a dot inside)
 /// and, while one is dragged, its readout beside it.
 fn arc_overlay(app: &FigApp, painter: &egui::Painter, col: Color32) {
-    use figcraft_engine::arc_handles::ArcHandle;
+    use trama_engine::arc_handles::ArcHandle;
     let Some(hs) = app.session.arc_handles() else { return };
     let ov = &app.session.tool.overlay;
     for h in [ArcHandle::Ratio, ArcHandle::Start, ArcHandle::Sweep] {
@@ -688,7 +688,7 @@ fn arc_overlay(app: &FigApp, painter: &egui::Painter, col: Color32) {
 /// The selected shape's corner radius handles and a star's ratio handle (the hovered or dragged
 /// one larger) and, while one is dragged, its value beside it.
 fn shape_overlay(app: &FigApp, painter: &egui::Painter, col: Color32) {
-    use figcraft_engine::shape_handles::ShapeHandle;
+    use trama_engine::shape_handles::ShapeHandle;
     let ov = &app.session.tool.overlay;
     for (h, [x, y]) in app.session.shape_handles() {
         let r = if ov.shape_hover == Some(h) { 4.5 } else { 3.5 };
@@ -709,12 +709,12 @@ fn shape_overlay(app: &FigApp, painter: &egui::Painter, col: Color32) {
 
 /// Variable width tool: each width point on the path with a bar across the stroke to its two
 /// width handles (the selected point filled), and a faint preview where a drag would add one.
-fn width_overlay(app: &FigApp, painter: &egui::Painter, doc: &Document, ve: &figcraft_engine::vectoredit::VectorEdit, zoom: f64) {
-    use figcraft_doc::WidthSide;
-    use figcraft_engine::vectoredit::{WHit, width_handles, width_preview};
+fn width_overlay(app: &FigApp, painter: &egui::Painter, doc: &Document, ve: &trama_engine::vectoredit::VectorEdit, zoom: f64) {
+    use trama_doc::WidthSide;
+    use trama_engine::vectoredit::{WHit, width_handles, width_preview};
     let hover = app.session.tool.overlay.width_hover;
     let sp = |p: &[f64; 2]| app.to_screen(p[0], p[1]);
-    let draw = |h: &figcraft_engine::vectoredit::WidthHandle, ghost: bool| {
+    let draw = |h: &trama_engine::vectoredit::WidthHandle, ghost: bool| {
         let (c, a, b) = (sp(&h.at), sp(&h.sides[0]), sp(&h.sides[1]));
         let col = if ghost { accent(painter).gamma_multiply(0.5) } else { accent(painter) };
         painter.line_segment([a, b], stroke(Color32::from_white_alpha(160), 3.0));
@@ -755,13 +755,13 @@ fn bezier_handle(painter: &egui::Painter, v: Pos2, e: Pos2, r: f32, fill: Color3
 fn vector_overlay(
     app: &FigApp,
     painter: &egui::Painter,
-    o: &figcraft_engine::vectoredit::EditOverlay,
+    o: &trama_engine::vectoredit::EditOverlay,
     points: bool,
-    hover: Option<figcraft_engine::vectoredit::VHit>,
+    hover: Option<trama_engine::vectoredit::VHit>,
     active: bool,
-    add: Option<figcraft_engine::tools::VectorAdd>,
+    add: Option<trama_engine::tools::VectorAdd>,
 ) {
-    use figcraft_engine::vectoredit::VHit;
+    use trama_engine::vectoredit::VHit;
     let ov = &app.session.tool.overlay;
     let sp = |p: &[f64; 2]| app.to_screen(p[0], p[1]);
     // Paint bucket target: hatched like a fill to come.
@@ -843,8 +843,8 @@ fn pick_outline(app: &FigApp, painter: &egui::Painter, doc: &Document) {
 #[cfg(test)]
 mod caret_tests {
     use super::*;
-    use figcraft_color::{Color, Paint};
-    use figcraft_doc::{Node, NodeId, NodeKind, StyleRun, TextData};
+    use trama_color::{Color, Paint};
+    use trama_doc::{Node, NodeId, NodeKind, StyleRun, TextData};
 
     fn text(chars: &str, fills: Vec<Paint>) -> Node {
         let mut n = Node::new(NodeId(1), NodeKind::Text(TextData { characters: chars.into(), ..TextData::default() }), "Text", 100.0, 20.0);
@@ -895,9 +895,9 @@ mod caret_tests {
     /// white on a dark one (the interface's text colour was white in the dark theme).
     #[test]
     fn without_a_solid_fill_the_caret_contrasts_with_the_page() {
-        let mut s = figcraft_engine::Session::new();
+        let mut s = trama_engine::Session::new();
         let r = s.execute("text.create", &serde_json::json!({"text": "Caret", "x": 0, "y": 0})).unwrap();
-        let id = figcraft_engine::params::id_of(&r["id"]).unwrap();
+        let id = trama_engine::params::id_of(&r["id"]).unwrap();
         assert_eq!(caret_fallback(s.doc().unwrap(), id), Color32::BLACK, "the default light page");
         s.execute("page.setBackground", &serde_json::json!({"color": "#1E1E1E"})).unwrap();
         assert_eq!(caret_fallback(s.doc().unwrap(), id), Color32::WHITE, "a dark page");
@@ -906,13 +906,13 @@ mod caret_tests {
     /// CodeRabbit on #2163: a dark frame on a light page is the surface under its text.
     #[test]
     fn without_a_solid_fill_the_caret_contrasts_with_the_frame_around_it() {
-        let mut s = figcraft_engine::Session::new();
-        let ex = |s: &mut figcraft_engine::Session, c: &str, p: serde_json::Value| s.execute(c, &p).unwrap();
+        let mut s = trama_engine::Session::new();
+        let ex = |s: &mut trama_engine::Session, c: &str, p: serde_json::Value| s.execute(c, &p).unwrap();
         let f = ex(&mut s, "frame.create", serde_json::json!({"x": 0, "y": 0, "width": 300, "height": 200}));
-        let f = figcraft_engine::params::id_of(&f["id"]).unwrap();
+        let f = trama_engine::params::id_of(&f["id"]).unwrap();
         ex(&mut s, "node.set", serde_json::json!({"id": f, "props": {"fill": "#222222"}}));
         let r = ex(&mut s, "text.create", serde_json::json!({"text": "Caret", "x": 20, "y": 20, "parent": f}));
-        let id = figcraft_engine::params::id_of(&r["id"]).unwrap();
+        let id = trama_engine::params::id_of(&r["id"]).unwrap();
         assert_eq!(caret_fallback(s.doc().unwrap(), id), Color32::WHITE, "inside a dark frame on the light page");
         ex(&mut s, "node.set", serde_json::json!({"id": f, "props": {"fill": "#F0F0F0"}}));
         assert_eq!(caret_fallback(s.doc().unwrap(), id), Color32::BLACK, "inside a light frame");
@@ -927,7 +927,7 @@ mod caret_tests {
     #[test]
     fn gradient_or_missing_fills_have_no_fill_colour() {
         let mut g = Paint::solid(hex("#FF0000"));
-        g.kind = figcraft_color::PaintKind::Gradient(figcraft_color::Gradient::default_for(figcraft_color::GradientKind::Linear, hex("#FF0000")));
+        g.kind = trama_color::PaintKind::Gradient(trama_color::Gradient::default_for(trama_color::GradientKind::Linear, hex("#FF0000")));
         assert_eq!(caret_fill(&text("Caret", vec![g]), 2), None);
         assert_eq!(caret_fill(&text("Caret", vec![]), 2), None);
         let mut hidden = Paint::solid(hex("#FF0000"));

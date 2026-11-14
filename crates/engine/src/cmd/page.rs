@@ -1,8 +1,8 @@
 //! Pages.
 
-use figcraft_doc::proto::Flow;
-use figcraft_doc::{Guide, NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::proto::Flow;
+use trama_doc::{Guide, NodeId, NodeKind};
 
 use super::{CommandSpec, ok};
 use crate::params::{boolean, color, id, req_index, req_num, req_string, string};

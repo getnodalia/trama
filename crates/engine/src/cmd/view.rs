@@ -1,7 +1,7 @@
 //! View menu, preferences and tools. View state is per document and drivable like everything else.
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use super::{CommandSpec, ok};
 use crate::params::{boolean, get, num, num_or, req_index, req_num, req_string, string};
@@ -139,7 +139,7 @@ fn zoom_at(s: &mut Session, p: &Value) -> Result<Value> {
     let v = view(s)?;
     match (num(p, "width"), num(p, "height")) {
         (Some(w), Some(h)) if w.is_finite() && h.is_finite() && w > 0.0 && h > 0.0 => {
-            v.fit(figcraft_geom::Rect::new(x, y, x + w, y + h), ViewState::MAX_ZOOM);
+            v.fit(trama_geom::Rect::new(x, y, x + w, y + h), ViewState::MAX_ZOOM);
         }
         _ => {
             let z = step(v.zoom, !boolean(p, "out").unwrap_or(false));
@@ -548,7 +548,7 @@ pub fn specs() -> Vec<CommandSpec> {
         spec!("app.preferences", "Preferences", "{}", false, |s, _| ui(s, "dialog.preferences")),
         spec!("app.actions", "Actions", "{}", false, |s, _| ui(s, "palette.actions")),
         spec!("help.shortcuts", "Keyboard shortcuts", "{}", false, |s, _| ui(s, "panel.shortcuts")),
-        spec!("help.about", "About FigCraft", "{}", false, |s, _| ui(s, "dialog.about")),
+        spec!("help.about", "About Trama", "{}", false, |s, _| ui(s, "dialog.about")),
         spec!("help.page", "Help page", "{}", false, |s, _| ui(s, "open.help")),
         spec!(
             "help.gettingStarted",
@@ -597,12 +597,12 @@ pub fn specs() -> Vec<CommandSpec> {
                 let (uid, page, centre, half) = {
                     let ds = s.ds()?;
                     let z = ds.view.zoom.max(1e-6);
-                    (ds.uid, ds.page, figcraft_geom::Point::new(ds.view.cx, ds.view.cy), (ds.view.vw / z / 2.0, ds.view.vh / z / 2.0))
+                    (ds.uid, ds.page, trama_geom::Point::new(ds.view.cx, ds.view.cy), (ds.view.vw / z / 2.0, ds.view.vh / z / 2.0))
                 };
                 // "It will appear in the middle of the viewport": the first arrow shows it there (a
                 // crosshair left on another page or document starts over).
                 let at = match s.crosshair() {
-                    Some(c) => figcraft_geom::Point::new(c.x + dx, c.y + dy),
+                    Some(c) => trama_geom::Point::new(c.x + dx, c.y + dy),
                     None => centre,
                 };
                 s.tool.place_at = Some(at);
@@ -628,7 +628,7 @@ pub fn specs() -> Vec<CommandSpec> {
                     let t = ToolId::from_id(&t).ok_or_else(|| bad("tool.place", format!("unknown tool `{t}`")))?;
                     tool(s, t)?;
                 }
-                let at = num(p, "x").zip(num(p, "y")).map(|(x, y)| figcraft_geom::Point::new(x, y));
+                let at = num(p, "x").zip(num(p, "y")).map(|(x, y)| trama_geom::Point::new(x, y));
                 s.place(at)?;
                 Ok(json!({"ids": s.selection()}))
             }

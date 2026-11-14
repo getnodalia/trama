@@ -1,4 +1,4 @@
-//! Real-time collaboration core for FigCraft: the synced object/property model over
+//! Real-time collaboration core for Trama: the synced object/property model over
 //! [`Document`], change sets, the session server's ordering and validation, the client's
 //! optimistic state, and the wire messages. Pure library: no networking, no UI (the WebSocket
 //! transport comes on top). The design is `docs/collab-protocol.md`.
@@ -40,11 +40,11 @@ pub use change::Target;
 pub use change::{Change, DocProp, Entry, Json, Prop};
 pub use client::{Client, HISTORY_LIMIT};
 pub use diff::{Diff, diff};
-pub use figcraft_doc::{Document, NodeId};
 pub use history::{BatchKind, Notice};
 pub use message::{Accepted, Access, CatchUp, ClientMsg, EditingText, Hello, Peer, Presence, Processed, Resume, ServerMsg, Signal};
 pub use replica::{Applied, Mode, Replica};
 pub use server::{COMMENT_ONLY, Journal, Outgoing, Server, SessionState, VIEW_ONLY};
+pub use trama_doc::{Document, NodeId};
 
 /// Compare secrets (tokens, keys, their hashes) without stopping at the first difference.
 pub fn same_secret(a: &str, b: &str) -> bool {

@@ -18,10 +18,10 @@
 //! writes the result through `node.set` (`cornerRadius`, `topLeftRadius`…, `innerRadius`, `pointCount`), one
 //! undo step per drag.
 
-use figcraft_doc::{Document, Node, NodeId, NodeKind};
-use figcraft_geom::{Affine, Point, Vec2};
 use serde::Serialize;
 use serde_json::{Map, Value, json};
+use trama_doc::{Document, Node, NodeId, NodeKind};
+use trama_geom::{Affine, Point, Vec2};
 
 /// One shape handle: a corner's radius (corner index: tl, tr, br, bl; 0 for a polygon's or
 /// star's top point), a star's ratio or a polygon's or star's point count.
@@ -81,8 +81,8 @@ fn corners(n: &Node) -> Vec<(Corner, f64)> {
     let (w, h) = (n.width, n.height);
     let r = n.corners.radii;
     match n.kind {
-        NodeKind::Polygon { count } => top(&figcraft_geom::polygon_points(w, h, count), r[0]),
-        NodeKind::Star { count, inner_ratio } => top(&figcraft_geom::star_points(w, h, count, inner_ratio), r[0]),
+        NodeKind::Polygon { count } => top(&trama_geom::polygon_points(w, h, count), r[0]),
+        NodeKind::Star { count, inner_ratio } => top(&trama_geom::star_points(w, h, count, inner_ratio), r[0]),
         _ if n.kind.has_independent_corners() => {
             let max_r = w.min(h) / 2.0;
             let quarter = std::f64::consts::FRAC_PI_4;
@@ -118,15 +118,15 @@ fn target<'a>(doc: &'a Document, sel: &[NodeId], zoom: f64) -> Option<(NodeId, &
 
 /// A star's ratio handle (local) for `ratio`.
 fn ratio_point(n: &Node, count: u32, ratio: f64) -> Option<Point> {
-    figcraft_geom::star_points(n.width, n.height, count, ratio).get(1).copied()
+    trama_geom::star_points(n.width, n.height, count, ratio).get(1).copied()
 }
 
 /// The Count handle (local): a polygon's vertex 1 or a star's outer point 1, the first clockwise
 /// from the top.
 fn count_point(n: &Node) -> Option<Point> {
     match n.kind {
-        NodeKind::Polygon { count } => figcraft_geom::polygon_points(n.width, n.height, count).get(1).copied(),
-        NodeKind::Star { count, inner_ratio } => figcraft_geom::star_points(n.width, n.height, count, inner_ratio).get(2).copied(),
+        NodeKind::Polygon { count } => trama_geom::polygon_points(n.width, n.height, count).get(1).copied(),
+        NodeKind::Star { count, inner_ratio } => trama_geom::star_points(n.width, n.height, count, inner_ratio).get(2).copied(),
         _ => None,
     }
 }

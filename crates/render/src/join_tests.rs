@@ -1,9 +1,9 @@
 //! Outside strokes on rectangles honour the stroke join at the outer corners; inside strokes keep
 //! the shape's square corners whatever the join.
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Document, NodeKind, StrokeAlign, StrokeJoin};
-use figcraft_geom::kurbo::{BezPath, Point, Shape};
+use trama_color::{Color, Paint};
+use trama_doc::{Document, NodeKind, StrokeAlign, StrokeJoin};
+use trama_geom::kurbo::{BezPath, Point, Shape};
 
 fn winding_at(align: StrokeAlign, join: StrokeJoin, at: Point) -> i32 {
     let mut d = Document::new("join");
@@ -14,7 +14,7 @@ fn winding_at(align: StrokeAlign, join: StrokeJoin, at: Point) -> i32 {
     n.stroke.weight = 10.0;
     n.stroke.align = align;
     n.stroke.join = join;
-    let rect: BezPath = figcraft_geom::kurbo::Rect::new(0.0, 0.0, 60.0, 40.0).to_path(0.1);
+    let rect: BezPath = trama_geom::kurbo::Rect::new(0.0, 0.0, 60.0, 40.0).to_path(0.1);
     let n = d.get(id).unwrap();
     crate::draw::stroke_area(n, &rect, true).winding(at)
 }
@@ -56,11 +56,11 @@ fn a_whole_ellipse_drawn_backwards_strokes_as_a_ring() {
         let n = d.get_mut(id).unwrap();
         n.strokes = vec![Paint::solid(Color::BLACK)];
         (n.stroke.weight, n.stroke.align) = (6.0, StrokeAlign::Inside);
-        let outline: BezPath = figcraft_geom::kurbo::Ellipse::from_rect(figcraft_geom::kurbo::Rect::new(0.0, 0.0, 60.0, 40.0)).to_path(0.1);
+        let outline: BezPath = trama_geom::kurbo::Ellipse::from_rect(trama_geom::kurbo::Rect::new(0.0, 0.0, 60.0, 40.0)).to_path(0.1);
         (*crate::draw::stroke_area(d.get(id).unwrap(), &outline, true)).clone()
     };
     let forwards = ring(std::f64::consts::TAU);
-    let moves = forwards.elements().iter().filter(|e| matches!(e, figcraft_geom::kurbo::PathEl::MoveTo(_))).count();
+    let moves = forwards.elements().iter().filter(|e| matches!(e, trama_geom::kurbo::PathEl::MoveTo(_))).count();
     assert_eq!(moves, 2, "two outlines: {forwards:?}");
     assert_eq!(ring(-std::f64::consts::TAU), forwards);
 }

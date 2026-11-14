@@ -1,28 +1,28 @@
 [package]
-name = "figcraft-engine"
+name = "trama-engine"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "FigCraft engine: sessions, undo history, the command registry every surface (UI, CLI, control channel, MCP) dispatches through, pointer tools, components and the Figma menu catalog"
+description = "Trama engine: sessions, undo history, the command registry every surface (UI, CLI, control channel, MCP) dispatches through, pointer tools, components and the Figma menu catalog"
 
 [lints]
 workspace = true
 
 [dependencies]
-figcraft-geom = { workspace = true }
-figcraft-color = { workspace = true }
-figcraft-doc = { workspace = true }
-figcraft-collab = { workspace = true }
-figcraft-layout = { workspace = true }
-figcraft-text = { workspace = true }
-figcraft-pathops = { workspace = true }
-figcraft-render = { workspace = true }
-figcraft-format = { workspace = true }
-figcraft-svg = { workspace = true }
-figcraft-pdf = { workspace = true }
-figcraft-vectordrawable = { workspace = true }
+trama-geom = { workspace = true }
+trama-color = { workspace = true }
+trama-doc = { workspace = true }
+trama-collab = { workspace = true }
+trama-layout = { workspace = true }
+trama-text = { workspace = true }
+trama-pathops = { workspace = true }
+trama-render = { workspace = true }
+trama-format = { workspace = true }
+trama-svg = { workspace = true }
+trama-pdf = { workspace = true }
+trama-vectordrawable = { workspace = true }
 craft-docpath = { workspace = true }
-figcraft-plugin = { workspace = true }
+trama-plugin = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

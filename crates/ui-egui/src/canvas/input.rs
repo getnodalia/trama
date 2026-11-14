@@ -5,15 +5,15 @@ use super::{FigApp, Point, PointerKind, Pos2, Rect, Ui, json, pointer_event};
 /// the same, so it isn't sent again.
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) struct HoverKey {
-    event: figcraft_engine::tools::PointerEvent,
-    doc: Option<(u64, figcraft_engine::doc::NodeId, u64)>,
-    selection: Vec<figcraft_engine::doc::NodeId>,
-    tool: figcraft_engine::ToolId,
+    event: trama_engine::tools::PointerEvent,
+    doc: Option<(u64, trama_engine::doc::NodeId, u64)>,
+    selection: Vec<trama_engine::doc::NodeId>,
+    tool: trama_engine::ToolId,
     modes: [bool; 3],
 }
 
 impl HoverKey {
-    fn of(app: &FigApp, event: figcraft_engine::tools::PointerEvent) -> Self {
+    fn of(app: &FigApp, event: trama_engine::tools::PointerEvent) -> Self {
         let ds = app.session.ds().ok();
         HoverKey {
             event,
@@ -401,7 +401,7 @@ fn send(app: &mut FigApp, kind: PointerKind, pos: Pos2, m: &egui::Modifiers) {
     // A gesture something else committed under the held button (a colour picker closing on this
     // press) leaves the rest of its drag with nothing to edit: that is not worth saying.
     if let Err(e) = app.session.pointer(&ev)
-        && !matches!(e, figcraft_engine::EngineError::NoGesture)
+        && !matches!(e, trama_engine::EngineError::NoGesture)
     {
         app.toast(e.to_string());
     }
@@ -418,9 +418,9 @@ pub fn open_context_menu(app: &mut FigApp, pos: Pos2, deep: bool) {
     if let Ok(ds) = app.session.ds() {
         let (doc, page, sel, zoom) = (ds.doc.clone(), ds.page, ds.selection.clone(), ds.view.zoom.max(1e-6));
         // A frame's name label is the frame, as on a press, even where it sits over a section.
-        let label = figcraft_engine::tools::label_at(&doc, page, &app.session.tool.labels, p);
+        let label = trama_engine::tools::label_at(&doc, page, &app.session.tool.labels, p);
         let hit = app.session.hit(&doc, page, p, 2.0 / zoom);
-        let target = label.or_else(|| hit.map(|leaf| figcraft_doc::geometry::select_target(&doc, leaf, &sel, deep)));
+        let target = label.or_else(|| hit.map(|leaf| trama_doc::geometry::select_target(&doc, leaf, &sel, deep)));
         if let Some(target) = target
             && !sel.contains(&target)
         {

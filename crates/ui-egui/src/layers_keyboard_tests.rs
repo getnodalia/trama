@@ -4,9 +4,9 @@
 //! keyboard, and F8 draws a selection box the arrows move and size and Enter selects with.
 
 use egui::{Event, Key, Modifiers};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::a11y::{Region, focused_name};
 use crate::layers_drag_tests::Ui;

@@ -1,8 +1,8 @@
 //! Sketch text layers → text with styled runs; font PostScript names → family and style.
 
-use figcraft_doc::color::PaintKind;
-use figcraft_doc::{Document, LetterSpacing, LineHeight, NodeKind, TextAlignH, TextAlignV, TextAutoResize, TextCase, TextData, TextDecoration};
 use serde_json::{Value, json};
+use trama_doc::color::PaintKind;
+use trama_doc::{Document, LetterSpacing, LineHeight, NodeKind, TextAlignH, TextAlignV, TextAutoResize, TextCase, TextData, TextDecoration};
 
 use super::fixture::*;
 use super::import;
@@ -23,7 +23,7 @@ fn data<'d>(doc: &'d Document, name: &str) -> &'d TextData {
     }
 }
 
-fn red(fills: &Option<Vec<figcraft_doc::color::Paint>>) -> bool {
+fn red(fills: &Option<Vec<trama_doc::color::Paint>>) -> bool {
     fills.as_ref().is_some_and(|f| f.iter().any(|p| matches!(p.kind, PaintKind::Solid { color } if color.r == 1.0 && color.g == 0.0)))
 }
 
@@ -193,7 +193,7 @@ fn embedded_fonts_are_reported() {
 }
 
 /// Where Sketch puts a line's extra height: above the text (`lineSpacingBehaviour` 0), below it
-/// (1) or around it (2, like FigCraft); the text layer moves by the difference.
+/// (1) or around it (2, like Trama); the text layer moves by the difference.
 #[test]
 fn line_spacing_behaviour_moves_text() {
     let mk = |name: &str, beh: i64| {
@@ -268,7 +268,7 @@ fn later_runs_dont_inherit_the_first_runs_settings() {
     let second = at(2);
     assert_eq!(second.font_family, "Helvetica");
     assert_eq!(second.letter_spacing.resolve(14.0), 0.0, "{second:?}");
-    assert_eq!(second.line_height, figcraft_doc::LineHeight::Auto, "{second:?}");
+    assert_eq!(second.line_height, trama_doc::LineHeight::Auto, "{second:?}");
     assert!(second.variations.is_empty(), "{second:?}");
 }
 

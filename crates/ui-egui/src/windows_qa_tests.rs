@@ -3,9 +3,9 @@
 //! Escape closes a dialog without deselecting.
 
 use egui::{Event, Key, Modifiers, Pos2, Rect, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::a11y::focused_name;
 use crate::layers_drag_tests::Ui;

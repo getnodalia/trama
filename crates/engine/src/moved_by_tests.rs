@@ -3,9 +3,9 @@
 //! from that document; `None` for anything else (a layer in an auto layout flow, a copy made with
 //! Alt), and gone with the gesture.
 
-use figcraft_doc::NodeId;
-use figcraft_geom::Point;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_geom::Point;
 
 use crate::Session;
 use crate::params::id_of;

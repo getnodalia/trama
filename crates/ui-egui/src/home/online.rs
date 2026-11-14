@@ -11,10 +11,10 @@
 //! in it) for the app, or for the server's browser build.
 
 use egui::{Align2, CornerRadius, Rect, Sense, Ui, pos2, vec2};
-use figcraft_engine::live::utc_date;
-use figcraft_engine::online::{FileState, OnlineFile, ServerProblem, server_host};
-use figcraft_engine::team::{Team, TeamFile, TeamList, team_link, web_link};
 use serde_json::{Value, json};
+use trama_engine::live::utc_date;
+use trama_engine::online::{FileState, OnlineFile, ServerProblem, server_host};
+use trama_engine::team::{Team, TeamFile, TeamList, team_link, web_link};
 
 use crate::FigApp;
 use crate::a11y::{self, Tip};
@@ -210,7 +210,7 @@ fn row(app: &mut FigApp, ui: &mut Ui, t: &Tokens, f: &OnlineFile, busy: bool) {
         if let Some(code) = shared.and_then(|s| s.edit.code.as_deref())
             && item(ui, tr("Copy code"), true)
         {
-            app.clipboard_set_text(&figcraft_engine::figcraft_collab::code::grouped(code));
+            app.clipboard_set_text(&trama_engine::trama_collab::code::grouped(code));
             app.toast(tr("Join code copied"));
             ui.close();
         }
@@ -310,7 +310,7 @@ fn team_row(app: &mut FigApp, ui: &mut Ui, t: &Tokens, server: &str, web: &str, 
         }
         if crate::right::menu_item(ui, tr("Copy link"), "") {
             app.clipboard_set_text(&team_link(server, &f.file));
-            app.toast(tr("Link copied: it opens the file in FigCraft"));
+            app.toast(tr("Link copied: it opens the file in Trama"));
             ui.close();
         }
         if !web.is_empty() && crate::right::menu_item(ui, tr("Copy browser link"), "") {
@@ -432,12 +432,12 @@ pub fn inspect(app: &FigApp) -> Value {
 mod icon_size_tests {
     use super::*;
     use crate::header_icon_size_tests::{painted_rects, paints_icon_at_button_size};
-    use figcraft_engine::figcraft_collab::message::Access;
+    use trama_engine::trama_collab::message::Access;
 
     /// The menu buttons of Online's file rows and team rows paint their dots at 16 pt (#2238).
     #[test]
     fn online_row_menus_paint_16pt() {
-        let t_app = || FigApp::new(figcraft_engine::Session::new(), Box::new(crate::NoServices));
+        let t_app = || FigApp::new(trama_engine::Session::new(), Box::new(crate::NoServices));
         let mut app = t_app();
         let file = OnlineFile { server: "wss://share.example/".into(), file: "f".into(), name: "Trail".into(), ..OnlineFile::default() };
         let rows = painted_rects(None, |ui| {

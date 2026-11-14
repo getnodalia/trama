@@ -7,7 +7,7 @@ use serde_json::{Value, json};
 
 use crate::params::id_of;
 use crate::{EngineError, Session};
-use figcraft_doc::{Node, NodeId, StyleKind};
+use trama_doc::{Node, NodeId, StyleKind};
 
 fn id(v: Value) -> NodeId {
     id_of(&v["id"]).unwrap()
@@ -230,8 +230,8 @@ fn rest_and_fig_carry_style_bindings() {
     let (_, _, a, b, sid) = two_modes(&mut s);
     run(&mut s, "style.bind", json!({"style": sid, "field": "fill", "variable": "bg"}));
     let doc = s.doc().unwrap().clone();
-    let (bytes, _) = figcraft_format::fig::export(&doc, None).unwrap();
-    let (mut back, warnings) = figcraft_format::fig::import(&bytes, "x").unwrap();
+    let (bytes, _) = trama_format::fig::export(&doc, None).unwrap();
+    let (mut back, warnings) = trama_format::fig::import(&bytes, "x").unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");
     // The file gives a styled layer its style's value; opening it resolves that per layer.
     crate::style_vars::after_load(&mut back);
@@ -263,7 +263,7 @@ fn body_style(s: &mut Session, value: Option<Value>) -> (NodeId, NodeId, String)
     (t1, t2, body)
 }
 
-fn text_of(s: &Session, n: NodeId) -> figcraft_doc::TextStyle {
+fn text_of(s: &Session, n: NodeId) -> trama_doc::TextStyle {
     node(s, n).kind.text().unwrap().style.clone()
 }
 
@@ -335,11 +335,11 @@ fn a_number_bound_to_a_percent_line_height_applies_as_pixels() {
         StyleKind::Text { style, .. } => style.line_height,
         k => panic!("{k:?}"),
     };
-    assert_eq!(lh(&s), figcraft_doc::LineHeight::Pixels(150.0));
-    assert_eq!(text_of(&s, t1).line_height, figcraft_doc::LineHeight::Pixels(150.0));
+    assert_eq!(lh(&s), trama_doc::LineHeight::Pixels(150.0));
+    assert_eq!(text_of(&s, t1).line_height, trama_doc::LineHeight::Pixels(150.0));
     assert_eq!(node(&s, t1).height, 150.0);
     run(&mut s, "variable.set", json!({"variable": "lh", "mode": "Light", "value": 36}));
-    assert_eq!((lh(&s), node(&s, t1).height), (figcraft_doc::LineHeight::Pixels(36.0), 36.0));
+    assert_eq!((lh(&s), node(&s, t1).height), (trama_doc::LineHeight::Pixels(36.0), 36.0));
 }
 
 #[test]
@@ -351,8 +351,8 @@ fn a_text_style_binding_round_trips_through_fig() {
         run(&mut s, "style.bind", json!({"style": body, "field": field, "variable": var}));
     }
     let doc = s.doc().unwrap().clone();
-    let (bytes, warnings) = figcraft_format::fig::export(&doc, None).unwrap();
-    let (mut back, _) = figcraft_format::fig::import(&bytes, "x").unwrap();
+    let (bytes, warnings) = trama_format::fig::export(&doc, None).unwrap();
+    let (mut back, _) = trama_format::fig::import(&bytes, "x").unwrap();
     crate::style_vars::after_load(&mut back);
     let st = back.styles.iter().find(|x| x.name == "Body").unwrap();
     assert!(st.bound.contains_key("fontSize") && st.bound.contains_key("lineHeight"), "{st:?}");

@@ -5,10 +5,10 @@
 
 use std::collections::HashMap;
 
-use figcraft_doc::proto::{Action, ConditionalBlock, Expr, Interaction};
-use figcraft_doc::{Document, NodeId, NodeKind, VariableType, VariableValue};
-use figcraft_geom::Rect;
 use serde_json::Value;
+use trama_doc::proto::{Action, ConditionalBlock, Expr, Interaction};
+use trama_doc::{Document, NodeId, NodeKind, VariableType, VariableValue};
+use trama_geom::Rect;
 
 use crate::cmd::styles::apply_bindings;
 use crate::params::{color_of, f64_of};

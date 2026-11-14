@@ -2,9 +2,9 @@
 //! the tools take the properties of the layer it was set from, and new text takes a text layer's;
 //! it no longer only copied them for Paste properties.
 
-use figcraft_color::Color;
-use figcraft_doc::{Node, NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_color::Color;
+use trama_doc::{Node, NodeId, NodeKind};
 
 use crate::Session;
 use crate::params::id_of;

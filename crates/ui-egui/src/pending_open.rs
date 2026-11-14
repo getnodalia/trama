@@ -6,8 +6,8 @@
 use std::sync::Arc;
 use std::task::{Context as TaskContext, Poll, Waker};
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use crate::i18n::{tr, trf, trn};
 use crate::theme::{Tokens, semibold};

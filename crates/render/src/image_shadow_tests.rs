@@ -4,8 +4,8 @@
 
 use std::sync::Arc;
 
-use figcraft_color::{Color, ImageScaleMode, Paint};
-use figcraft_doc::{Document, Effect, EffectKind, ImageData, NodeId, NodeKind, Shadow};
+use trama_color::{Color, ImageScaleMode, Paint};
+use trama_doc::{Document, Effect, EffectKind, ImageData, NodeId, NodeKind, Shadow};
 
 use super::{Pixmap, View, render_nodes_into, shadow};
 

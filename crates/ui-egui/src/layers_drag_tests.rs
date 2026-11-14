@@ -3,9 +3,9 @@
 //! its edges.
 
 use egui::{Event, Pos2, RawInput, Rect, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices};
 

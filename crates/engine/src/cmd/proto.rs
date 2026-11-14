@@ -1,11 +1,11 @@
 //! Prototype commands: interactions, flows, settings, presenting.
 
-use figcraft_doc::proto::{
+use serde_json::{Value, json};
+use trama_doc::proto::{
     Action, DeviceRotation, Easing, Expr, Flow, Interaction, MAX_DELAY_MS, MAX_EXPR_DEPTH, OverlayPosition, PrototypeSettings, Transition, Trigger,
     walk_mut,
 };
-use figcraft_doc::{Document, NodeId, NodeKind, VariableValue, Variables};
-use serde_json::{Value, json};
+use trama_doc::{Document, NodeId, NodeKind, VariableValue, Variables};
 
 use super::{CommandSpec, ok};
 use crate::params::{boolean, color, f64_of, get, id, num, parse, req_id, req_num, req_targets, string};
@@ -213,7 +213,7 @@ fn settings(s: &mut Session, p: &Value) -> Result<Value> {
             let found = known_device(name).ok_or_else(|| {
                 let names: Vec<&str> =
                     ["None", PrototypeSettings::CUSTOM_DEVICE].into_iter().chain(PrototypeSettings::DEVICES.iter().map(|d| d.name)).collect();
-                bad(cmd, format!("unknown device {}: device is one of {}", figcraft_format::clip(&v.to_string(), 60), names.join("|")))
+                bad(cmd, format!("unknown device {}: device is one of {}", trama_format::clip(&v.to_string(), 60), names.join("|")))
             })?;
             Some(found.to_string())
         }
@@ -339,7 +339,7 @@ fn check_dests(cmd: &str, s: &Session, it: &Interaction) -> Result<()> {
 
 /// Every node `actions` (and what they nest) point at must exist in `doc`.
 pub(crate) fn check_action_dests(cmd: &str, doc: &Document, actions: &[Action]) -> Result<()> {
-    for a in figcraft_doc::proto::walk(actions) {
+    for a in trama_doc::proto::walk(actions) {
         if let Some(d) = a.dest()
             && !doc.contains(d)
         {
@@ -506,7 +506,7 @@ fn set(s: &mut Session, p: &Value) -> Result<Value> {
 mod tests {
     use super::*;
     use crate::params::id_of;
-    use figcraft_doc::proto::{Direction, Overflow, ScrollPosition};
+    use trama_doc::proto::{Direction, Overflow, ScrollPosition};
 
     fn frame(s: &mut Session, x: f64) -> NodeId {
         let r = s.execute("node.create", &json!({"type": "frame", "x": x, "y": 0, "width": 100, "height": 200})).unwrap();

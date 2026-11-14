@@ -143,14 +143,14 @@ mod tests {
     /// Exercise the real canvas with a render present, checking the grid covers it and draws first.
     #[test]
     fn the_canvas_draws_the_transparency_grid_for_a_transparent_page() {
-        let mut ui = crate::layers_drag_tests::Ui::new(figcraft_engine::Session::new());
+        let mut ui = crate::layers_drag_tests::Ui::new(trama_engine::Session::new());
         ui.app.run("page.setBackground", serde_json::json!({"color": "#FF000000"}));
         let ds = ui.app.session.ds().unwrap();
         let shown = (ds.uid, ds.page);
         // Seed an image so this test does not depend on when the asynchronous worker finishes.
         ui.app.canvas.texture =
             Some(ui.ctx.load_texture("test-page-render", egui::ColorImage::filled([16, 16], Color32::TRANSPARENT), egui::TextureOptions::NEAREST));
-        ui.app.canvas.tex_view = Some(figcraft_render::View { origin: (0.0, 0.0), scale: 1.0, width: 16, height: 16 });
+        ui.app.canvas.tex_view = Some(trama_render::View { origin: (0.0, 0.0), scale: 1.0, width: 16, height: 16 });
         ui.app.canvas.tex_of = Some(shown);
         let out = ui.frame_output(vec![]);
         let (tile, _) =

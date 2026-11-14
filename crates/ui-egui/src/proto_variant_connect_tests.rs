@@ -3,10 +3,10 @@
 //! makes nothing, and onto a frame outside the set it still navigates.
 
 use egui::{Pos2, pos2};
-use figcraft_doc::NodeId;
-use figcraft_doc::proto::{Action, Transition, Trigger};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_doc::proto::{Action, Transition, Trigger};
+use trama_engine::Session;
 
 use crate::FigApp;
 use crate::RightTab;
@@ -69,7 +69,7 @@ fn drag(t: &mut Setup, source: NodeId, to: Pos2) {
     t.u.frames(2, Vec::new);
 }
 
-fn interactions(t: &Setup, n: NodeId) -> Vec<figcraft_doc::proto::Interaction> {
+fn interactions(t: &Setup, n: NodeId) -> Vec<trama_doc::proto::Interaction> {
     t.u.app.session.doc().unwrap().node(n).unwrap().interactions.clone()
 }
 

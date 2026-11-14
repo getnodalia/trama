@@ -1,8 +1,8 @@
 //! Menu and Actions entries that need an input must collect it in the UI, not send `{}` to the
 //! engine (which would show a parameter error or silently use a default).
 
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::dialogs::MenuInput;
 use crate::layers_drag_tests::Ui;

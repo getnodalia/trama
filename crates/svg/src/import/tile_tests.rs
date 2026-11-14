@@ -1,9 +1,9 @@
 //! Pattern tiles: drawn once per pattern and scale in an import, their layers counted in the
 //! import's layer budget.
 
-use figcraft_color::{Paint, PaintKind};
-use figcraft_doc::{Document, NodeKind};
-use figcraft_geom::Affine;
+use trama_color::{Paint, PaintKind};
+use trama_doc::{Document, NodeKind};
+use trama_geom::Affine;
 
 use super::{Ctx, MAX_NODES, children, import_svg_with_notes};
 

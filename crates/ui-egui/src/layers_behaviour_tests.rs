@@ -5,9 +5,9 @@
 //! behaviour. What the gestures do to the document is in the engine's `panels_behaviour_tests`.
 
 use egui::{Event, Id, Modifiers, Pos2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

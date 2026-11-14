@@ -2,9 +2,9 @@
 
 use crate::props::{Effect, LayoutGrid};
 use crate::text::{ParagraphStyle, TextStyle};
-use figcraft_color::{Color, Paint};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
+use trama_color::{Color, Paint};
 
 pub type StyleId = String;
 pub type VariableId = String;

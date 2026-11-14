@@ -4,8 +4,8 @@ use crate::Session;
 use crate::components::tests::{copy_of, ex, fill, healthy, idv, kids, node};
 use crate::components::*;
 use crate::tools::{PointerEvent, PointerKind, ToolId};
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_doc::*;
 
 /// A "Card" component (300×200 at the origin) with a "Title" text and a "Content" slot (280×140 at
 /// 10,50) holding a default "Placeholder" rectangle. Returns (card, title, content, placeholder).
@@ -259,8 +259,8 @@ fn drops_land_in_slots() {
     let page = s.page().unwrap();
     let doc = s.doc().unwrap().clone();
     // The slot (at 410..690, 50..190) takes drops; the rest of the instance doesn't.
-    assert_eq!(crate::drop::slot(&doc, page, figcraft_geom::Point::new(600.0, 150.0)).parent, islot);
-    assert_eq!(crate::drop::slot(&doc, page, figcraft_geom::Point::new(420.0, 20.0)).parent, page);
+    assert_eq!(crate::drop::slot(&doc, page, trama_geom::Point::new(600.0, 150.0)).parent, islot);
+    assert_eq!(crate::drop::slot(&doc, page, trama_geom::Point::new(420.0, 20.0)).parent, page);
     let r = ex(&mut s, "instance.place", json!({"component": chip, "x": 600, "y": 150}));
     assert_eq!(r["parent"], json!(islot.0));
     assert!(slot_edited(s.doc().unwrap(), islot));
@@ -507,8 +507,8 @@ fn slot_text_properties_survive_inherited_own_content_and_persistence() {
     assert_local_slot_text(&mut s, bc, "Default");
     assert_local_slot_text(&mut s, inherited_content, "Default");
     assert_local_slot_text(&mut s, main_content, "Default");
-    let bytes = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
-    let (back, _) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let (back, _) = trama_format::load_bytes(&bytes).unwrap();
     let mut s = Session::with_document(back);
     assert_local_slot_text(&mut s, ac, "Custom");
     assert_slot_text(&mut s, ac, "Custom");
@@ -579,8 +579,8 @@ fn slot_boolean_properties_stay_local_in_inherited_own_content() {
     assert_slot_visibility(&mut s, bc, true);
     assert_slot_visibility(&mut s, main_content, false);
     healthy(&s);
-    let bytes = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
-    let (back, _) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let (back, _) = trama_format::load_bytes(&bytes).unwrap();
     let mut s = Session::with_document(back);
     assert_slot_visibility(&mut s, ac, false);
     assert_slot_visibility(&mut s, bc, true);
@@ -630,8 +630,8 @@ fn same_component_in_own_slot_keeps_independent_text_properties() {
     check(&mut s, "Outer updated", "Inner");
     ex(&mut s, "instance.setProperties", json!({"ids": [inner], "properties": {"Text": "Inner updated"}}));
     check(&mut s, "Outer updated", "Inner updated");
-    let bytes = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
-    let (back, _) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let (back, _) = trama_format::load_bytes(&bytes).unwrap();
     let mut s = Session::with_document(back);
     check(&mut s, "Outer updated", "Inner updated");
     ex(&mut s, "node.set", json!({"id": card, "props": {"fill": "#123456"}}));

@@ -6,7 +6,7 @@
 //! version 3 widgets, version 4 `save_file`)
 //!
 //! The module exports its `memory` and `figcraft_run(input_len: i32) -> i32`. Host functions are
-//! imported from the module `figcraft`; strings are UTF-8 `(ptr, len)` pairs in the plugin's memory.
+//! imported from the module `trama`; strings are UTF-8 `(ptr, len)` pairs in the plugin's memory.
 //!
 //! | Import | Signature | Does |
 //! |---|---|---|
@@ -273,7 +273,7 @@ fn func_type(params: usize, results: usize) -> FuncType {
     FuncType::new(vec![ValType::I32; params], vec![ValType::I32; results])
 }
 
-/// Compile and check a module: its size, that it imports only FigCraft's host functions (no WASI)
+/// Compile and check a module: its size, that it imports only Trama's host functions (no WASI)
 /// and exports `memory` and `figcraft_run`.
 pub fn check_module(bytes: &[u8], limits: &Limits) -> Result<(), PluginError> {
     compile(&engine(), bytes, limits).map(|_| ())
@@ -296,7 +296,7 @@ fn compile(engine: &Engine, bytes: &[u8], limits: &Limits) -> Result<Module, Plu
             }
             (None, _) => {
                 return Err(PluginError::InvalidModule(format!(
-                    "it imports `{}.{}`, which FigCraft doesn't provide (plugins get no file system, network or clock)",
+                    "it imports `{}.{}`, which Trama doesn't provide (plugins get no file system, network or clock)",
                     imp.module(),
                     imp.name()
                 )));
