@@ -93,6 +93,7 @@ status = "draft — needs native review"
 "style settings of some vector segments aren't supported; those segments use the layer's stroke" = "la configuración de estilo de algunos segmentos vectoriales no es compatible; esos segmentos usan el trazo de la capa"
 "{name} is forgotten on this computer; the file stays on {server}" = "{name} se olvidó en esta computadora; el archivo se queda en {server}"
 "{n} added" = { one = "{n} agregada", other = "{n} agregadas" }
+"Upload from computer" = "Subir desde la computadora"
 
 [commands]
 "annotation.add" = "Agregar anotación"
