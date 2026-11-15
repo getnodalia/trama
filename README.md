@@ -264,9 +264,10 @@ Issues and pull requests are welcome. New contributors and AI agents start with
 
 ## App icon
 
-A swatch of plain-weave cloth: the weft (*trama*, in Spanish) runs across in amber and the warp
-runs down in white, each crossing alternating over and under, threads laid on a grid as an
-interface is. It is original vector art for Nodalia, drawn on the Colloid icon grid. Sources,
+Joseph Marie Jacquard, whose punched-card loom wove a picture from rows of threads, as an interface
+is laid out on a grid (*trama* is the weft, in Spanish). The portrait comes from the woven-silk
+"A la mémoire de J.M. Jacquard" of 1839, itself made on a Jacquard loom, cut out in black and
+white on Trama's purple like every Nodalia app icon. Sources,
 sizes and licence are in [`assets/app-icon/`](assets/app-icon/).
 
 ## The Nodalia suite

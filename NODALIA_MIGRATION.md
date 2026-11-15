@@ -25,7 +25,7 @@ and the Creator suite's shared parts (`nodalia_theme::creator`, nodalia-design's
 
 - Names, app id `dev.danielmiguelt.Trama`, packages, installers and metadata say Trama; files,
   plugins and invite links made before the rename keep working.
-- Original app icon (a woven swatch, Colloid style), the Linux hicolor set, `.ico` and the macOS
+- App icon: Joseph Marie Jacquard's portrait on Trama's purple (Nodalia icon family), the Linux hicolor set, `.ico` and the macOS
   renders; Trama's accent `#8B2FD6` and its DMG window background in nodalia-design.
 - The theme: every chrome colour comes from NDL's light and dark palettes with Trama's accent.
   Canvas marks keep Trama's own colours (selection purple, components magenta so they never read

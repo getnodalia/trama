@@ -281,7 +281,7 @@ fn draw_fliph(p: &P) {
 }
 
 /// Draw `icon` on the 16-unit grid through `p`, which maps grid units to the target box.
-/// Trama's own mark, the woven swatch of the app icon: three threads across and three down,
+/// Trama's own mark, a woven swatch: three threads across and three down,
 /// each crossing alternating over and under (the thread underneath breaks).
 fn draw_logo(p: &P) {
     const POS: [f32; 3] = [4.0, 8.0, 12.0];
