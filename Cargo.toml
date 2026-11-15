@@ -42,10 +42,10 @@ craft-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/founda
 # pull a second egui family version).
 craft-window = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
 # The Nodalia Design Language: tokens, Trama's accent and the creator suite's shared parts.
-nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "05dfff0a4dde3432b24d6596da4b2e4988736d37" }
+nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "07e63775aca14bc13f98e72e3c67be978f2f7fc3" }
 # In-app updates, shared by the Nodalia apps: check getnodalia/trama's releases, verify the
 # package, replace the AppImage or Trama.app, install the MSI.
-nodalia-update = { git = "https://github.com/getnodalia/nodalia-design", rev = "05dfff0a4dde3432b24d6596da4b2e4988736d37", features = ["egui"] }
+nodalia-update = { git = "https://github.com/getnodalia/nodalia-design", rev = "07e63775aca14bc13f98e72e3c67be978f2f7fc3", features = ["egui"] }
 # The suite's font store: exact lookup of a missing font in the pinned Google Fonts and Noto
 # indexes, and checksum-verified installs into the one folder every Nodalia app reads (craft-libs).
 craft-font-store = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }

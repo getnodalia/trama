@@ -180,8 +180,20 @@ impl P<'_> {
     }
 }
 
-/// Paint `icon` centred in `rect` (a 16-unit glyph scaled to fit) in `color`.
+/// Paint `icon` centred in `rect` in `color`: NDL's glyph in its bold style where Nodalia Design has
+/// one ([`Icon::ndl`]), otherwise Trama's own 16-unit drawing scaled to fit.
 pub fn paint(painter: &Painter, rect: Rect, icon: Icon, color: Color32) {
+    if let Some(glyph) = icon.ndl().and_then(nodalia_theme::icons::get) {
+        let side = rect.width().min(rect.height());
+        let square = Rect::from_center_size(rect.center(), vec2(side, side));
+        nodalia_theme::icons::paint(painter, square, glyph, nodalia_theme::icons::Style::bold(color));
+        return;
+    }
+    paint_own(painter, rect, icon, color);
+}
+
+/// Trama's own drawing of `icon` (a 16-unit glyph scaled to fit), for the icons NDL has no glyph for.
+pub fn paint_own(painter: &Painter, rect: Rect, icon: Icon, color: Color32) {
     let ppp = painter.ctx().pixels_per_point();
     let px = 1.0 / ppp;
     // Physical pixels per grid unit: whole steps from 16 px up (quarter steps on fractional

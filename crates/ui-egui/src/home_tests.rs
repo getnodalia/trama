@@ -917,10 +917,10 @@ fn a_jam_file_is_a_document_open_and_drops_take() {
     }
 }
 
-/// The Preferences dialog can be opened and toggled from the home screen via
-/// the `Cmd/Ctrl + ,` shortcut as well as by clicking Preferences in the sidebar.
+/// The Preferences dialog opens from the home screen with the `Cmd/Ctrl + ,` shortcut and from
+/// NDL's main menu (the hamburger); the sidebar has no Preferences row.
 #[test]
-fn home_screen_preferences_shortcut_and_sidebar_access() {
+fn home_screen_preferences_shortcut_and_main_menu_access() {
     let mut u = first_run();
     u.app.ui.home = true;
     u.frame(vec![]);
@@ -937,13 +937,14 @@ fn home_screen_preferences_shortcut_and_sidebar_access() {
     press(&mut u, Key::Escape);
     assert!(!u.app.ui.preferences, "Escape should close Preferences");
 
-    // Clicking Preferences in the sidebar opens Preferences.
+    // Not in the sidebar.
     let s = shapes(&mut u);
-    click(&mut u, text_center(&s, "Preferences"));
-    assert!(u.app.ui.preferences, "Clicking Preferences in sidebar should open Preferences");
+    assert!(!texts(&s).iter().any(|(t, ..)| t.contains("Preferences")), "no Preferences row in the sidebar");
 
-    // Clicking it again toggles it closed.
-    let s = shapes(&mut u);
-    click(&mut u, text_center(&s, "Preferences"));
-    assert!(!u.app.ui.preferences, "Clicking Preferences in sidebar again should close it");
+    // The hamburger's main menu has it.
+    u.app.ui.main_menu = true;
+    u.frame(vec![]);
+    let at = crate::panel_width_tests::control(&mut u, Role::MenuItem, "Preferences…").expect("Preferences… in the main menu");
+    click(&mut u, at);
+    assert!(u.app.ui.preferences, "Preferences… in the main menu should open Preferences");
 }

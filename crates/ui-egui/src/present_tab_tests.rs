@@ -60,7 +60,8 @@ fn front_settings(u: &Ui) -> PrototypeSettings {
 /// "Untitled".
 fn present_tab(u: &Ui, files: usize, k: usize) -> (Pos2, Pos2) {
     let width = |chars: usize, lo: f32, hi: f32| (12.0 * 0.6 * chars as f32 + 64.0).clamp(lo, hi);
-    let mut x = 52.0 + files as f32 * width("Untitled".len(), 120.0, 220.0);
+    // NDL's main menu and Home before the file tabs.
+    let mut x = 84.0 + files as f32 * width("Untitled".len(), 120.0, 220.0);
     let names: Vec<String> = tabs(u).as_array().unwrap().iter().map(|t| t["name"].as_str().unwrap().to_string()).collect();
     for n in names.iter().take(k) {
         x += width(n.chars().count(), 140.0, 260.0);

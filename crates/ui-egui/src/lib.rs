@@ -20,6 +20,7 @@ pub mod canvas;
 pub mod cjk;
 pub mod control;
 pub mod dialogs;
+pub mod global_menu;
 pub mod home;
 pub mod i18n;
 pub mod icons;
@@ -789,6 +790,10 @@ pub(crate) struct PendingAck {
 
 /// The whole Trama UI.
 pub struct FigApp {
+    /// The menus exported to the desktop's top bar (Linux with a global menu), and when they were
+    /// last sent (at most twice a second).
+    #[cfg(target_os = "linux")]
+    global_menu: Option<(global_menu::GlobalMenu, f64)>,
     pub session: Session,
     pub ui: UiState,
     pub canvas: canvas::CanvasState,

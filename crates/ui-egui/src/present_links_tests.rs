@@ -88,7 +88,7 @@ fn played(cmd: &str, url: &str, skip_notice: bool) -> (Harness, Opened) {
 
 /// A click on the presented frame, and a few frames for what it fires.
 fn click_the_frame(u: &mut Harness) {
-    let at = egui::pos2(700.0, 290.0);
+    let at = egui::pos2(700.0, 300.0);
     u.button(at, true);
     u.button(at, false);
     u.frames(3, Vec::new);
@@ -181,7 +181,7 @@ fn a_click_opens_one_link_with_the_notice_skipped() {
 #[test]
 fn a_link_the_pointer_fires_by_passing_waits_with_the_notice_skipped() {
     let (mut u, seen) = playing("proto.present", true, json!({"trigger": {"type": "mouseEnter"}}), &["https://example.com/hover"]);
-    u.frame(vec![egui::Event::PointerMoved(egui::pos2(700.0, 290.0))]);
+    u.frame(vec![egui::Event::PointerMoved(egui::pos2(700.0, 300.0))]);
     u.frames(3, Vec::new);
     assert!(opened(&seen).is_empty(), "passing over the layer opened it");
     assert_eq!(notice(&u), "https://example.com/hover");
@@ -417,7 +417,7 @@ fn the_prototype_takes_no_clicks_while_the_notice_shows() {
     u.frames(40, Vec::new);
     assert_eq!(notice(&u), "https://example.com/a");
     // On the frame, above the notice.
-    let at = egui::pos2(700.0, 290.0);
+    let at = egui::pos2(700.0, 300.0);
     u.button(at, true);
     u.button(at, false);
     u.frames(5, Vec::new);
@@ -453,7 +453,7 @@ fn nothing_opens_while_a_notice_shows_with_the_notice_skipped() {
         json!({"id": f, "trigger": {"type": "mouseUp"}, "actions": [open("https://example.com/3")], "transition": {"type": "instant"}}),
     );
     let (mut u, seen) = present("proto.present", s, f);
-    let at = egui::pos2(700.0, 290.0);
+    let at = egui::pos2(700.0, 300.0);
     u.button(at, true);
     u.frames(2, Vec::new);
     assert_eq!(opened(&seen), ["https://example.com/1"]);
@@ -484,7 +484,7 @@ fn a_press_that_raised_a_notice_doesnt_release_behind_it() {
         json!({"id": a, "trigger": {"type": "mouseUp"}, "action": {"type": "navigate", "dest": b}, "transition": {"type": "instant"}}),
     );
     let (mut u, _) = present("proto.present", s, a);
-    let at = egui::pos2(700.0, 290.0);
+    let at = egui::pos2(700.0, 300.0);
     u.button(at, true);
     u.frames(2, Vec::new);
     assert_eq!(notice(&u), "https://example.com/2");

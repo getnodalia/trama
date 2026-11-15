@@ -18,6 +18,9 @@ use crate::widgets;
 pub mod home_recents;
 pub mod online;
 
+/// The corner radius of the sidebar's rows (NDL's controls).
+const ROW_RADIUS: u8 = nodalia_theme::creator::layout::CONTROL_RADIUS;
+
 /// The section the home screen shows.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Section {
@@ -142,8 +145,13 @@ fn listed(ui: &mut Ui, t: &Tokens, id: Id, height: f32, row: &FileRow) -> bool {
 pub fn show(app: &mut FigApp, ui: &mut Ui) {
     let t = Tokens::get(ui.ctx());
     dropped(app, ui.ctx());
-    egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.panel)).show(ui, |ui| {
+    // Home is one NDL island on the window's colour.
+    let gap = crate::theme::ISLAND_GAP as i8;
+    ui.painter().rect_filled(ui.available_rect_before_wrap(), 0.0, t.bg);
+    let margin = egui::Margin { left: gap, right: gap, top: 0, bottom: gap };
+    let shown = egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.panel).outer_margin(margin)).show(ui, |ui| {
         let rect = ui.max_rect();
+        ui.ctx().data_mut(|d| d.insert_temp(Id::unique("home_island"), rect));
         let left = Rect::from_min_size(rect.min, vec2(SIDEBAR, rect.height()));
         ui.painter().line_segment([left.right_top(), left.right_bottom()], Stroke::new(1.0, t.border));
         sidebar(app, ui, &t, left);
@@ -172,6 +180,10 @@ pub fn show(app: &mut FigApp, ui: &mut Ui) {
             });
         });
     });
+    let _ = shown;
+    if let Some(island) = ui.ctx().data(|d| d.get_temp::<Rect>(Id::unique("home_island"))) {
+        crate::theme::round_island(ui.painter(), &t, island);
+    }
     // The whole window is the drop target, not only the canvas.
     crate::drop_overlay(ui.ctx(), ui.ctx().content_rect(), tr("Drop to open"));
 }
@@ -191,7 +203,7 @@ fn dropped(app: &mut FigApp, ctx: &egui::Context) {
 }
 
 /// Draw the Home sidebar: app icon and wordmark, file/template search (Escape clears it), section
-/// tabs (choosing one clears the file query) and Preferences at the bottom.
+/// tabs (choosing one clears the file query). Preferences is in the main menu, as NDL has it.
 fn sidebar(app: &mut FigApp, ui: &mut Ui, t: &Tokens, left: Rect) {
     let mut y = left.min.y + 20.0;
     crate::theme::paint_app_icon(ui, Rect::from_min_size(pos2(left.min.x + 12.0, y - 4.0), vec2(32.0, 32.0)));
@@ -218,9 +230,9 @@ fn sidebar(app: &mut FigApp, ui: &mut Ui, t: &Tokens, left: Rect) {
         let current = app.ui.home_view.file_query.trim().is_empty() && app.ui.home_view.section == section;
         a11y::tab(&resp, tr(label), current);
         if current || resp.hovered() {
-            ui.painter().rect_filled(r, CornerRadius::same(5), if current { t.selected_row } else { t.hover });
+            ui.painter().rect_filled(r, CornerRadius::same(ROW_RADIUS), if current { t.selected_row } else { t.hover });
         }
-        focus_ring(ui, t, r, &resp, 5);
+        focus_ring(ui, t, r, &resp, ROW_RADIUS);
         icons::paint(ui.painter(), Rect::from_min_size(pos2(r.min.x + 10.0, r.center().y - 8.0), vec2(16.0, 16.0)), icon, t.icon);
         ui.painter().text(pos2(r.min.x + 36.0, r.center().y), Align2::LEFT_CENTER, tr(label), regular(12.0), t.text);
         if resp.clicked() {
@@ -229,26 +241,7 @@ fn sidebar(app: &mut FigApp, ui: &mut Ui, t: &Tokens, left: Rect) {
         }
         y += 34.0;
     }
-    let pref_y = (left.max.y - 44.0).max(y + 12.0);
-    if pref_y > y + 12.0 {
-        ui.painter().line_segment([pos2(left.min.x + 12.0, pref_y - 6.0), pos2(left.max.x - 12.0, pref_y - 6.0)], Stroke::new(1.0, t.border));
-    }
-    let r = Rect::from_min_size(pos2(left.min.x + 8.0, pref_y), vec2(SIDEBAR - 16.0, 32.0));
-    let mut resp = ui.interact(r, ui.scope_id().with("home_preferences"), Sense::click());
-    let current = app.ui.preferences;
-    a11y::button(&resp, tr("Preferences"));
-    if current || resp.hovered() {
-        ui.painter().rect_filled(r, CornerRadius::same(5), if current { t.selected_row } else { t.hover });
-    }
-    focus_ring(ui, t, r, &resp, 5);
-    icons::paint(ui.painter(), Rect::from_min_size(pos2(r.min.x + 10.0, r.center().y - 8.0), vec2(16.0, 16.0)), Icon::Adjust, t.icon);
-    ui.painter().text(pos2(r.min.x + 36.0, r.center().y), Align2::LEFT_CENTER, tr("Preferences"), regular(12.0), t.text);
-    let key_label = trama_engine::keymap::display("Cmd+,", crate::shortcuts::platform());
-    ui.painter().text(pos2(r.max.x - 8.0, r.center().y), Align2::RIGHT_CENTER, &key_label, regular(11.0), t.text_secondary);
-    resp = resp.on_hover_text(format!("{} ({})", tr("Preferences"), key_label));
-    if resp.clicked() {
-        app.ui.preferences = !app.ui.preferences;
-    }
+    // Preferences is in NDL's main menu (the hamburger), not in the sidebar.
 }
 
 fn file_matches(name: &str, location: &str, query: &str) -> bool {

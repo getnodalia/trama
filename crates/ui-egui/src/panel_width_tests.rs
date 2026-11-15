@@ -34,9 +34,16 @@ fn ui() -> (Ui, Kept) {
     (u, kept)
 }
 
-/// The x of the left panel's edge (the canvas's left) and of the right panel's (its right).
+/// The NDL islands' gap between the panels and the canvas.
+const G: f32 = crate::theme::ISLAND_GAP;
+
+/// The x of the left panel's edge and of the right panel's: the middle of the gap between their
+/// islands and the canvas's, or the window's edge where the canvas reaches it.
 fn edges(u: &Ui) -> (f32, f32) {
-    (u.app.canvas.rect.min.x, u.app.canvas.rect.max.x)
+    let r = u.app.canvas.rect;
+    let left = if r.min.x <= 0.0 { 0.0 } else { r.min.x - G / 2.0 };
+    let right = if r.max.x >= 1440.0 { 1440.0 } else { r.max.x + G / 2.0 };
+    (left, right)
 }
 
 fn widths(u: &Ui) -> (f32, f32) {
@@ -122,7 +129,7 @@ fn dragging_an_edge_sizes_its_panel_within_its_limits_and_keeps_the_views_centre
     // The view keeps its centre and zoom: the page doesn't jump, the canvas is just narrower.
     let v = u.app.session.ds().unwrap().view.clone();
     assert_eq!((v.cx, v.cy, v.zoom), centre);
-    assert_eq!(v.vw, f64::from(right - left - 100.0));
+    assert_eq!(v.vw, f64::from(right - left - G - 100.0));
     // Kept in the preferences, once per drag (not on every move).
     assert_eq!(u.app.session.prefs.panel_widths, (300.0, 280.0));
     assert_eq!(*kept.lock().unwrap(), [(300.0, 240.0), (300.0, 280.0)]);
@@ -190,14 +197,14 @@ fn the_widths_come_back_with_the_preferences() {
     u.frame(vec![]);
     assert_eq!(widths(&u), (360.0, 300.0));
     let (left, right) = edges(&u);
-    assert_eq!(right - left, 1440.0 - 56.0 - 360.0 - 300.0, "the canvas between them (the icon rail is 56 wide)");
+    assert_eq!(right - left, 1440.0 - 56.0 - 360.0 - 300.0 - 3.0 * G, "the canvas between them (the icon rail is 56 wide, the islands G apart)");
     // Widths from a damaged file are brought within the limits when drawn.
     let mut s = Session::new();
     s.prefs.panel_widths = (-5.0, f32::NAN);
     let mut u = Ui::new(s);
     u.frame(vec![]);
     let (left, right) = edges(&u);
-    assert_eq!((left, 1440.0 - right), (56.0 + *LEFT_PANEL.start(), PANEL_DEFAULT));
+    assert_eq!((left, 1440.0 - right), (56.0 + G + *LEFT_PANEL.start() + G / 2.0, PANEL_DEFAULT + 1.5 * G));
     // Widths saved under the old limits (left 200 to 480, right up to 480) or over the new ones
     // are clamped when loaded, not rejected.
     for (stored, want) in
@@ -229,7 +236,7 @@ fn minimize_ui_hides_the_panels_and_keeps_their_widths() {
     // The left sidebar alone: its edge goes with it, the right panel stays.
     u.app.run("view.leftSidebar", json!({}));
     u.frame(vec![]);
-    assert_eq!(edges(&u), (56.0, shown.1));
+    assert_eq!(edges(&u), (56.0 + G, shown.1), "the rail's island and the canvas's, G apart");
 }
 
 /// The middle of the accessible control with `role` and `label`, if one shows.

@@ -87,10 +87,35 @@ pub(crate) fn window<'a>(title: &'a str, ctx: &Context) -> egui::Window<'a> {
 /// A window styled like the dialogs that the user can move.
 pub(crate) fn floating<'a>(title: &'a str, ctx: &Context) -> egui::Window<'a> {
     let t = Tokens::get(ctx);
-    egui::Window::new(title)
-        .collapsible(false)
-        .resizable(false)
-        .frame(egui::Frame::window(&ctx.global_style()).fill(t.panel).inner_margin(egui::Margin::same(20)))
+    egui::Window::new(title).collapsible(false).resizable(false).frame(
+        egui::Frame::window(&ctx.global_style())
+            .fill(t.panel)
+            .corner_radius(egui::CornerRadius::same(crate::theme::ISLAND_RADIUS))
+            .inner_margin(egui::Margin::same(20)),
+    )
+}
+
+/// A dialog in NDL's look: no system title bar; its heading and the round close button (the only
+/// window control a dialog has) come from [`header`].
+pub(crate) fn ndl_window<'a>(title: &'a str, ctx: &Context) -> egui::Window<'a> {
+    window(title, ctx).title_bar(false)
+}
+
+/// The heading of an [`ndl_window`]: its title and NDL's round close button at the end. Returns
+/// whether the button was clicked.
+pub(crate) fn header(ui: &mut egui::Ui, t: &Tokens, title: &str) -> bool {
+    let (rect, _) = ui.allocate_exact_size(vec2(ui.available_width(), 30.0), egui::Sense::hover());
+    let mut job = egui::text::LayoutJob::simple_singleline(title.to_owned(), crate::theme::semibold(15.0), t.text);
+    job.wrap = egui::text::TextWrapping::truncate_at_width((rect.width() - 40.0).max(0.0));
+    let g = ui.painter().layout_job(job);
+    ui.painter().galley(egui::pos2(rect.left(), rect.center().y - g.size().y / 2.0), g, t.text);
+    let close = egui::Rect::from_center_size(egui::pos2(rect.right() - 14.0, rect.center().y), vec2(28.0, 28.0));
+    let id = ui.scope_id().with("ndl_dialog_close");
+    let clicked = nodalia_theme::creator::close_button(ui, &t.creator(), close, id);
+    // NDL names the button in English; screen readers get it in the interface's language.
+    ui.ctx().accesskit_node_builder(id, |n| n.set_label(tr("Close")));
+    ui.add_space(8.0);
+    clicked
 }
 
 /// The About window's tabs.
@@ -223,8 +248,11 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
     let t = Tokens::get(ctx);
     if app.ui.about {
         let mut open = true;
-        window(tr("About Trama"), ctx).open(&mut open).show(ctx, |ui| {
+        ndl_window(tr("About Trama"), ctx).show(ctx, |ui| {
             ui.set_width(ABOUT_WIDTH);
+            if header(ui, &t, tr("About Trama")) {
+                open = false;
+            }
             tab_strip(ui, &t, &AboutTab::ALL, AboutTab::label, &mut app.ui.about_tab);
             ui.add_space(12.0);
             match app.ui.about_tab {
@@ -239,8 +267,11 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
     }
     if app.ui.preferences {
         let mut open = true;
-        window(tr("Preferences"), ctx).open(&mut open).show(ctx, |ui| {
+        ndl_window(tr("Preferences"), ctx).show(ctx, |ui| {
             ui.set_width(360.0);
+            if header(ui, &t, tr("Preferences")) {
+                open = false;
+            }
             let prefs = app.session.prefs.clone();
             let mut toggles = vec![];
             for (label, val, cmd) in [
