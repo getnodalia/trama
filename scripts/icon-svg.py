@@ -63,8 +63,8 @@ def linux(art, comment):
         '</svg>\n')
 
 
-COMMENT = ('<!-- Trama app icon: Joseph Marie Jacquard, from the woven-silk portrait "A la mémoire de '
-           'J.M. Jacquard" (public domain), cut out in black and white on Trama\'s purple. '
+COMMENT = ('<!-- Trama app icon: Joseph Marie Jacquard, from a wood engraving of 1878 '
+           '(public domain), cut out in black and white on Trama\'s purple. '
            'MIT OR Apache-2.0 (assets/app-icon/README.md). -->')
 
 if __name__ == '__main__':

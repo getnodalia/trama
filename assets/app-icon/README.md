@@ -3,17 +3,16 @@
 **Figure:** Joseph Marie Jacquard (1752–1834). His loom read punched cards to weave a picture
 thread by thread, row by row: a design laid on a grid, as an interface is (*trama* is the weft).
 
-**Style:** a black-and-white portrait cut out over a full-bleed colour field, head and shoulders,
+**Style:** a black-and-white portrait cut out over a full-bleed colour field, head and shoulders, the bust running off the bottom edge,
 in the Nodalia icon family (one historical figure per app, one colour per app).
 
 **Tile:** Trama purple, `#9A45E2` at the top to `#7A26C9` at the bottom; 512 × 512 viewBox,
 rounded square `rx=112`, clipped; no border or roundel.
 
-**Provenance:** the portrait is "A la mémoire de J.M. Jacquard" (1839), the woven-silk portrait
-made on a Jacquard loom by Michel Marie Carquillat after a painting by Claude Bonnefond, from
-[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_la_m%C3%A9moire_de_J.M._Jacquard.jpg)
-(public domain). The bust was cropped from the seated figure, separated from its background,
-converted to black and white and placed over the app colour with nodalia-design's
+**Provenance:** the portrait is a wood engraving of Jacquard signed Bocourt and Tourfaut, from
+"Les bienfaiteurs de l'Humanité" (Paris, Librairie Paul Ducrocq, 1878), on
+[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Joseph_Marie_Jacquard-portrait.jpg)
+(public domain). The figure was traced out of its hatched background, converted to black and white and placed over the app colour with nodalia-design's
 `tools/app-portrait`. Licence: see [LICENSE.txt](LICENSE.txt).
 
 ## Files
@@ -30,8 +29,11 @@ converted to black and white and placed over the app colour with nodalia-design'
 
 ```sh
 # 1. the artwork, in nodalia-design (needs rembg):
-python3 tools/app-portrait/portrait.py "A_la_mémoire_de_J.M._Jacquard.jpg" trama.png \
-  --box 430,322,810,702 --colors '#9A45E2' '#7A26C9' --gamma 1.35
+# (the 1280 px render of the Commons file; --mask traces the figure, since the model keeps the
+# engraving's hatched background)
+python3 tools/app-portrait/portrait.py "Joseph_Marie_Jacquard-portrait.jpg" trama.png \
+  --box 210,170,1090,1050 --colors '#9A45E2' '#7A26C9' --gamma 1.25 \
+  --mask 180,1300,230,1000,260,860,330,780,420,700,452,630,450,560,442,480,468,400,512,325,568,262,640,238,708,240,770,272,822,330,858,410,872,495,864,560,846,612,880,660,960,730,1030,820,1080,940,1110,1100,1130,1300
 # 2. the SVGs, here:
 python3 scripts/icon-svg.py trama.png assets/app-icon
 # 3. every render (needs resvg: cargo install resvg):
