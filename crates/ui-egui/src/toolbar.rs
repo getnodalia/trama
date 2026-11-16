@@ -308,8 +308,9 @@ fn mode_switcher(app: &mut FigApp, ui: &mut Ui, x: f32, cy: f32, t: &Tokens) {
     }
 }
 
-/// Mode `i` of the switcher chosen.
-fn pick_mode(app: &mut FigApp, i: usize) {
+/// Mode `i` of the switcher chosen (0 Draw, 1 Design, 2 Prototype, 3 Inspect); the top bar's
+/// workspace selector picks 1 to 3.
+pub(crate) fn pick_mode(app: &mut FigApp, i: usize) {
     match i {
         0 => {
             app.ui.right_tab = crate::RightTab::Design;
@@ -681,7 +682,7 @@ mod tests {
         }
     }
 
-    /// The stroke widths `icon` paints with in a `size` box at `ppp` pixels per point.
+    /// The stroke widths Trama's own drawing of `icon` paints with in a `size` box at `ppp` pixels per point.
     fn widths(ppp: f32, icon: Icon, size: f32) -> Vec<f32> {
         let ctx = egui::Context::default();
         let input = || {
@@ -690,8 +691,8 @@ mod tests {
             i
         };
         ctx.run_ui(input(), |_| {}).textures_delta.clear();
-        let mut out =
-            ctx.run_ui(input(), |ui| icons::paint(ui.painter(), Rect::from_center_size(pos2(50.0, 50.0), vec2(size, size)), icon, Color32::WHITE));
+        let mut out = ctx
+            .run_ui(input(), |ui| icons::paint_own(ui.painter(), Rect::from_center_size(pos2(50.0, 50.0), vec2(size, size)), icon, Color32::WHITE));
         out.textures_delta.clear();
         assert_eq!(ctx.pixels_per_point(), ppp);
         let mut w: Vec<f32> = out

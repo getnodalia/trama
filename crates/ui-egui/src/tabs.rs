@@ -13,7 +13,8 @@ use crate::present::{PresentTab, Presenter};
 use crate::theme::{Tokens, regular};
 use crate::{FigApp, TitleBar};
 
-pub const HEIGHT: f32 = 40.0;
+/// NDL's Creator top bar height.
+pub const HEIGHT: f32 = nodalia_theme::creator::layout::APP_BAR;
 const MIN_TAB_WIDTH: f32 = 96.0;
 const OVERFLOW_WIDTH: f32 = 32.0;
 /// Size of the Home, new tab and theme icons, and of a tab's file, live and play marks and the
@@ -115,6 +116,7 @@ pub fn tab_bar(app: &mut FigApp, ui: &mut Ui) {
         let rect = ui.max_rect();
         let buttons_w = if app.ui.title_bar == TitleBar::Custom { window_buttons(app, ui, rect) } else { 0.0 };
         let mut x = rect.min.x + if app.ui.title_bar == TitleBar::Inset { 76.0 } else { 8.0 };
+        x += main_menu_button(app, ui, &t, x, rect);
         x += home_tab(app, ui, &t, x, rect);
         ui.painter().line_segment([pos2(x, rect.min.y), pos2(x, rect.max.y)], Stroke::new(1.0, t.border));
         let document_tabs: Vec<usize> = app.session.docs.iter().enumerate().filter_map(|(i, d)| app.shows(d.uid).then_some(i)).collect();
@@ -129,8 +131,8 @@ pub fn tab_bar(app: &mut FigApp, ui: &mut Ui) {
             motion.opening.clone()
         });
         let preferred: Vec<f32> = document_tabs.iter().map(|&i| preferred_width(app, i)).collect();
-        // Leave the new-tab button, theme toggle, window controls and a draggable gap free.
-        let room = (rect.max.x - buttons_w - 70.0 - x - 34.0).max(0.0);
+        // Leave the new-tab button, the workspace selector, window controls and a draggable gap free.
+        let room = (rect.max.x - buttons_w - WORKSPACE_W - 24.0 - x - 34.0).max(0.0);
         let present_pref: Vec<f32> = app.ui.presents.iter().map(present_tab_width).collect();
         let present_on = app.ui.present.as_ref().and(app.ui.present_active);
         let active_present = present_on.and_then(|id| app.ui.presents.iter().position(|p| p.id == id));
@@ -255,9 +257,9 @@ pub fn tab_bar(app: &mut FigApp, ui: &mut Ui) {
             app.run("file.new", json!({}));
             app.ui.home = false;
         }
-        let theme_r = theme_toggle(app, ui, &t, rect, buttons_w);
+        let right_end = workspace_selector(app, ui, &t, rect, buttons_w);
         if app.ui.title_bar != TitleBar::Native {
-            drag_free_space(ui, rect, nr.max.x, theme_r.min.x);
+            drag_free_space(ui, rect, nr.max.x, right_end);
         }
         if let Some(i) = switch {
             pause_present(app);
@@ -330,7 +332,7 @@ fn close_tab(app: &mut FigApp, ui: &Ui, i: usize) {
 /// The Home tab at `x`; returns its width. Without inset window buttons its divider continues the
 /// icon rail's edge below (a mirrored window has the rail on the right: no edge to continue).
 fn home_tab(app: &mut FigApp, ui: &mut Ui, t: &Tokens, x: f32, rect: Rect) -> f32 {
-    let w = if app.ui.title_bar == TitleBar::Inset || app.ui.mirrored { 44.0 } else { rect.min.x + crate::layers::RAIL_WIDTH - x };
+    let w = 44.0;
     let hr = Rect::from_min_size(pos2(x, rect.min.y), vec2(w, HEIGHT));
     let hresp = ui.interact(hr, ui.scope_id().with("home"), Sense::click()).tip(tr("Home"));
     let home_active = (app.ui.home || !app.has_files()) && app.ui.present.is_none();
@@ -348,24 +350,51 @@ fn home_tab(app: &mut FigApp, ui: &mut Ui, t: &Tokens, x: f32, rect: Rect) -> f3
     w
 }
 
-/// The theme toggle, left of the window buttons; returns its rect.
-fn theme_toggle(app: &mut FigApp, ui: &mut Ui, t: &Tokens, rect: Rect, buttons_w: f32) -> Rect {
-    let theme_r = Rect::from_center_size(pos2(rect.max.x - buttons_w - 26.0, rect.center().y), Vec2::splat(BAR_BUTTON));
-    let tresp = ui.interact(theme_r, ui.scope_id().with("theme"), Sense::click()).tip(tr("Toggle light/dark theme"));
-    if tresp.hovered() {
-        ui.painter().rect_filled(theme_r, CornerRadius::same(5), t.hover);
+/// The workspace selector's width in the bar.
+const WORKSPACE_W: f32 = 150.0;
+
+/// NDL's main menu (the hamburger) at `x`, opening the menu under it; returns the room it takes.
+fn main_menu_button(app: &mut FigApp, ui: &mut Ui, t: &Tokens, x: f32, rect: Rect) -> f32 {
+    let r = Rect::from_center_size(pos2(x + 16.0, rect.center().y), Vec2::splat(28.0));
+    let resp = ui.interact(r, ui.scope_id().with("main_menu"), Sense::click()).tip(tr("Main menu"));
+    crate::a11y::menu_button(&resp, tr("Main menu"), app.ui.main_menu);
+    if resp.hovered() || app.ui.main_menu {
+        ui.painter().rect_filled(r, CornerRadius::same(nodalia_theme::creator::layout::CONTROL_RADIUS), t.hover);
     }
-    icons::paint(
-        ui.painter(),
-        Rect::from_center_size(theme_r.center(), Vec2::splat(BAR_ICON)),
-        if app.ui.dark { Icon::Sun } else { Icon::Moon },
-        t.icon,
-    );
-    if tresp.clicked() {
-        let cmd = if app.ui.dark { "view.themeLight" } else { "view.themeDark" };
-        app.run(cmd, json!({}));
+    icons::paint(ui.painter(), Rect::from_center_size(r.center(), Vec2::splat(18.0)), Icon::Menu, t.icon);
+    if resp.clicked() {
+        app.ui.main_menu = !app.ui.main_menu;
     }
-    theme_r
+    if app.ui.main_menu {
+        crate::a11y::popup(&mut app.ui.nav, resp.id, crate::menus::main_menu_id());
+    }
+    ui.ctx().data_mut(|d| d.insert_temp(crate::menus::main_menu_anchor_id(), r));
+    36.0
+}
+
+/// The creator suite's workspace selector at the bar's end, left of the window buttons, while a
+/// design file shows: Design, Prototype and Inspect (Dev Mode). Returns its left edge.
+fn workspace_selector(app: &mut FigApp, ui: &mut Ui, t: &Tokens, rect: Rect, buttons_w: f32) -> f32 {
+    let end = rect.max.x - buttons_w - 8.0;
+    let board = app.session.doc().is_ok_and(trama_engine::board::is_board);
+    if !app.has_files() || app.ui.home || app.ui.present.is_some() || board {
+        return end;
+    }
+    let names = [tr("Design"), tr("Prototype"), tr("Inspect")];
+    let current = match app.ui.right_tab {
+        crate::RightTab::Design => 0,
+        crate::RightTab::Prototype => 1,
+        crate::RightTab::Inspect => 2,
+    };
+    let r = Rect::from_min_size(pos2(end - WORKSPACE_W, rect.center().y - 14.0), vec2(WORKSPACE_W, 28.0));
+    let mut wu = ui.new_child(egui::UiBuilder::new().max_rect(r).layout(egui::Layout::left_to_right(egui::Align::Center)));
+    use nodalia_theme::creator::WorkspacePick;
+    if let Some(WorkspacePick::Workspace(i)) =
+        nodalia_theme::creator::workspace_selector(&mut wu, &t.creator(), "trama", names[current], &names, names.len(), &[], WORKSPACE_W)
+    {
+        crate::toolbar::pick_mode(app, i + 1);
+    }
+    r.min.x
 }
 
 /// What a drag on a document tab is doing.

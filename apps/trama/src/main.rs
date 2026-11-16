@@ -288,6 +288,8 @@ fn main() -> eframe::Result {
                 graphics.opened(&state.adapter.get_info());
             }
             with_app(|fig| fig.services.set_egui_context(&cc.egui_ctx));
+            // Linux: the menus go to the desktop's top bar when it has one (NDL).
+            with_app(|fig| fig.install_global_menu(&cc.egui_ctx));
             // winit's own Quit (⌘Q) ends the process through `terminate:` without ever asking the
             // app, so unsaved changes are lost with no warning (issue #857). This menu's Quit
             // sends the root window a close request instead, and the unsaved-changes question

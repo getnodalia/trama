@@ -25,7 +25,120 @@ macro_rules! icons {
 
 mod draw;
 
-pub use draw::{paint, paint_outlines};
+pub use draw::{paint, paint_outlines, paint_own};
+
+impl Icon {
+    /// The Nodalia Design icon this one is drawn with, in NDL's bold style; `None` keeps Trama's
+    /// own drawing (marks NDL has no glyph for: components, auto layout, corners, live sessions,
+    /// the window buttons Windows draws its own way).
+    pub fn ndl(self) -> Option<&'static str> {
+        Some(match self {
+            Icon::Move => "select",
+            Icon::Scale => "scale",
+            Icon::FitContents => "fit",
+            Icon::Hand => "pan",
+            Icon::Frame => "artboard",
+            Icon::Section => "section",
+            Icon::Slice => "slice",
+            Icon::Rectangle => "rectangle",
+            Icon::Line => "line",
+            Icon::Ellipse => "ellipse",
+            Icon::Polygon => "polygon",
+            Icon::Star => "star",
+            Icon::Image => "image",
+            Icon::Pen => "pen",
+            Icon::Pencil => "pencil",
+            Icon::Text => "text",
+            Icon::TextOnPath => "type-path",
+            Icon::Comment => "comment",
+            Icon::Actions => "actions",
+            Icon::Chevron => "chevron-down",
+            Icon::ChevronRight => "chevron-right",
+            Icon::ChevronLeft => "chevron-left",
+            Icon::ChevronUp => "chevron-up",
+            Icon::Plus => "plus",
+            Icon::Minus => "minus",
+            Icon::EyeOff => "eye-off",
+            Icon::Lock => "lock",
+            Icon::Unlock => "unlock",
+            Icon::Group => "group",
+            Icon::Bend => "curvature",
+            Icon::Lasso => "lasso",
+            Icon::Cut => "cut",
+            Icon::Crop => "crop",
+            Icon::Boolean => "pathfinder",
+            Icon::Page => "file",
+            Icon::Check => "check",
+            Icon::Close => "close",
+            Icon::Search => "search",
+            Icon::Grid => "grid",
+            Icon::AlignLeft => "align-objects-left",
+            Icon::AlignHCenter => "align-objects-center",
+            Icon::AlignRight => "align-objects-right",
+            Icon::AlignTop => "align-objects-top",
+            Icon::AlignVCenter => "align-objects-middle",
+            Icon::AlignBottom => "align-objects-bottom",
+            Icon::DistributeH => "distribute",
+            Icon::DistributeV => "distribute-vertical",
+            Icon::Rotate => "rotate",
+            Icon::FlipH => "flip",
+            Icon::FlipV => "flip-vertical",
+            Icon::CornerRadius => "radius",
+            Icon::Angle => "angle",
+            Icon::LinkOn => "link",
+            Icon::LinkOff => "link-off",
+            Icon::ClipContent => "clip-mask",
+            Icon::Effects => "effects",
+            Icon::Styles => "styles",
+            Icon::Menu => "menu",
+            Icon::Play => "play",
+            Icon::Home => "home",
+            Icon::Bell => "bell",
+            Icon::Panels => "sidebar",
+            Icon::Help => "help",
+            Icon::Dots => "more-horizontal",
+            Icon::TextAlignLeft => "align-left",
+            Icon::TextAlignCenter => "align-center",
+            Icon::TextAlignRight => "align-right",
+            Icon::TextAlignJustify => "align-justify",
+            Icon::TextTop => "align-top",
+            Icon::TextMiddle => "align-middle",
+            Icon::TextBottom => "align-bottom",
+            Icon::Eyedropper => "eyedropper",
+            Icon::Code => "code",
+            Icon::Library => "library",
+            Icon::Layers => "layers",
+            Icon::Opacity => "opacity",
+            Icon::Export => "export",
+            Icon::StrokeIcon => "stroke-weight",
+            Icon::Fill => "fill",
+            Icon::Sun => "sun",
+            Icon::Moon => "moon",
+            Icon::Undo => "undo",
+            Icon::Redo => "redo",
+            Icon::Union => "pathfinder-unite",
+            Icon::Subtract => "pathfinder-minus-front",
+            Icon::Intersect => "pathfinder-intersect",
+            Icon::Exclude => "pathfinder-exclude",
+            Icon::Reset => "refresh",
+            Icon::Detach => "unlink",
+            Icon::Clock => "clock",
+            Icon::Eraser => "eraser",
+            Icon::VariableWidth => "width",
+            Icon::ShapeBuilder => "shape-builder",
+            Icon::Swap => "swap",
+            Icon::Link => "link",
+            Icon::Preview => "preview",
+            Icon::Adjust => "settings",
+            Icon::ViewList => "list-view",
+            Icon::ViewGrid => "grid-view",
+            Icon::DragHandle => "drag-handle",
+            Icon::GamutWarning => "warning",
+            Icon::Online => "globe",
+            _ => return None,
+        })
+    }
+}
 
 icons! {
     Move,
@@ -345,6 +458,13 @@ pub fn gallery(ctx: &egui::Context) {
 mod tests {
     use super::*;
 
+    /// Every icon drawn with Nodalia Design names a glyph NDL has.
+    #[test]
+    fn every_ndl_icon_exists() {
+        let missing: Vec<_> = Icon::ALL.iter().filter_map(|i| i.ndl().filter(|n| nodalia_theme::icons::get(n).is_none()).map(|n| (*i, n))).collect();
+        assert!(missing.is_empty(), "no NDL glyph for {missing:?}");
+    }
+
     /// Every icon paints at every size the UI uses (and odd positions) without panicking.
     #[test]
     fn every_icon_paints_at_every_size() {
@@ -454,10 +574,12 @@ mod tests {
     }
 
     /// The shapes `icon` paints in a 32-point box at the origin: two points per grid unit.
+    /// Trama's own drawing of an icon (the stand-in where NDL has the glyph).
     fn shapes_at_32(icon: Icon) -> Vec<Shape> {
         let ctx = egui::Context::default();
-        let mut out =
-            ctx.run_ui(egui::RawInput::default(), |ui| paint(ui.painter(), Rect::from_min_size(Pos2::ZERO, Vec2::splat(32.0)), icon, Color32::WHITE));
+        let mut out = ctx.run_ui(egui::RawInput::default(), |ui| {
+            paint_own(ui.painter(), Rect::from_min_size(Pos2::ZERO, Vec2::splat(32.0)), icon, Color32::WHITE)
+        });
         out.textures_delta.clear();
         out.shapes.into_iter().map(|c| c.shape).collect()
     }

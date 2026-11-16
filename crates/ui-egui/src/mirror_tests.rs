@@ -22,9 +22,12 @@ fn ui(mirrored: bool) -> Ui {
     u
 }
 
-/// The canvas's left and right x.
+/// The NDL islands' gap between the panels and the canvas.
+const G: f32 = crate::theme::ISLAND_GAP;
+
+/// The canvas's left and right x: the middle of the gap between its island and the panels'.
 fn canvas(u: &Ui) -> (f32, f32) {
-    (u.app.canvas.rect.min.x, u.app.canvas.rect.max.x)
+    (u.app.canvas.rect.min.x - G / 2.0, u.app.canvas.rect.max.x + G / 2.0)
 }
 
 /// Press on `from`, move to `to` in steps and let go.
@@ -38,11 +41,11 @@ fn drag(u: &mut Ui, from: egui::Pos2, to: egui::Pos2) {
 fn the_design_panel_is_on_the_left_and_the_layers_on_the_right() {
     let u = ui(true);
     let (left, right) = canvas(&u);
-    assert_eq!(left, PANEL_DEFAULT, "the Design panel from the window's left edge");
-    assert_eq!(right, WINDOW_W - layers::RAIL_WIDTH - PANEL_DEFAULT, "the layers panel and the rail on the right");
+    assert_eq!(left, PANEL_DEFAULT + 1.5 * G, "the Design panel from the window's left edge");
+    assert_eq!(right, WINDOW_W - layers::RAIL_WIDTH - PANEL_DEFAULT - 1.5 * G, "the layers panel and the rail on the right");
     // egui keeps a point between a side panel and the canvas, on the canvas side.
     let design = u.app.ui.right_panel_rect.expect("the Design panel drew");
-    assert_eq!((design.min.x, design.max.x), (0.0, PANEL_DEFAULT - 1.0));
+    assert_eq!((design.min.x, design.max.x), (G, G + PANEL_DEFAULT - 1.0), "its island, G from the window's edge");
     assert!(u.ctx.global_style().right_to_left, "egui's chrome mirrors too");
 }
 
@@ -50,9 +53,9 @@ fn the_design_panel_is_on_the_left_and_the_layers_on_the_right() {
 fn an_english_window_is_as_it_was() {
     let u = ui(false);
     let (left, right) = canvas(&u);
-    assert_eq!((left, right), (layers::RAIL_WIDTH + PANEL_DEFAULT, WINDOW_W - PANEL_DEFAULT));
+    assert_eq!((left, right), (layers::RAIL_WIDTH + PANEL_DEFAULT + 1.5 * G, WINDOW_W - PANEL_DEFAULT - 1.5 * G));
     let design = u.app.ui.right_panel_rect.expect("the Design panel drew");
-    assert_eq!((design.min.x, design.max.x), (WINDOW_W - PANEL_DEFAULT + 1.0, WINDOW_W));
+    assert_eq!((design.min.x, design.max.x), (WINDOW_W - G - PANEL_DEFAULT + 1.0, WINDOW_W - G), "its island, G from the window's edge");
     assert!(!u.ctx.global_style().right_to_left);
 }
 
@@ -77,7 +80,7 @@ fn closing_the_layers_panel_gives_the_canvas_the_right_side() {
     let mut u = ui(true);
     u.app.ui.close_left_panel();
     u.frame(vec![]);
-    assert_eq!(canvas(&u), (PANEL_DEFAULT, WINDOW_W - layers::RAIL_WIDTH), "only the rail is left on the right");
+    assert_eq!(canvas(&u), (PANEL_DEFAULT + 1.5 * G, WINDOW_W - layers::RAIL_WIDTH - G), "only the rail is left on the right");
 }
 
 #[test]
@@ -86,7 +89,7 @@ fn switching_back_unmirrors_the_window_and_egui() {
     u.app.ui.mirrored = false;
     u.frame(vec![]);
     u.frame(vec![]);
-    assert_eq!(canvas(&u), (layers::RAIL_WIDTH + PANEL_DEFAULT, WINDOW_W - PANEL_DEFAULT));
+    assert_eq!(canvas(&u), (layers::RAIL_WIDTH + PANEL_DEFAULT + 1.5 * G, WINDOW_W - PANEL_DEFAULT - 1.5 * G));
     assert!(!u.ctx.global_style().right_to_left);
 }
 

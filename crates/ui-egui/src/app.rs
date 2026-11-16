@@ -29,6 +29,8 @@ impl FigApp {
         let (left_width, right_width) = (within(left_width, LEFT_PANEL), within(right_width, RIGHT_PANEL));
         let pages_height = session.prefs.pages_height;
         Self {
+            #[cfg(target_os = "linux")]
+            global_menu: None,
             ui: UiState { left_width, right_width, pages_height, ..UiState::default() },
             session,
             canvas: canvas::CanvasState::default(),
@@ -153,6 +155,37 @@ impl FigApp {
         }
     }
 
+    /// On Linux, export the menus to the desktop's top bar when it shows the focused app's menus
+    /// (NDL); elsewhere, or with no such bar, they stay in the main menu. Call it once, at start.
+    pub fn install_global_menu(&mut self, ctx: &egui::Context) {
+        #[cfg(target_os = "linux")]
+        {
+            let items = crate::global_menu::items(self);
+            self.global_menu = crate::global_menu::install(ctx, &items).map(|m| (m, 0.0));
+        }
+        #[cfg(not(target_os = "linux"))]
+        let _ = ctx;
+    }
+
+    /// Runs what was picked in the desktop's top-bar menu and keeps its items current.
+    #[cfg(target_os = "linux")]
+    fn serve_global_menu(&mut self) {
+        let Some((menu, _)) = self.global_menu.as_ref() else { return };
+        let picked: Vec<String> = menu.commands.try_iter().collect();
+        for id in &picked {
+            crate::global_menu::run(self, id);
+        }
+        let now = self.now_secs();
+        if picked.is_empty() && self.global_menu.as_ref().is_some_and(|(_, sent)| now - sent < 0.5) {
+            return;
+        }
+        let items = crate::global_menu::items(self);
+        if let Some((menu, sent)) = self.global_menu.as_mut() {
+            menu.update(&items);
+            *sent = now;
+        }
+    }
+
     /// Draw the whole UI: the main window (the other windows draw themselves).
     pub fn ui(&mut self, ui: &mut egui::Ui) {
         #[cfg(not(target_arch = "wasm32"))]
@@ -238,6 +271,10 @@ impl FigApp {
         self.poll_dialog(&ctx);
         // Control requests run first so their results reflect this frame.
         crate::control::drain(self, &ctx);
+        #[cfg(target_os = "linux")]
+        if self.windows.current == 0 {
+            self.serve_global_menu();
+        }
         windows::requests(self, &ctx);
         selection_spacing::sync(self, &ctx);
         // Before any widget: the navigation keys (F6, Tab, arrows, Escape) move the keyboard.
@@ -262,6 +299,8 @@ impl FigApp {
             // changes dialog take Escape and draw above the player just as it does in the editor.
             dialogs::keys(self, &ctx);
             present::show(self, ui);
+            // NDL's main menu (the hamburger in the bar) opens here too.
+            menus::popups(self, &ctx);
             dialogs::show(self, &ctx);
             updates_ui::show(self, &ctx);
             // What went wrong while presenting (a widget's plugin failing) shows over it.
@@ -283,6 +322,8 @@ impl FigApp {
                 self.run("app.preferences", serde_json::json!({}));
             }
             dialogs::keys(self, &ctx);
+            // NDL's main menu (the hamburger in the bar) opens on Home too.
+            menus::popups(self, &ctx);
             dialogs::show(self, &ctx);
             updates_ui::show(self, &ctx);
             self.toast_ui(&ctx);
@@ -312,42 +353,63 @@ impl FigApp {
         // right, the "right" (Design) panel on the left. Their ids and widths stay as they are.
         let mirrored = self.ui.mirrored;
         let side = |start: bool, id: &'static str| if start != mirrored { egui::Panel::left(id) } else { egui::Panel::right(id) };
-        if !hidden && !minimized && (!narrow || mobile == Some(MobilePanel::Left)) {
+        // The panels and the canvas are NDL islands on the window's colour, `ISLAND_GAP` apart and
+        // from the window's edges (the tab bar above is the gap at their top). With the interface
+        // hidden or minimized, and in a phone-sized window, the canvas has the whole window.
+        let islands = !hidden && !minimized && !narrow;
+        let gap = if islands { theme::ISLAND_GAP } else { 0.0 };
+        // An island's outer margin on the window's start (left) or end side: `edge` toward the
+        // window's edge, `inner` toward the canvas, and the gap below.
+        let island = |start: bool, edge: f32, inner: f32| {
+            let (l, r) = if start != mirrored { (edge, inner) } else { (inner, edge) };
+            egui::Margin { left: l as i8, right: r as i8, top: 0, bottom: gap as i8 }
+        };
+        ui.painter().rect_filled(ui.available_rect_before_wrap(), 0.0, t.bg);
+        let mut rail_rect = None;
+        let rail_open = !hidden && !minimized && (!narrow || mobile == Some(MobilePanel::Left));
+        if rail_open {
             side(true, "left_rail")
-                .exact_size(layers::RAIL_WIDTH)
+                .exact_size(layers::RAIL_WIDTH + gap)
                 .resizable(false)
-                .frame(egui::Frame::NONE.fill(t.panel).stroke(egui::Stroke::new(1.0, t.border)))
+                .frame(egui::Frame::NONE.fill(t.panel).outer_margin(island(true, gap, 0.0)))
                 .show(ui, |ui| {
+                    rail_rect = Some(ui.max_rect());
                     a11y::region(&mut self.ui.nav, ui, a11y::Region::Layers, egui::accesskit::Role::Navigation, i18n::tr("Sidebar"));
                     layers::rail(self, ui)
                 });
         }
         // The panels are as wide as asked, less in a window too small for them and the canvas.
         let left_open = !hidden && !minimized && if narrow { mobile == Some(MobilePanel::Left) } else { !self.ui.left_collapsed };
+        // The gaps beside the left panel, around the right one and the canvas take their room.
+        let room = (ui.available_width() - 3.0 * gap).max(0.0);
         let (left_w, right_w) = if narrow {
-            let w = (ui.available_width() - MOBILE_STRIP).max(0.0);
+            let w = (room - MOBILE_STRIP).max(0.0);
             (if left_open { w } else { 0.0 }, w)
         } else {
-            fit_panels(ui.available_width(), left_open.then_some(self.ui.left_width), right_open.then_some(self.ui.right_width))
+            fit_panels(room, left_open.then_some(self.ui.left_width), right_open.then_some(self.ui.right_width))
         };
         let rows = ui.available_rect_before_wrap().y_range();
         let mut edges: Vec<(&str, f32, f32, f32)> = Vec::new();
         // The x of the edge facing the canvas of a panel `w` wide on the window's start (left)
-        // side, or its end side, and which way a drag to the right sizes it.
-        let edge = |ui: &egui::Ui, start: bool, w: f32| {
+        // side, or its end side (the middle of the gap between its island and the canvas's), and
+        // which way a drag to the right sizes it. `outer`: the gap between the panel's island and
+        // the window's edge.
+        let edge = |ui: &egui::Ui, start: bool, w: f32, outer: f32| {
             let room = ui.available_rect_before_wrap();
-            if start != mirrored { (room.min.x + w, 1.0) } else { (room.max.x - w, -1.0) }
+            if start != mirrored { (room.min.x + outer + w + gap / 2.0, 1.0) } else { (room.max.x - outer - w - gap / 2.0, -1.0) }
         };
+        let mut left_rect = None;
         if left_open {
             if !narrow {
-                let (x, grows) = edge(ui, true, left_w);
+                let (x, grows) = edge(ui, true, left_w, 0.0);
                 edges.push(("left", x, left_w, grows));
             }
             side(true, "left_panel")
                 .resizable(false)
-                .exact_size(left_w)
-                .frame(egui::Frame::NONE.fill(t.panel).stroke(egui::Stroke::new(1.0, t.border)))
+                .exact_size(left_w + gap / 2.0)
+                .frame(egui::Frame::NONE.fill(t.panel).outer_margin(island(true, 0.0, gap / 2.0)))
                 .show(ui, |ui| {
+                    left_rect = Some(ui.max_rect());
                     let label = match self.ui.left_tab {
                         _ if self.ui.versions.open => i18n::tr("Version history"),
                         LeftTab::File => i18n::tr("Layers"),
@@ -360,22 +422,27 @@ impl FigApp {
         self.ui.right_panel_rect = None;
         if right_open {
             if !narrow {
-                let (x, grows) = edge(ui, false, right_w);
+                let (x, grows) = edge(ui, false, right_w, gap);
                 edges.push(("right", x, right_w, grows));
             }
             side(false, "right_panel")
                 .resizable(false)
-                .exact_size(right_w)
-                // No stroke: a frame's stroke is part of its margin, which would take 1 pt off
-                // each side of the panel (240 pt by default). The edge is drawn in `right_panel`.
-                .frame(egui::Frame::NONE.fill(t.panel))
+                .exact_size(right_w + gap * 1.5)
+                .frame(egui::Frame::NONE.fill(t.panel).outer_margin(island(false, gap, gap / 2.0)))
                 .show(ui, |ui| {
                     let label = right_tab_label(self.ui.right_tab);
                     a11y::region(&mut self.ui.nav, ui, a11y::Region::Properties, egui::accesskit::Role::Pane, label);
                     right::right_panel(self, ui)
                 });
         }
-        egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.canvas)).show(ui, |ui| {
+        // The canvas island: half the gap beside a panel's island, the whole gap at the window's edge.
+        let (start_side, end_side) = (rail_open, right_open);
+        let (on_left, on_right) = if mirrored { (end_side, start_side) } else { (start_side, end_side) };
+        let beside = |panel: bool| if panel { (gap / 2.0) as i8 } else { gap as i8 };
+        let canvas_margin = egui::Margin { left: beside(on_left), right: beside(on_right), top: 0, bottom: gap as i8 };
+        let mut canvas_rect = None;
+        egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.canvas).outer_margin(canvas_margin)).show(ui, |ui| {
+            canvas_rect = Some(ui.max_rect());
             let worker = self.worker.take();
             let mut worker = worker.unwrap_or_else(|| render_worker::Worker::new(ctx.clone()));
             canvas::show(self, ui, &mut worker);
@@ -393,6 +460,14 @@ impl FigApp {
                 });
             }
         });
+        // The islands' rounded corners, over what each drew; the rail and the left panel are one.
+        let side_panels = match (rail_rect, left_rect) {
+            (Some(a), Some(b)) => Some(a.union(b)),
+            (a, b) => a.or(b),
+        };
+        for r in [side_panels, self.ui.right_panel_rect.filter(|_| right_open), canvas_rect].into_iter().flatten().filter(|_| islands) {
+            theme::round_island(ui.painter(), &t, r);
+        }
         if narrow {
             // In the strip beside the open panel; with none open, on the Design panel's side.
             let at_right = (mobile == Some(MobilePanel::Left)) != mirrored;

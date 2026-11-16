@@ -161,9 +161,29 @@ impl Tokens {
         }
     }
 
+    /// The creator suite's shared parts (`nodalia_theme::creator`: workspace selector, Home,
+    /// dialog buttons) in these tokens' palette.
+    pub fn creator(&self) -> nodalia_theme::creator::Look {
+        let mode = if self.dark { nodalia_theme::Mode::Dark } else { nodalia_theme::Mode::Light };
+        nodalia_theme::creator::Look::new(mode.palette_with(TRAMA))
+            .strong_family(FontFamily::Name("semibold".into()))
+            .medium_family(FontFamily::Name("semibold".into()))
+    }
+
     pub fn get(ctx: &Context) -> Tokens {
         ctx.data(|d| d.get_temp::<Tokens>(tokens_id())).unwrap_or_else(Tokens::light)
     }
+}
+
+/// The window-coloured gap between the panels' islands, and from them to the window's edges.
+pub const ISLAND_GAP: f32 = 8.0;
+/// An island's corner radius (NDL's `ISLAND_RADIUS`).
+pub const ISLAND_RADIUS: u8 = nodalia_theme::creator::layout::ISLAND_RADIUS;
+
+/// Rounds the corners of the island `rect` after its contents are drawn: a window-coloured ring
+/// outside the rounded rect, clipped to it.
+pub fn round_island(painter: &egui::Painter, t: &Tokens, rect: egui::Rect) {
+    nodalia_theme::creator::round_island_corners(painter, &t.creator(), rect);
 }
 
 /// Stable id for temporary theme tokens.

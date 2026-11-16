@@ -1,7 +1,7 @@
 # Nodalia migration: Trama
 
 Category: Creator suite app (with Lienzo and Pluma).
-Status: named Trama, building from getnodalia, first NDL step, as of 2026-11-14. Evidence: the
+Status: named Trama, building from getnodalia, NDL interface, as of 2026-11-15. Evidence: the
 pull request that adds this file.
 
 ## Current state
@@ -32,46 +32,35 @@ and the Creator suite's shared parts (`nodalia_theme::creator`, nodalia-design's
   as a selection).
 - The title bar: NDL's round window controls on Linux and the BSDs (`TRAMA_TITLEBAR=desktop`
   keeps the desktop's frame), the system's on macOS, Windows' own caption buttons on Windows.
-- The rail's main menu is NDL's hamburger.
 - The in-app updater is `nodalia-update` against getnodalia/trama's releases.
 - No default online-collaboration server: online sharing needs a server set in Preferences;
   sharing on the local network works as before.
 
+## NDL: done
+
+- **Islands.** The rail and the layers panel, the properties panel and the canvas are rounded
+  islands (`creator::layout::ISLAND_RADIUS`) on the window's colour, 8 pt apart; a panel's edge is
+  grabbed in the gap between islands. With the interface hidden or minimized, and in a phone-sized
+  window, the canvas has the whole window.
+- **Top bar** at the creator suite's height (`creator::layout::APP_BAR`): NDL's hamburger, Home,
+  the file tabs and, while a design file shows, the creator workspace selector (Design,
+  Prototype, Inspect) left of the window controls.
+- **Hamburger.** The main menu moved from the rail to the top bar; it holds the menus (when the
+  desktop has no global menu) and ends with About, Preferences, Keyboard shortcuts and Quit.
+- **Light and dark only in Preferences.** The bar's theme toggle and View ▸ Theme are gone; the
+  commands stay for the CLI, MCP and the control channel.
+- **Home** is one island on the window's colour, with NDL's control radius on its sidebar rows.
+- **About and Preferences** carry NDL's integrated close control and no system title bar; every
+  floating window has the island radius.
+- **Icons.** Toolbar, panel and menu icons draw NDL's bold glyphs; Trama's own drawings stay for
+  what NDL has no glyph for (components, auto layout, corners, gradients, live and window marks).
+- **Global menu on Linux.** The menus are exported over D-Bus (`com.canonical.dbusmenu`,
+  registered with `com.canonical.AppMenu.Registrar`) to the shell's top-bar menu where it has one;
+  the hamburger then shows only the app's own entries.
+
 ## NDL still to do
 
-In order. Each is its own pull request, with light and dark screenshots.
-
-1. **Islands.** The panels (layers, properties, toolbar, tab strip) become rounded islands on the
-   window colour with `nodalia_theme::component::{PANEL_RADIUS, WINDOW_GAP}`, the canvas rounded
-   with `creator::round_island_corners`, as Pluma's `theme::bar_frame`.
-2. **Top bar with the workspace selector** (`nodalia_theme::creator`): Design, Prototype and
-   Inspect (Trama's dev mode) as workspaces, replacing the mode switch in the properties panel.
-3. **Hamburger contents.** The rail's hamburger opens the full main menu today; NDL puts About,
-   Preferences, Keyboard shortcuts and Quit first in it, in the header.
-4. **Light and dark only in Preferences.** View ▸ Theme (`view.themeLight`, `view.themeDark`,
-   `view.themeSystem`) leaves the menu; the commands stay for the CLI, MCP and the control channel,
-   and Preferences keeps the choice.
-5. **Home** on `nodalia_theme::creator::home` (rail, recents, new file), keeping Trama's online
-   and local-network sections.
-6. **Dialogs** (About, Preferences, Export, confirmations) with NDL's integrated controls
-   (Preferences: close only) and the creator suite's buttons.
-7. **Fonts.** The UI and the wordmark move to NDL's faces from craft-fonts.
-8. **Global menu on Linux.** Export the menus over D-Bus to the shell's top-bar menu where it has
-   one; the in-window menu bar shows only where it has none.
-9. **Icons.** Move the shared UI icons (tools, align, boolean operations) to nodalia-design's set
-   in the bold style.
-
-## Technical debt
-
-- The native file's signature (`"format": "figcraft"`), the plugin ABI (`figcraft`,
-  `figcraft_run`), the old manifest name and the `figcraft://` scheme keep the old name for
-  compatibility; `.github/rebrand.toml` keeps them.
-- Internal Rust type names inherited from upstream (`FigApp`) are not product names and stay
-  until upstream renames them, so the weekly sync merges cleanly.
-- Upstream's `docs/brand/` and `docs/online-sharing-terms.md` were removed here; an upstream change
-  to them shows up as a conflict in the sync pull request, resolved by keeping them removed.
-
-## Reusable Nodalia components
-
-getnodalia/foundation (vendored crates, fonts, reusable workflows); getnodalia/nodalia-design
-(theme, window controls, creator parts, updater, DMG background).
+1. **Fonts.** The UI and the wordmark move to NDL's faces from craft-fonts.
+2. **Home on `creator::home`.** Home keeps Trama's own layout (online and local-network sections)
+   on its island; moving it onto the shared creator Home needs those sections there first.
+3. **The other dialogs** (Export, confirmations) on the creator frame with its buttons.

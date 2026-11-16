@@ -193,8 +193,9 @@ fn expanding_collapsing_and_revealing() {
     u.frame(vec![]);
     // Alt-click on a disclosure arrow opens everything inside (silent, pinned); again closes it.
     let row = u.row_at(f);
-    // The arrow sits at the row's left, after the panel's inset.
-    let arrow = Pos2::new(74.0, row.y);
+    // The arrow sits at the row's left, after the panel's inset (its island is the islands' gap
+    // from the window's edge).
+    let arrow = Pos2::new(74.0 + crate::theme::ISLAND_GAP, row.y);
     click(&mut u, arrow, ALT);
     assert!(u.app.ui.expanded.contains(&f) && u.app.ui.expanded.contains(&g), "silent: Alt-click on an arrow expands every layer inside (pinned)");
     click(&mut u, arrow, ALT);

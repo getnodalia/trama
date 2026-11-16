@@ -260,6 +260,12 @@ pub fn available(id: &str) -> bool {
 }
 
 /// Draw one level of the main menu: `prefix` is the menu path ("File", "Edit/Copy as").
+/// Submenus the catalog lists that the window's menus leave out. Light and dark are chosen only
+/// in Preferences (NDL); the `view.theme*` commands stay for the CLI, MCP and the control channel.
+pub(crate) fn hidden_submenu(prefix: &str, sub: &str) -> bool {
+    prefix == "View" && sub == "Theme"
+}
+
 fn menu_level(app: &mut FigApp, ui: &mut Ui, prefix: &str) -> bool {
     let t = Tokens::get(ui.ctx());
     // The installed plugins head the Plugins menu.
@@ -293,7 +299,7 @@ fn menu_level(app: &mut FigApp, ui: &mut Ui, prefix: &str) -> bool {
             }
         } else if let Some(rest) = m.menu.strip_prefix(prefix).and_then(|r| r.strip_prefix('/')) {
             let sub = rest.split('/').next().unwrap_or(rest).to_string();
-            if !subs.contains(&sub) {
+            if !subs.contains(&sub) && !hidden_submenu(prefix, &sub) {
                 subs.push(sub.clone());
                 last_sep = false;
                 let full = format!("{prefix}/{sub}");
@@ -351,6 +357,11 @@ fn ctx_menu_id() -> Id {
 }
 
 /// The main menu's area.
+/// Where the main menu's button is this frame (the menu opens under it).
+pub(crate) fn main_menu_anchor_id() -> Id {
+    Id::unique("main_menu_anchor")
+}
+
 pub fn main_menu_id() -> Id {
     Id::unique("main_menu")
 }
@@ -360,7 +371,7 @@ fn over_menu(ctx: &egui::Context) -> bool {
     ctx.input(|i| i.pointer.interact_pos()).and_then(|p| ctx.layer_id_at(p)).is_some_and(|l| l.order == egui::Order::Foreground)
 }
 
-const TOP_MENUS: &[&str] = &[
+pub(crate) const TOP_MENUS: &[&str] = &[
     tr_noop("File"),
     tr_noop("Edit"),
     tr_noop("View"),
@@ -398,7 +409,10 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
     if app.ui.main_menu {
         let mut close = false;
         let area = egui::Area::new(main_menu_id())
-            .fixed_pos(pos2(8.0, crate::tabs::HEIGHT + 48.0))
+            .fixed_pos(
+                ctx.data(|d| d.get_temp::<Rect>(main_menu_anchor_id()))
+                    .map_or(pos2(8.0, crate::tabs::HEIGHT + 4.0), |r| r.left_bottom() + vec2(0.0, 6.0)),
+            )
             .order(egui::Order::Foreground)
             .constrain_to(tree::vertical_bounds(ctx))
             .show(ctx, |ui| {
@@ -427,7 +441,8 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                         close = true;
                     }
                     ui.add_space(6.0);
-                    for top in TOP_MENUS {
+                    // The menus themselves are in the desktop's top bar when it shows them.
+                    for top in TOP_MENUS.iter().filter(|_| !crate::global_menu::shown()) {
                         if submenu_at(
                             ui,
                             SubmenuOptions { area: Id::unique(("menu", *top)), key: top, label: tr(top), gap: 12.0, constrain: false, tokens: &t },
@@ -437,6 +452,20 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                         {
                             close = true;
                         }
+                    }
+                    separator(ui);
+                    // NDL's main menu ends with the app's own entries.
+                    for (label, id) in
+                        [(tr("About Trama"), "help.about"), (tr("Preferences…"), "app.preferences"), (tr("Keyboard shortcuts"), "help.shortcuts")]
+                    {
+                        if item(ui, label, crate::shortcuts::shortcut(id).unwrap_or(""), true, false, &t) {
+                            app.run(id, json!({}));
+                            close = true;
+                        }
+                    }
+                    if item(ui, tr("Quit Trama"), crate::shortcuts::shortcut("app.quit").unwrap_or(""), true, false, &t) {
+                        crate::windows::request_close(app, ui.ctx());
+                        close = true;
                     }
                 });
             });

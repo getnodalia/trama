@@ -87,6 +87,10 @@ const BUTTONS: f32 = 138.0;
 #[cfg(not(windows))]
 const BUTTONS: f32 = nodalia_theme::window_controls::WIDTH + 16.0;
 
+/// How much further right the tabs start than they did behind a bare Home tab: NDL's main menu
+/// button sits before Home.
+const AT: f32 = 32.0;
+
 /// Empty title bar space, right of the tabs.
 const EMPTY: Pos2 = pos2(800.0, 20.0);
 
@@ -163,13 +167,13 @@ fn tabs_and_new_tab_keep_their_clicks() {
     let mut u = Ui::new(TitleBar::Custom);
     u.app.ui.home = true;
     // The open file's tab switches to it.
-    assert!(u.click(pos2(100.0, 20.0)).is_empty());
+    assert!(u.click(pos2(100.0 + AT, 20.0)).is_empty());
     assert!(!u.app.ui.home);
     // The `+` right of it opens a new file (found by clicking along the bar past the tab).
     let mut opened = false;
     for x in (180..320).step_by(4) {
         u.time += 1.0;
-        assert!(u.click(pos2(x as f32, 20.0)).is_empty(), "{x}");
+        assert!(u.click(pos2(x as f32 + AT, 20.0)).is_empty(), "{x}");
         if u.app.session.docs.len() > 1 {
             opened = true;
             break;
@@ -186,7 +190,8 @@ fn many_tabs_do_not_cover_the_window_buttons() {
     }
     u.frame(vec![]);
     let before = u.app.session.docs.len();
-    u.click(pos2(SIZE.x - BUTTONS - 84.0, 20.0));
+    // The workspace selector (150 wide, 24 around it) is where the theme toggle (70) was.
+    u.click(pos2(SIZE.x - BUTTONS - 84.0 - (150.0 + 24.0 - 70.0), 20.0));
     assert_eq!(u.app.session.docs.len(), before + 1, "the new-tab button must stay reachable");
     assert!(u.click(window_button(0)).contains(&ViewportCommand::Minimized(true)));
     assert!(u.click(window_button(1)).contains(&ViewportCommand::Maximized(true)));
@@ -201,7 +206,7 @@ fn close_button_on_inactive_tab_closes_it_without_switching() {
     u.app.session.execute("file.new", &json!({})).unwrap();
     let active_uid = u.app.session.docs[u.app.session.active].uid;
     let inactive_uid = u.app.session.docs[1].uid;
-    let close_button = pos2(270.0, 20.0);
+    let close_button = pos2(270.0 + AT, 20.0);
     u.frame(vec![Event::PointerMoved(close_button)]);
     u.click(close_button);
     assert!(
@@ -224,7 +229,7 @@ fn closing_a_tab_before_the_active_one_keeps_the_active_file() {
     u.app.session.execute("doc.switch", &json!({"index": 2})).unwrap();
     let active_uid = u.app.session.docs[u.app.session.active].uid;
     let closed_uid = u.app.session.docs[0].uid;
-    let close_button = pos2(156.0, 20.0);
+    let close_button = pos2(156.0 + AT, 20.0);
     u.frame(vec![Event::PointerMoved(close_button)]);
     u.click(close_button);
     assert!(!u.app.session.docs.iter().any(|doc| doc.uid == closed_uid));
@@ -240,7 +245,7 @@ fn dragging_a_tab_along_the_bar_reorders_it_without_detaching() {
     let moved_uid = u.app.session.docs[0].uid;
     let active_uid = u.app.session.docs[u.app.session.active].uid;
     u.frame(vec![]);
-    let commands = u.drag(pos2(100.0, 20.0), vec2(310.0, 0.0));
+    let commands = u.drag(pos2(100.0 + AT, 20.0), vec2(310.0, 0.0));
     assert!(!commands.contains(&ViewportCommand::StartDrag), "{commands:?}");
     assert_eq!(
         u.app.session.docs[2].uid,
@@ -263,7 +268,7 @@ fn a_system_title_bar_leaves_the_window_alone() {
 
 /// The main window's first tab closing: (its file's uid, the close button of the first tab).
 fn first_tab(u: &Ui) -> (u64, Pos2) {
-    (u.app.session.docs[0].uid, pos2(156.0, 20.0))
+    (u.app.session.docs[0].uid, pos2(156.0 + AT, 20.0))
 }
 
 /// Whether file `uid` is still open in a tab.
