@@ -1,9 +1,9 @@
 Trama app icon (trama.svg, trama-linux.svg and every file derived from them in this directory:
 trama-<size>.png, trama.ico, hicolor/).
 
-The source portrait, "A la mémoire de J.M. Jacquard" (1839), woven in silk by Michel Marie
-Carquillat after Claude Bonnefond, is in the public domain:
-https://commons.wikimedia.org/wiki/File:A_la_m%C3%A9moire_de_J.M._Jacquard.jpg
+The source portrait of Joseph Marie Jacquard, a wood engraving signed Bocourt and Tourfaut from
+"Les bienfaiteurs de l'Humanité" (Paris, Librairie Paul Ducrocq, 1878), is in the public domain:
+https://commons.wikimedia.org/wiki/File:Joseph_Marie_Jacquard-portrait.jpg
 
 The icon made from it (the cut-out, black-and-white portrait on Trama's purple tile) is licensed
 like the rest of Trama, under either of
