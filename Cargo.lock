@@ -4983,7 +4983,7 @@ dependencies = [
 
 [[package]]
 name = "trama"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "arboard",
  "craft-menu",
@@ -5015,7 +5015,7 @@ dependencies = [
 
 [[package]]
 name = "trama-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "clap_complete",
@@ -5033,7 +5033,7 @@ dependencies = [
 
 [[package]]
 name = "trama-collab"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -5051,7 +5051,7 @@ dependencies = [
 
 [[package]]
 name = "trama-collab-net"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.4.3",
@@ -5074,7 +5074,7 @@ dependencies = [
 
 [[package]]
 name = "trama-color"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "kurbo",
  "serde",
@@ -5083,7 +5083,7 @@ dependencies = [
 
 [[package]]
 name = "trama-doc"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "imbl",
  "serde",
@@ -5096,7 +5096,7 @@ dependencies = [
 
 [[package]]
 name = "trama-engine"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "craft-docpath",
@@ -5130,7 +5130,7 @@ dependencies = [
 
 [[package]]
 name = "trama-format"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "flate2",
  "image",
@@ -5147,7 +5147,7 @@ dependencies = [
 
 [[package]]
 name = "trama-geom"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "kurbo",
  "serde",
@@ -5155,7 +5155,7 @@ dependencies = [
 
 [[package]]
 name = "trama-layout"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "trama-doc",
  "trama-geom",
@@ -5163,7 +5163,7 @@ dependencies = [
 
 [[package]]
 name = "trama-mcp"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "image",
@@ -5179,7 +5179,7 @@ dependencies = [
 
 [[package]]
 name = "trama-pathops"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "linesweeper",
  "trama-doc",
@@ -5188,7 +5188,7 @@ dependencies = [
 
 [[package]]
 name = "trama-pdf"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "flate2",
  "krilla",
@@ -5205,7 +5205,7 @@ dependencies = [
 
 [[package]]
 name = "trama-plugin"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -5218,7 +5218,7 @@ dependencies = [
 
 [[package]]
 name = "trama-render"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "crc32fast",
  "image",
@@ -5237,7 +5237,7 @@ dependencies = [
 
 [[package]]
 name = "trama-server"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "chrono",
  "crc32fast",
@@ -5262,7 +5262,7 @@ dependencies = [
 
 [[package]]
 name = "trama-svg"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "flate2",
@@ -5278,7 +5278,7 @@ dependencies = [
 
 [[package]]
 name = "trama-text"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "core-text",
  "craft-font-catalog",
@@ -5296,7 +5296,7 @@ dependencies = [
 
 [[package]]
 name = "trama-ui-egui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -5326,7 +5326,7 @@ dependencies = [
 
 [[package]]
 name = "trama-vectordrawable"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "roxmltree 0.21.2",
  "thiserror 2.0.21",
@@ -5340,7 +5340,7 @@ dependencies = [
 
 [[package]]
 name = "trama-web"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "craft-web-api",
@@ -6629,7 +6629,7 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde_json",
  "trama-engine",
