@@ -26,7 +26,7 @@
 </div>
 
 <p align="center">
-  <img src="docs/images/ui-dark.png" width="100%" alt="Trama in its dark theme editing the Ridgeline hiking app: phone screens on the canvas, the layers panel on the left and the Design panel on the right, as rounded islands on the window colour">
+  <img src="https://raw.githubusercontent.com/getnodalia/nodalia-web/main/assets/screens/trama/trama-dark.jpg" width="100%" alt="Trama in its dark theme editing the Ridgeline hiking app: phone screens on the canvas, the layers panel on the left and the Design panel on the right, as rounded islands on the window colour">
   <br><sub><b>Ridgeline</b> (<a href="examples/ridgeline-app.trama">examples/ridgeline-app.trama</a>): auto layout screens built from components, with Light and Dark modes from one set of colour variables.</sub>
 </p>
 
@@ -57,7 +57,7 @@ the window colour, bold icons, a hamburger menu, and the suite's own window cont
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/images/ui-light.png" alt="Trama in its light theme with the same Ridgeline screens open, the panels as light islands on a grey window"></td>
+    <td width="50%"><img src="https://raw.githubusercontent.com/getnodalia/nodalia-web/main/assets/screens/trama/trama-light.jpg" alt="Trama in its light theme with the same Ridgeline screens open, the panels as light islands on a grey window"></td>
     <td width="50%"><img src="docs/images/ui-components.png" alt="The Ridgeline design system with the Assets panel showing component thumbnails and a Button component set of variants selected"></td>
   </tr>
   <tr>
