@@ -50,7 +50,7 @@ pub(super) fn sync_instance_depth(doc: &mut Document, inst: NodeId, depth: usize
     // A resized instance: children follow their constraints (auto layout re-flows later).
     let (iw, ih) = doc.node(inst).map(|n| (n.width, n.height)).unwrap_or((comp.width, comp.height));
     if (iw - comp.width).abs() > 1e-9 || (ih - comp.height).abs() > 1e-9 {
-        figcraft_layout::apply_constraints(doc, inst, comp.width, comp.height);
+        trama_layout::apply_constraints(doc, inst, comp.width, comp.height);
         remeasure = map.values().copied().collect();
     }
     follow_geometry_overrides(doc, &src, &map, &old, &mut remeasure);
@@ -208,7 +208,7 @@ fn follow_geometry_overrides(
             && doc.node(nid).is_some_and(|n| n.kind.is_frame_like() && n.layout.is_none())
             && let Some((mw, mh)) = doc.node(*s).map(|m| (m.width, m.height))
         {
-            figcraft_layout::apply_constraints(doc, nid, mw, mh);
+            trama_layout::apply_constraints(doc, nid, mw, mh);
         }
         if !o.overrides.contains("size") && !o.overrides.contains("position") {
             continue;
@@ -217,9 +217,9 @@ fn follow_geometry_overrides(
         let Some((ow, oh)) = doc.node(nid).map(|n| (n.width, n.height)) else { continue };
         if o.overrides.contains("size") {
             // Through set_size so vector networks scale with the box.
-            figcraft_layout::set_size(doc, nid, o.width, o.height);
+            trama_layout::set_size(doc, nid, o.width, o.height);
             if doc.node(nid).is_some_and(|n| n.kind.is_frame_like() && n.layout.is_none()) {
-                figcraft_layout::apply_constraints(doc, nid, ow, oh);
+                trama_layout::apply_constraints(doc, nid, ow, oh);
             }
         }
         if let Some(n) = doc.node_mut(nid) {
@@ -292,10 +292,10 @@ fn apply_enclosing_props(
 fn remeasure_text(doc: &mut Document, remeasure: Vec<NodeId>) {
     for nid in remeasure {
         if let Some(n) = doc.node(nid)
-            && let Some((w, h)) = figcraft_text::auto_size(n)
+            && let Some((w, h)) = trama_text::auto_size(n)
             && ((w - n.width).abs() > 1e-6 || (h - n.height).abs() > 1e-6)
         {
-            figcraft_layout::set_size(doc, nid, w, h);
+            trama_layout::set_size(doc, nid, w, h);
         }
     }
 }

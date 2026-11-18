@@ -4,9 +4,9 @@
 //! export layers, ignored by the always-sRGB SVG, PDF and XML, and bad values refused.
 
 use base64::Engine as _;
-use figcraft_color::{Color, ColorProfile};
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_color::{Color, ColorProfile};
+use trama_doc::*;
 
 use crate::Session;
 use crate::params::id_of;
@@ -177,8 +177,8 @@ fn export_settings_keep_their_color_profile() {
     let old: ExportSetting = serde_json::from_value(json!({"size": {"by": "scale", "value": 2.0}, "suffix": "@2x", "format": "jpg"})).unwrap();
     assert_eq!(old.color_profile, ExportColorProfile::SameAsFile);
     // Saved and loaded.
-    let saved = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
-    let (back, _) = figcraft_format::load_bytes(&saved).unwrap();
+    let saved = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let (back, _) = trama_format::load_bytes(&saved).unwrap();
     assert_eq!(back.node(r).unwrap().exports[0], e);
     // Edited and undone; a format switch keeps it.
     s.execute("export.update", &json!({"ids": [r], "index": 0, "colorProfile": "srgb"})).unwrap();

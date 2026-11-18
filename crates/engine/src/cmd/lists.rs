@@ -6,8 +6,8 @@
 //! Every list is stored bottom first: index 0 paints (or applies) first, the last one is on top;
 //! the Design panel shows them in reverse, the topmost row first.
 
-use figcraft_doc::{Document, LayoutGrid, Node, NodeId, NodeKind};
 use serde_json::Value;
+use trama_doc::{Document, LayoutGrid, Node, NodeId, NodeKind};
 
 use super::{CommandSpec, ok};
 use crate::params::{req_index, req_targets};
@@ -113,8 +113,8 @@ pub fn stop_binding(field: &str) -> Option<usize> {
 /// the paint changed from `old`: one stop removed shifts the later ones down (the removed one's
 /// binding goes); a paint that is no longer a gradient drops them. Other edits keep stop indices.
 /// Returns the removed stop's index.
-pub(crate) fn remap_stop_bindings(n: &mut Node, fills: bool, index: usize, old: &figcraft_color::Paint) -> Option<usize> {
-    use figcraft_color::PaintKind;
+pub(crate) fn remap_stop_bindings(n: &mut Node, fills: bool, index: usize, old: &trama_color::Paint) -> Option<usize> {
+    use trama_color::PaintKind;
     let list = if fills { BoundList::Fills } else { BoundList::Strokes };
     let new = if fills { n.fills.get(index) } else { n.strokes.get(index) };
     // Some(k): stop k was removed; None: the paint has no stops any more.
@@ -158,10 +158,10 @@ pub(crate) fn remap_stop_bindings(n: &mut Node, fills: bool, index: usize, old: 
 /// bindings follow a removed stop, then each binding whose value the edit changed (the colour, the
 /// opacity, a stop's colour) lets go, so the edit stays instead of being put back from the
 /// variable. Bindings whose value the edit kept stay; a paint that is gone takes its bindings.
-pub(crate) fn rebind_edited_paint(n: &mut Node, fills: bool, index: usize, old: &figcraft_color::Paint) {
+pub(crate) fn rebind_edited_paint(n: &mut Node, fills: bool, index: usize, old: &trama_color::Paint) {
     let removed = remap_stop_bindings(n, fills, index, old);
     let mut old = old.clone();
-    if let (Some(k), figcraft_color::PaintKind::Gradient(g)) = (removed, &mut old.kind)
+    if let (Some(k), trama_color::PaintKind::Gradient(g)) = (removed, &mut old.kind)
         && k < g.stops.len()
     {
         g.stops.remove(k);
@@ -176,8 +176,8 @@ pub(crate) fn rebind_edited_paint(n: &mut Node, fills: bool, index: usize, old: 
 
 /// Whether a paint's bound `field` (`color`, `opacity`, `stops/<j>/color`, …) has the same value in
 /// `new` as in `old`.
-fn paint_field_kept(old: &figcraft_color::Paint, new: &figcraft_color::Paint, field: &str) -> bool {
-    use figcraft_color::PaintKind;
+fn paint_field_kept(old: &trama_color::Paint, new: &trama_color::Paint, field: &str) -> bool {
+    use trama_color::PaintKind;
     match field {
         "color" => matches!((&old.kind, &new.kind), (PaintKind::Solid { color: a }, PaintKind::Solid { color: b }) if a == b),
         "opacity" => old.opacity == new.opacity,
@@ -194,7 +194,7 @@ fn paint_field_kept(old: &figcraft_color::Paint, new: &figcraft_color::Paint, fi
 /// characters differ, as the layer's fill is then mixed ("Text nodes can have multiple sets of
 /// fills if some characters are colored differently than others", the developer documentation's
 /// `fills`). Any other layer: its fills.
-pub fn character_fills(n: &Node) -> Option<Vec<figcraft_color::Paint>> {
+pub fn character_fills(n: &Node) -> Option<Vec<trama_color::Paint>> {
     let NodeKind::Text(t) = &n.kind else { return Some(n.fills.clone()) };
     let mut spans = t.spans().into_iter().map(|(_, _, st)| st.fills.as_ref().unwrap_or(&n.fills));
     let first = spans.next().unwrap_or(&n.fills).clone();

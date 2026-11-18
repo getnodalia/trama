@@ -1,7 +1,7 @@
 //! Node property types: strokes, effects, corners, constraints, auto layout, grids, exports.
 
-use figcraft_color::{BlendMode, Color, ColorProfile};
 use serde::{Deserialize, Serialize};
+use trama_color::{BlendMode, Color, ColorProfile};
 
 /// Where a stroke sits relative to the shape edge.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -104,7 +104,7 @@ pub struct StrokeProps {
 }
 
 /// A brush stroke: the stroke drawn with a built-in brush shape (`preset`, an id of
-/// `figcraft_pathops::brush::PRESETS`), stretched along the path or scattered along it every
+/// `trama_pathops::brush::PRESETS`), stretched along the path or scattered along it every
 /// `spacing` stroke weights with repeatable jitter from `seed`. A width profile scales it.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]

@@ -6,9 +6,9 @@
 use std::sync::Arc;
 
 use egui::{Color32, Context, Rect, pos2, vec2};
-use figcraft_doc::{Document, NodeId, NodeKind};
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_doc::{Document, NodeId, NodeKind};
+use trama_engine::Session;
 
 use super::selection_cache_tests::drawn;
 use crate::right::common;

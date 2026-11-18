@@ -1,12 +1,12 @@
-//! One budget for everything a `.figcraft` file unpacks when it opens (#1079): the document,
+//! One budget for everything a `.trama` file unpacks when it opens (#1079): the document,
 //! images, version history and branches share it, beyond each area's own cap, and what passes it
 //! is left out (or, for the document, refused) with a note that says so. Images left out this way
 //! stay in the file like those past the images' own budget (#1313).
 
 use std::io::Write;
 
-use figcraft_doc::Document;
 use sha2::Digest;
+use trama_doc::Document;
 
 use crate::{IMAGE_BUDGET, MAX_UNPACKED, load_limited, to_json};
 

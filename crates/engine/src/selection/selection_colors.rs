@@ -4,10 +4,10 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_color::{Paint, PaintKind};
-use figcraft_doc::{Document, NodeId, NodeKind, Style, StyleKind, VariableId, VariableType, VariableValue};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use trama_color::{Paint, PaintKind};
+use trama_doc::{Document, NodeId, NodeKind, Style, StyleKind, VariableId, VariableType, VariableValue};
 
 use crate::cmd::lists::{BoundList, list_binding, rebind_edited_paint};
 use crate::cmd::styles::{rebind_paint_alpha, unbind_slot};

@@ -1,8 +1,8 @@
 //! `board.addConnected` (#1597): the next sticky or shape on a side of the selected one, of the
 //! same kind, size and colour, joined to it by a connector, in one undo step.
 
-use figcraft_doc::{BoardItem, BoardShape, Connector, End, NodeId, Side};
 use serde_json::json;
+use trama_doc::{BoardItem, BoardShape, Connector, End, NodeId, Side};
 
 use crate::Session;
 use crate::board::CONNECTED_GAP;

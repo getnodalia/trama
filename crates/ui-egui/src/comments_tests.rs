@@ -6,8 +6,8 @@
 use std::sync::{Arc, Mutex};
 
 use egui::{Event, Key, Modifiers, Pos2, pos2, vec2};
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_engine::Session;
 
 use crate::comments::{cluster, insert_mention, mention_matches, mention_query, start_draft};
 use crate::present_tests::{Ui, id};

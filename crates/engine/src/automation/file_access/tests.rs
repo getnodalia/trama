@@ -9,13 +9,13 @@ use serde_json::json;
 use super::{Access, Roots, allow, confined, current};
 use crate::Session;
 
-/// A fresh folder for one test: `<tmp>/figcraft-roots-<name>-<pid>`, holding `root/`, `root2/`
+/// A fresh folder for one test: `<tmp>/trama-roots-<name>-<pid>`, holding `root/`, `root2/`
 /// (a sibling whose name starts like the root's) and `outside/`.
 struct Fixture(PathBuf);
 
 impl Fixture {
     fn new(name: &str) -> Self {
-        let d = std::env::temp_dir().join(format!("figcraft-roots-{name}-{}", std::process::id()));
+        let d = std::env::temp_dir().join(format!("trama-roots-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         for sub in ["root/sub", "root2", "outside"] {
             std::fs::create_dir_all(d.join(sub)).unwrap();
@@ -216,7 +216,7 @@ fn spellings_of_other_computers_and_devices_are_refused() {
     ];
     let network = [&on_the_share[..], &elsewhere[..]].concat();
     let device = [
-        r"\\.\pipe\figcraft",
+        r"\\.\pipe\trama",
         r"\\?\GLOBALROOT\Device\Mup\192.0.2.1\share\x.png",
         r"\\.\C:\work\x.png",
         r"\\.\COM1",
@@ -280,7 +280,7 @@ fn links_on_the_way_are_followed_by_their_spelling_first() {
     use super::{Entry, MAX_LINKS, link_refused};
     use std::cell::RefCell;
     use std::collections::HashMap;
-    let base = std::env::temp_dir().join("figcraft-links");
+    let base = std::env::temp_dir().join("trama-links");
     let at = |rel: &str| base.join(rel);
     let mut links: HashMap<PathBuf, Option<PathBuf>> = HashMap::from([
         // Relative to the link's folder, to a device name.
@@ -374,8 +374,8 @@ fn paths_are_classified_as_windows_opens_them() {
         PathBuf::from(OsString::from_wide(&wide))
     };
     assert_eq!(refused_unresolved(&odd(r"\\192.0.2.1\share\", ".png"), &[]), Some(Unresolved::Spelled(Network)));
-    assert_eq!(refused_unresolved(&odd(r"C:\figcraft-no-such-folder\", r"\nul"), &[]), Some(Unresolved::Spelled(Device)));
-    assert_eq!(refused_unresolved(&odd(r"C:\figcraft-no-such-folder\", ".png"), &[]), None);
+    assert_eq!(refused_unresolved(&odd(r"C:\trama-no-such-folder\", r"\nul"), &[]), Some(Unresolved::Spelled(Device)));
+    assert_eq!(refused_unresolved(&odd(r"C:\trama-no-such-folder\", ".png"), &[]), None);
     // A NUL can't be passed to Windows at all, so the path can't be made absolute.
     assert_eq!(refused_unresolved(Path::new("C:\\work\\a\0b.png"), &[]), Some(Unresolved::Linked));
 }
@@ -424,7 +424,7 @@ fn other_computers_and_devices_are_refused_before_anything_is_opened() {
         let e = refused(&read_only, p, Access::Write);
         assert!(e.ends_with("is on another computer, and no folder that may be written is on its share"), "{p}: {e}");
     }
-    for p in [r"\\.\pipe\figcraft-roots", r"\\?\GLOBALROOT\Device\Mup\192.0.2.1\share\x.png", &f.p(r"root\COM1\x.png"), "nul"] {
+    for p in [r"\\.\pipe\trama-roots", r"\\?\GLOBALROOT\Device\Mup\192.0.2.1\share\x.png", &f.p(r"root\COM1\x.png"), "nul"] {
         for access in [Access::Read, Access::Write] {
             let e = refused(&r, p, access);
             assert!(e.ends_with("names a device, not a file"), "{p}: {e}");
@@ -453,7 +453,7 @@ fn links_to_other_computers_are_refused_before_they_are_followed() {
     }
     // Relative to the link's folder.
     assert!(symlink_dir(Path::new(r"..\remote"), &f.0.join("root/sub/up")));
-    assert!(symlink_file(Path::new(r"\\.\pipe\figcraft-roots"), &f.0.join("root/pipe")));
+    assert!(symlink_file(Path::new(r"\\.\pipe\trama-roots"), &f.0.join("root/pipe")));
     let standard = |p: &str| format!("automation path rejected: {p} is outside the folders that may be");
     for p in [f.p("root/remote/x.png"), f.p("root/hop/x.png"), f.p("root/sub/up/x.png"), f.p("root/pipe")] {
         for access in [Access::Read, Access::Write] {
@@ -500,11 +500,11 @@ fn commands_run_confined_read_and_write_only_inside() {
     std::fs::create_dir_all(f.0.join("outside/readable")).unwrap();
     let roots = Arc::new(Roots::new(&[f.p("outside/readable")], &[f.p("root")]).unwrap());
     // Unconfined, the outside is writable: the bait files a confined command must not reach.
-    let bait = f.p("outside/bait.figcraft");
+    let bait = f.p("outside/bait.trama");
     let mut s = Session::new();
     s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 20, "height": 10})).unwrap();
     s.execute("file.saveAs", &json!({"path": bait})).unwrap();
-    std::fs::copy(&bait, f.0.join("outside/readable/ok.figcraft")).unwrap();
+    std::fs::copy(&bait, f.0.join("outside/readable/ok.trama")).unwrap();
     let mut s = Session::new();
     s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 20, "height": 10})).unwrap();
     s.prefs.recent_files = vec![bait.clone(), f.p("root/in.txt")];
@@ -516,9 +516,9 @@ fn commands_run_confined_read_and_write_only_inside() {
         assert!(s.execute("file.open", &json!({"path": bait})).is_err());
         assert!(s.execute("file.import", &json!({"path": bait})).is_err());
         assert!(s.execute("file.placeImage", &json!({"path": f.p("outside/secret.txt")})).is_err());
-        assert!(s.execute("file.open", &json!({"path": f.p("outside/readable/ok.figcraft")})).is_ok(), "read roots may be read");
+        assert!(s.execute("file.open", &json!({"path": f.p("outside/readable/ok.trama")})).is_ok(), "read roots may be read");
         assert!(s.execute("file.save", &json!({})).is_err(), "but not written");
-        assert!(s.execute("file.saveAs", &json!({"path": f.p("root/ok.figcraft")})).is_ok());
+        assert!(s.execute("file.saveAs", &json!({"path": f.p("root/ok.trama")})).is_ok());
         // Recent files outside the roots aren't listed.
         let recent = s.execute("file.openRecent", &json!({})).unwrap().to_string();
         assert!(!recent.contains("bait") && recent.contains("in.txt"), "{recent}");
@@ -538,7 +538,7 @@ fn no_command_reaches_outside_the_roots() {
     // name that must never show up in a document or a result.
     let mut s = Session::new();
     s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 20, "height": 10, "name": "BAIT-LAYER"})).unwrap();
-    s.execute("file.saveAs", &json!({"path": f.p("outside/bait.figcraft")})).unwrap();
+    s.execute("file.saveAs", &json!({"path": f.p("outside/bait.trama")})).unwrap();
     s.execute("file.export", &json!({"format": "png", "path": f.p("outside/bait.png")})).unwrap();
     std::fs::write(
         outside.join("bait.svg"),
@@ -547,7 +547,7 @@ fn no_command_reaches_outside_the_roots() {
     .unwrap();
     let before: Vec<_> = std::fs::read_dir(&outside).unwrap().flatten().map(|e| e.file_name()).collect();
     // The bait is what an unconfined command finds.
-    for (cmd, bait) in [("file.open", "bait.figcraft"), ("file.import", "bait.svg")] {
+    for (cmd, bait) in [("file.open", "bait.trama"), ("file.import", "bait.svg")] {
         let mut s = Session::new();
         s.execute(cmd, &json!({"path": f.p(&format!("outside/{bait}"))})).unwrap();
         assert!(crate::inspect::document(&s, 64, true).to_string().contains("BAIT-LAYER"), "{cmd} {bait}");
@@ -555,7 +555,7 @@ fn no_command_reaches_outside_the_roots() {
     let mut s = Session::new();
     s.execute("file.placeImage", &json!({"path": f.p("outside/bait.png")})).unwrap();
     assert!(!s.doc().unwrap().images.is_empty());
-    for bait in ["bait.figcraft", "bait.svg", "bait.png", "new.figcraft", "new.png"] {
+    for bait in ["bait.trama", "bait.svg", "bait.png", "new.trama", "new.png"] {
         let path = f.p(&format!("outside/{bait}"));
         let params = json!({"path": path, "dir": f.p("outside"), "file": path, "variables": path, "folder": f.p("outside"), "confirm": true});
         for c in crate::all_commands() {
@@ -576,7 +576,7 @@ fn no_command_reaches_outside_the_roots() {
 fn recent_files_outside_the_roots_are_never_opened_removed_or_named() {
     let f = Fixture::new("recents");
     let roots = Arc::new(f.rw());
-    let (bait, gone, ok) = (f.p("outside/bait.figcraft"), f.p("outside/gone.figcraft"), f.p("root/ok.figcraft"));
+    let (bait, gone, ok) = (f.p("outside/bait.trama"), f.p("outside/gone.trama"), f.p("root/ok.trama"));
     let mut s = Session::new();
     s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 20, "height": 10})).unwrap();
     s.execute("file.saveAs", &json!({"path": bait})).unwrap();

@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 bash packaging/server/install-test.sh
-if grep -rniE 'photoshop|psd|photocraft|vectorcraft|illustrator|adobe|figma' packaging/ .github/ \
+if grep -rniE 'photoshop|psd|lienzo|pluma|illustrator|adobe|figma' packaging/ .github/ \
     --exclude=packaging-lint.yml --exclude=check-app-specific.sh; then
   echo "::error::package metadata mentions another product (see above)" >&2
   exit 1
@@ -13,12 +13,12 @@ fi
 python3 - <<'PYEOF'
 import yaml
 manifests = []
-for name in ("ai.storyteller.figcraft.yml", "ai.storyteller.figcraft.bundle.yml"):
+for name in ("dev.danielmiguelt.Trama.yml", "dev.danielmiguelt.Trama.bundle.yml"):
     with open("packaging/linux/flatpak/" + name) as source:
         manifest = yaml.safe_load(source)
-    assert manifest["id"] == "ai.storyteller.figcraft" and manifest["command"] == "figcraft", name
+    assert manifest["id"] == "dev.danielmiguelt.Trama" and manifest["command"] == "trama", name
     manifests.append(manifest)
 for key in ("runtime", "runtime-version", "sdk", "finish-args"):
     assert manifests[0][key] == manifests[1][key], f"Flatpak manifests disagree on {key}"
-print("FigCraft package identity ok")
+print("Trama package identity ok")
 PYEOF

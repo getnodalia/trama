@@ -4,8 +4,8 @@
 use std::io::{BufRead, BufReader, Write};
 use std::net::TcpListener;
 
-use figcraft_mcp::{Attached, Backend, Headless, Server};
 use serde_json::{Value, json};
+use trama_mcp::{Attached, Backend, Headless, Server};
 
 fn fake_app() -> u16 {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();

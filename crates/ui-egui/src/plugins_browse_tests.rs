@@ -7,11 +7,11 @@
 use std::sync::{Arc, Mutex};
 
 use egui::Pos2;
-use figcraft_engine::Session;
-use figcraft_engine::figcraft_collab::message::{ClientMsg, PluginEntry, PluginReply, PluginReq};
-use figcraft_engine::live::{Event, HostOptions, LiveLink, NetReply, NetRequest, Presence, SessionInfo};
-use figcraft_engine::plugin_directory::bundle::{Bundle, sha256_hex};
 use serde_json::json;
+use trama_engine::Session;
+use trama_engine::live::{Event, HostOptions, LiveLink, NetReply, NetRequest, Presence, SessionInfo};
+use trama_engine::plugin_directory::bundle::{Bundle, sha256_hex};
+use trama_engine::trama_collab::message::{ClientMsg, PluginEntry, PluginReply, PluginReq};
 
 use crate::layers_drag_tests::Ui;
 use crate::plugins_ui::PluginsTab;
@@ -105,10 +105,10 @@ fn deliver(wire: &Arc<Mutex<Wire>>, bytes: &[u8]) -> usize {
 }
 
 /// Services that keep what the app saved.
-struct Saved(Arc<Mutex<Vec<figcraft_engine::Prefs>>>);
+struct Saved(Arc<Mutex<Vec<trama_engine::Prefs>>>);
 
 impl crate::Services for Saved {
-    fn save_prefs(&mut self, prefs: &figcraft_engine::Prefs) {
+    fn save_prefs(&mut self, prefs: &trama_engine::Prefs) {
         self.0.lock().unwrap().push(prefs.clone());
     }
 }

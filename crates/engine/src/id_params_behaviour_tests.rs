@@ -9,8 +9,8 @@
 
 use crate::params::id_of;
 use crate::{EngineError, Session};
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_doc::*;
 
 /// The page's children, by name (bottom first).
 fn top(s: &Session) -> Vec<String> {

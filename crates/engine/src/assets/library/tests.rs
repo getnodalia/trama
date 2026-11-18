@@ -36,7 +36,7 @@ fn healthy(s: &Session) {
 
 /// A scratch directory for one test.
 fn dir(name: &str) -> std::path::PathBuf {
-    let d = std::env::temp_dir().join(format!("figcraft-lib-{}-{name}", std::process::id()));
+    let d = std::env::temp_dir().join(format!("trama-lib-{}-{name}", std::process::id()));
     std::fs::create_dir_all(&d).unwrap();
     d
 }
@@ -111,18 +111,18 @@ fn publish_to(s: &mut Session, path: &str) -> String {
 fn saved_and_read_back(doc: &Document, lib: &PublishedLibrary) {
     let m = &lib.manifest;
     // Saved and read back: the author's file and a reader of the library see the same manifest.
-    let bytes = figcraft_format::save_bytes(doc, None).unwrap();
-    let (back, issues) = figcraft_format::load_bytes(&bytes).unwrap();
+    let bytes = trama_format::save_bytes(doc, None).unwrap();
+    let (back, issues) = trama_format::load_bytes(&bytes).unwrap();
     assert!(issues.is_empty(), "{issues:?}");
     assert_eq!(back.published.as_ref().map(|p| &p.manifest), Some(m));
-    let read = figcraft_format::read_library(std::io::Cursor::new(&bytes)).unwrap().unwrap();
+    let read = trama_format::read_library(std::io::Cursor::new(&bytes)).unwrap().unwrap();
     assert_eq!(read.manifest, *m);
     assert_eq!(read.doc.node_count(), lib.doc.node_count());
     // Older files and files never published have no library; readers that don't know libraries
     // are unaffected (the entries are extra archive members).
-    let plain = figcraft_format::save_bytes(&Document::new("x"), None).unwrap();
-    assert!(figcraft_format::read_library(std::io::Cursor::new(&plain)).unwrap().is_none());
-    assert!(figcraft_format::load_bytes(&plain).unwrap().0.published.is_none());
+    let plain = trama_format::save_bytes(&Document::new("x"), None).unwrap();
+    assert!(trama_format::read_library(std::io::Cursor::new(&plain)).unwrap().is_none());
+    assert!(trama_format::load_bytes(&plain).unwrap().0.published.is_none());
 }
 
 /// `publish_manifest_roundtrip`: a republish bumps only what changed.
@@ -160,7 +160,7 @@ fn publish_manifest_roundtrip() {
     let doc = s.doc().unwrap();
     let lib = doc.published.clone().unwrap();
     let m = &lib.manifest;
-    assert!(figcraft_format::is_valid_library_id(&m.id));
+    assert!(trama_format::is_valid_library_id(&m.id));
     assert_eq!(m.description, "Our kit");
     assert!(m.component(k.button).is_some_and(|a| a.published && a.version == 1));
     assert!(m.component(k.card).is_some_and(|a| a.published));
@@ -246,7 +246,7 @@ fn detaching_a_library_instance_counts_it(s: &mut Session, d: &std::path::Path, 
     assert_eq!((detached[0].library.as_str(), detached[0].count), (lid, 1));
     let report = crate::library_server::detached(s.doc().unwrap(), lid).expect("a report");
     assert_eq!(report.components, [(detached[0].key, 1)]);
-    let again = path_str(&d.join("app-detached.figcraft"));
+    let again = path_str(&d.join("app-detached.trama"));
     ex(s, "file.saveAs", json!({"path": again}));
     let mut t = Session::empty();
     ex(&mut t, "file.open", json!({"path": again}));
@@ -262,7 +262,7 @@ fn detaching_a_library_instance_counts_it(s: &mut Session, d: &std::path::Path, 
 #[test]
 fn inserting_library_instances_counts_them() {
     let d = dir("inserted");
-    let lib_path = path_str(&d.join("kit.figcraft"));
+    let lib_path = path_str(&d.join("kit.trama"));
     let mut lib = Session::new();
     kit(&mut lib);
     let lid = publish_to(&mut lib, &lib_path);
@@ -312,7 +312,7 @@ fn inserting_library_instances_counts_them() {
     let report = crate::library_server::inserted(s.doc().unwrap(), &lid).expect("a report");
     assert_eq!(report.components.iter().map(|c| c.1).collect::<Vec<_>>(), [5]);
     // Kept with the file.
-    let saved = path_str(&d.join("app.figcraft"));
+    let saved = path_str(&d.join("app.trama"));
     ex(&mut s, "file.saveAs", json!({"path": saved}));
     let mut t = Session::empty();
     ex(&mut t, "file.open", json!({"path": saved}));
@@ -328,7 +328,7 @@ fn inserting_library_instances_counts_them() {
 #[test]
 fn add_place_and_update_keep_overrides() {
     let d = dir("flow");
-    let lib_path = path_str(&d.join("kit.figcraft"));
+    let lib_path = path_str(&d.join("kit.trama"));
     let mut lib = Session::new();
     let k = kit(&mut lib);
     let lid = publish_to(&mut lib, &lib_path);
@@ -378,7 +378,7 @@ fn add_place_and_update_keep_overrides() {
     let card_inst = library_updates_flow(&mut s, &mut lib, &k, &lid, [b, b_label, remote_button, main]);
 
     // Saved and reopened, the document keeps its links, copies and records.
-    let user_path = path_str(&d.join("app.figcraft"));
+    let user_path = path_str(&d.join("app.trama"));
     ex(&mut s, "file.saveAs", json!({"path": user_path}));
     let mut t = Session::empty();
     ex(&mut t, "file.open", json!({"path": user_path}));
@@ -405,7 +405,7 @@ fn go_to_main(s: &mut Session, id: NodeId) -> Value {
 #[test]
 fn going_to_a_library_main_opens_the_library_file() {
     let d = dir("go-to-main");
-    let lib_path = path_str(&d.join("kit.figcraft"));
+    let lib_path = path_str(&d.join("kit.trama"));
     let mut lib = Session::new();
     let k = kit(&mut lib);
     let mut chips = Vec::new();
@@ -453,7 +453,7 @@ fn going_to_a_library_main_opens_the_library_file() {
     assert!(s.message.take().is_some_and(|m| m.contains("isn't in this file any more")));
 
     ex(&mut s, "file.close", json!({"index": 1, "force": true}));
-    std::fs::rename(&lib_path, d.join("moved.figcraft")).unwrap();
+    std::fs::rename(&lib_path, d.join("moved.trama")).unwrap();
     s.active = 0;
     let e = s.execute("component.goToMain", &json!({"id": card})).unwrap_err();
     assert!(e.to_string().contains("isn't at"), "{e}");
@@ -469,7 +469,7 @@ fn going_to_a_library_main_opens_the_library_file() {
 #[test]
 fn library_styles_apply_and_import_with_pages() {
     let d = dir("styles");
-    let lib_path = path_str(&d.join("kit.figcraft"));
+    let lib_path = path_str(&d.join("kit.trama"));
     let mut lib = Session::new();
     kit(&mut lib);
     let lid = publish_to(&mut lib, &lib_path);
@@ -486,7 +486,7 @@ fn library_styles_apply_and_import_with_pages() {
     assert_eq!(s.doc().unwrap().styles.len(), 1);
     assert!(s.execute("library.applyStyle", &json!({"library": lid, "style": "Nope", "ids": [r]})).is_err());
     let inst = idv(&ex(&mut s, "library.place", json!({"library": lid, "component": "Card", "x": 0, "y": 100})));
-    let path = path_str(&d.join("user.figcraft"));
+    let path = path_str(&d.join("user.trama"));
     ex(&mut s, "file.saveAs", json!({"path": path}));
 
     // Importing that file's pages into another document brings the copies along.
@@ -516,35 +516,35 @@ fn library_styles_apply_and_import_with_pages() {
 fn bad_library_files_are_errors() {
     let d = dir("bad");
     let mut s = Session::new();
-    let missing = path_str(&d.join("missing.figcraft"));
+    let missing = path_str(&d.join("missing.trama"));
     assert!(matches!(s.execute("library.add", &json!({"path": missing})), Err(EngineError::Other(_))));
-    let junk = d.join("junk.figcraft");
+    let junk = d.join("junk.trama");
     std::fs::write(&junk, b"not a zip at all").unwrap();
     assert!(s.execute("library.add", &json!({"path": path_str(&junk)})).is_err());
     std::fs::write(&junk, b"{\"name\": \"json\"}").unwrap();
     assert!(s.execute("library.add", &json!({"path": path_str(&junk)})).is_err());
-    // A FigCraft file that was never published.
-    let plain = d.join("plain.figcraft");
-    std::fs::write(&plain, figcraft_format::save_bytes(&Document::new("Plain"), None).unwrap()).unwrap();
+    // A Trama file that was never published.
+    let plain = d.join("plain.trama");
+    std::fs::write(&plain, trama_format::save_bytes(&Document::new("Plain"), None).unwrap()).unwrap();
     let e = s.execute("library.add", &json!({"path": path_str(&plain)})).unwrap_err();
     assert!(e.to_string().contains("no published library"), "{e}");
     // A truncated library (damaged entries are covered by the format crate's tests).
     let mut lib = Session::new();
     kit(&mut lib);
     ex(&mut lib, "library.publish", json!({}));
-    let good = figcraft_format::save_bytes(lib.doc().unwrap(), None).unwrap();
-    let cut = d.join("cut.figcraft");
+    let good = trama_format::save_bytes(lib.doc().unwrap(), None).unwrap();
+    let cut = d.join("cut.trama");
     std::fs::write(&cut, &good[..good.len() / 2]).unwrap();
     assert!(s.execute("library.add", &json!({"path": path_str(&cut)})).is_err());
     // Oversized files are refused before they are read.
-    let ok = d.join("ok.figcraft");
+    let ok = d.join("ok.trama");
     std::fs::write(&ok, &good).unwrap();
     let mut cache = Cache::default();
     let e = cache.load_limited(&path_str(&ok), 16).unwrap_err();
     assert!(e.to_string().contains("too large"), "{e}");
     assert!(cache.load(&path_str(&ok)).is_ok());
     // Its own library can't be added to a file.
-    let own = d.join("own.figcraft");
+    let own = d.join("own.trama");
     ex(&mut lib, "file.saveAs", json!({"path": path_str(&own)}));
     assert!(lib.execute("library.add", &json!({"path": path_str(&own)})).is_err());
     // Commands naming no library fail cleanly, and nothing was enabled.
@@ -558,7 +558,7 @@ fn bad_library_files_are_errors() {
 #[test]
 fn library_variants_swaps_and_undo() {
     let d = dir("variants");
-    let lib_path = path_str(&d.join("chips.figcraft"));
+    let lib_path = path_str(&d.join("chips.trama"));
     let mut lib = Session::new();
     let mut variants = Vec::new();
     for (i, color) in ["#ff0000", "#00ff00"].iter().enumerate() {
@@ -601,7 +601,7 @@ fn library_variants_swaps_and_undo() {
 #[test]
 fn library_survives_saving_with_versions() {
     let d = dir("versions");
-    let path = path_str(&d.join("kit.figcraft"));
+    let path = path_str(&d.join("kit.trama"));
     let mut lib = Session::new();
     kit(&mut lib);
     let r = ex(&mut lib, "library.publish", json!({}));
@@ -661,37 +661,37 @@ fn library_links_follow_a_moved_folder() {
     std::fs::create_dir_all(a.join("pages")).unwrap();
     let mut lib = Session::new();
     kit(&mut lib);
-    let lid = publish_to(&mut lib, &path_str(&a.join("lib").join("kit.figcraft")));
+    let lid = publish_to(&mut lib, &path_str(&a.join("lib").join("kit.trama")));
 
     let mut s = Session::new();
-    ex(&mut s, "file.saveAs", json!({"path": path_str(&a.join("pages").join("Page.figcraft"))}));
-    ex(&mut s, "library.add", json!({"path": path_str(&a.join("lib").join("kit.figcraft"))}));
+    ex(&mut s, "file.saveAs", json!({"path": path_str(&a.join("pages").join("Page.trama"))}));
+    ex(&mut s, "library.add", json!({"path": path_str(&a.join("lib").join("kit.trama"))}));
     ex(&mut s, "library.place", json!({"library": lid, "component": "Card", "x": 0, "y": 0}));
     ex(&mut s, "file.save", json!({}));
     // The folder moves (or is cloned elsewhere): the library keeps its place next to the page.
     std::fs::rename(&a, &b).unwrap();
     let mut moved = Session::empty();
-    ex(&mut moved, "file.open", json!({"path": path_str(&b.join("pages").join("Page.figcraft"))}));
+    ex(&mut moved, "file.open", json!({"path": path_str(&b.join("pages").join("Page.trama"))}));
     link_found(&mut moved, &lid);
 
     // A file from before relative links: the absolute path is followed.
     let old = d.join("old");
     std::fs::create_dir_all(&old).unwrap();
     let mut doc = Document::new("Old");
-    let abs = path_str(&b.join("lib").join("kit.figcraft"));
+    let abs = path_str(&b.join("lib").join("kit.trama"));
     doc.libraries_mut().enabled.push(LibraryLink { id: lid.clone(), name: "Kit".into(), path: abs, version: 1, ..Default::default() });
-    std::fs::write(old.join("Old.figcraft"), figcraft_format::save_bytes(&doc, None).unwrap()).unwrap();
+    std::fs::write(old.join("Old.trama"), trama_format::save_bytes(&doc, None).unwrap()).unwrap();
     let mut s = Session::empty();
-    ex(&mut s, "file.open", json!({"path": path_str(&old.join("Old.figcraft"))}));
+    ex(&mut s, "file.open", json!({"path": path_str(&old.join("Old.trama"))}));
     link_found(&mut s, &lid);
 
     // A relative path written by hand goes by the document's folder, not the working directory.
     let mut doc = Document::new("Hand");
-    let rel = "../lib/kit.figcraft".to_string();
+    let rel = "../lib/kit.trama".to_string();
     doc.libraries_mut().enabled.push(LibraryLink { id: lid.clone(), name: "Kit".into(), path: rel, version: 1, ..Default::default() });
-    std::fs::write(b.join("pages").join("Hand.figcraft"), figcraft_format::save_bytes(&doc, None).unwrap()).unwrap();
+    std::fs::write(b.join("pages").join("Hand.trama"), trama_format::save_bytes(&doc, None).unwrap()).unwrap();
     let mut s = Session::empty();
-    ex(&mut s, "file.open", json!({"path": path_str(&b.join("pages").join("Hand.figcraft"))}));
+    ex(&mut s, "file.open", json!({"path": path_str(&b.join("pages").join("Hand.trama"))}));
     link_found(&mut s, &lid);
     let _ = std::fs::remove_dir_all(&d);
 }

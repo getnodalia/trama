@@ -55,7 +55,7 @@ impl<'d> Exporter<'d> {
         if td.hanging_list {
             f.push(("hangingList", b(true)));
         }
-        if td.leading_trim == figcraft_doc::LeadingTrim::CapHeight {
+        if td.leading_trim == trama_doc::LeadingTrim::CapHeight {
             f.push(("leadingTrim", e("CAP_HEIGHT")));
         }
         if td.truncates() {
@@ -227,9 +227,9 @@ impl<'d> Exporter<'d> {
                         st.push((
                             "handleMirroring",
                             e(match m {
-                                figcraft_doc::HandleMirroring::None => "NONE",
-                                figcraft_doc::HandleMirroring::Angle => "ANGLE",
-                                figcraft_doc::HandleMirroring::AngleAndLength => "ANGLE_AND_LENGTH",
+                                trama_doc::HandleMirroring::None => "NONE",
+                                trama_doc::HandleMirroring::Angle => "ANGLE",
+                                trama_doc::HandleMirroring::AngleAndLength => "ANGLE_AND_LENGTH",
                             }),
                         ));
                     }
@@ -291,7 +291,7 @@ impl<'d> Exporter<'d> {
             if net.regions.iter().any(|r| r.winding != winding) {
                 self.warn("vectors whose filled areas use different winding rules use the first one's in their outline");
             }
-            self.geometry("fillGeometry", &figcraft_doc::geometry::drawn_network(net, n.corners.smoothing).fill_path(), winding, f);
+            self.geometry("fillGeometry", &trama_doc::geometry::drawn_network(net, n.corners.smoothing).fill_path(), winding, f);
         }
     }
 
@@ -316,7 +316,7 @@ impl<'d> Exporter<'d> {
         if !(plain && weight.is_finite() && weight > 0.0 && w.is_finite() && h.is_finite()) {
             return;
         }
-        let whole = matches!(n.kind, NodeKind::Ellipse { sweep, inner, .. } if inner == 0.0 && figcraft_doc::geom::full_sweep(sweep));
+        let whole = matches!(n.kind, NodeKind::Ellipse { sweep, inner, .. } if inner == 0.0 && trama_doc::geom::full_sweep(sweep));
         if boxy || whole {
             let (out, inset) = match sp.align {
                 StrokeAlign::Inside => (0.0, weight),
@@ -330,10 +330,10 @@ impl<'d> Exporter<'d> {
                     return None;
                 }
                 let mut p = if whole {
-                    figcraft_doc::geom::ellipse(gw, gh, 0.0, std::f64::consts::TAU, 0.0)
+                    trama_doc::geom::ellipse(gw, gh, 0.0, std::f64::consts::TAU, 0.0)
                 } else {
                     let radii = n.corners.radii.map(|r| if r > 0.0 { (r + d).max(0.0) } else { 0.0 });
-                    figcraft_doc::geom::rounded_rect(gw, gh, radii, n.corners.smoothing)
+                    trama_doc::geom::rounded_rect(gw, gh, radii, n.corners.smoothing)
                 };
                 p.apply_affine(Affine::translate((-d, -d)));
                 Some(p)
@@ -343,12 +343,12 @@ impl<'d> Exporter<'d> {
             self.geometry("strokeGeometry", &ring, WindingRule::EvenOdd, f);
         } else if sp.align == StrokeAlign::Center {
             let path = match &n.kind {
-                NodeKind::Vector { .. } => figcraft_doc::geometry::stroke_geometry(n),
+                NodeKind::Vector { .. } => trama_doc::geometry::stroke_geometry(n),
                 NodeKind::Text(_) => None,
-                _ => figcraft_doc::geometry::shape_path(n),
+                _ => trama_doc::geometry::shape_path(n),
             };
             let Some(path) = path.filter(|p| !p.elements().is_empty()) else { return };
-            use figcraft_doc::geom::kurbo::{Cap, Join, Stroke, StrokeOpts, stroke};
+            use trama_doc::geom::kurbo::{Cap, Join, Stroke, StrokeOpts, stroke};
             let cap = match sp.cap_start {
                 StrokeCap::Round => Cap::Round,
                 StrokeCap::Square => Cap::Square,
@@ -391,7 +391,7 @@ impl<'d> Exporter<'d> {
             if main_ok != own.is_ok() {
                 // An override can't take its layer off the main's path. So an instance text of
                 // more than one line, on a main that is on a path, stays on that path in the file:
-                // say so rather than the general mismatch (FigCraft's import reads it as plain text).
+                // say so rather than the general mismatch (Trama's import reads it as plain text).
                 let lines = main_ok && matches!(own, Err(TEXT_PATH_LINES));
                 self.warn(if lines { TEXT_PATH_INSTANCE_LINES } else { TEXT_PATH_INSTANCE });
                 return None;
@@ -438,8 +438,8 @@ struct PathNet {
 }
 
 /// The tangent-to-control-point cubic of a network segment, as the import reads it.
-fn net_cubic(net: &network::Network, s: &network::Segment) -> Option<(figcraft_doc::geom::kurbo::CubicBez, bool)> {
-    use figcraft_doc::geom::kurbo::CubicBez;
+fn net_cubic(net: &network::Network, s: &network::Segment) -> Option<(trama_doc::geom::kurbo::CubicBez, bool)> {
+    use trama_doc::geom::kurbo::CubicBez;
     let (a, b) = (net.vertices.get(s.a)?, net.vertices.get(s.b)?);
     let line = s.ta == (0.0, 0.0) && s.tb == (0.0, 0.0);
     let cubic = CubicBez::new((a.x, a.y), (a.x + s.ta.0, a.y + s.ta.1), (b.x + s.tb.0, b.y + s.tb.1), (b.x, b.y));
@@ -448,7 +448,7 @@ fn net_cubic(net: &network::Network, s: &network::Segment) -> Option<(figcraft_d
 
 /// The length of a segment, as the import measures it.
 fn net_length(net: &network::Network, s: &network::Segment) -> f64 {
-    use figcraft_doc::geom::kurbo::{Line, ParamCurveArclen};
+    use trama_doc::geom::kurbo::{Line, ParamCurveArclen};
     match net_cubic(net, s) {
         Some((c, true)) => Line::new(c.p0, c.p3).arclen(1e-9),
         Some((c, false)) => c.arclen(1e-9),
@@ -458,8 +458,8 @@ fn net_length(net: &network::Network, s: &network::Segment) -> f64 {
 
 /// The part of a path (a move and what follows it) as a chain of the network, and whether it is
 /// a cycle; `None` without a segment longer than a billionth.
-fn path_chain(part: &[figcraft_doc::geom::kurbo::PathEl]) -> Option<(network::Network, bool)> {
-    use figcraft_doc::geom::kurbo::{PathEl, Point, QuadBez};
+fn path_chain(part: &[trama_doc::geom::kurbo::PathEl]) -> Option<(network::Network, bool)> {
+    use trama_doc::geom::kurbo::{PathEl, Point, QuadBez};
     let r = |x: f64| f64::from(finite(x) as f32);
     let rp = |p: Point| (r(p.x), r(p.y));
     let mut net = network::Network::default();
@@ -530,7 +530,7 @@ fn path_chain(part: &[figcraft_doc::geom::kurbo::PathEl]) -> Option<(network::Ne
 
 /// A text on a path as the format holds it, or the warning for why it stays plain text.
 fn text_path_net(td: &TextData, w: f64, h: f64) -> Result<PathNet, &'static str> {
-    use figcraft_doc::geom::kurbo::{ParamCurveArclen, PathEl};
+    use trama_doc::geom::kurbo::{ParamCurveArclen, PathEl};
     let Some(tp) = td.path.as_deref() else { return Err(TEXT_PATH_CANT) };
     if td.characters.contains(['\n', '\r']) {
         return Err(TEXT_PATH_LINES);
@@ -567,7 +567,7 @@ fn text_path_net(td: &TextData, w: f64, h: f64) -> Result<PathNet, &'static str>
         return Err(TEXT_PATH_CANT);
     }
     // The path the import builds from it must be one the text renderer can measure.
-    let mut shape = figcraft_doc::geom::BezPath::new();
+    let mut shape = trama_doc::geom::BezPath::new();
     for (i, s) in net.segments.iter().enumerate() {
         let Some((c, line)) = net_cubic(&net, s) else { return Err(TEXT_PATH_CANT) };
         if i == 0 {
@@ -582,7 +582,7 @@ fn text_path_net(td: &TextData, w: f64, h: f64) -> Result<PathNet, &'static str>
     if cycle {
         shape.close_path();
     }
-    let measured = figcraft_doc::geom::measure::polylines(&shape);
+    let measured = trama_doc::geom::measure::polylines(&shape);
     if measured.as_ref().and_then(|l| l.first()).is_none_or(|l| l.length() <= 1e-9) {
         return Err(TEXT_PATH_CANT);
     }

@@ -6,7 +6,7 @@
 use serde_json::{Value, json};
 
 use crate::{EngineError, Session, params};
-use figcraft_doc::{NodeId, NodeKind, VectorNetwork};
+use trama_doc::{NodeId, NodeKind, VectorNetwork};
 
 fn ex(s: &mut Session, c: &str, p: Value) -> Value {
     s.execute(c, &p).unwrap_or_else(|e| panic!("{c}: {e}"))
@@ -373,7 +373,7 @@ fn cut_with_only_lone_points_is_refused_like_copy_and_changes_nothing() {
     let mut s = Session::new();
     let id = path(&mut s);
     // A point no segment touches.
-    crate::vectoredit::edit(s.doc_mut().unwrap(), id, |n| n.vertices.push(figcraft_doc::Vertex::new(50.0, 50.0))).unwrap();
+    crate::vectoredit::edit(s.doc_mut().unwrap(), id, |n| n.vertices.push(trama_doc::Vertex::new(50.0, 50.0))).unwrap();
     // Something on the clipboard first, then only the lone point selected.
     select(&mut s, &[0], &[]);
     ex(&mut s, "edit.copy", json!({}));
@@ -423,7 +423,7 @@ fn cutting_a_selected_region_deletes_exactly_the_segments_it_copies_and_keeps_a_
     let id = id_of(&r);
     // A tail: one open segment from the first corner to a new point.
     crate::vectoredit::edit(s.doc_mut().unwrap(), id, |n| {
-        n.vertices.push(figcraft_doc::Vertex::new(20.0, 20.0));
+        n.vertices.push(trama_doc::Vertex::new(20.0, 20.0));
         let tail = n.vertices.len() - 1;
         crate::vectoredit::ops::connect(n, 0, tail, (0.0, 0.0), (0.0, 0.0));
     })

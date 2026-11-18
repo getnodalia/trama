@@ -5,8 +5,8 @@ use crate::Session;
 use crate::components::tests::{ex, healthy, idv};
 use crate::components::*;
 use base64::Engine as _;
-use figcraft_doc::*;
 use serde_json::{Value, json};
+use trama_doc::*;
 
 fn at(x: f64, y: f64) -> Value {
     json!([[1, 0, x], [0, 1, y]])
@@ -76,10 +76,10 @@ fn rest_slot_content_survives_main_edits_moves_and_saving() {
     assert_eq!(slot_content(&s).1, want, "kept across syncs");
 
     // Saving and opening again keeps it.
-    let bytes = figcraft_format::save_bytes(s.doc().unwrap(), None).unwrap();
+    let bytes = trama_format::save_bytes(s.doc().unwrap(), None).unwrap();
     let data = base64::engine::general_purpose::STANDARD.encode(bytes);
     let mut again = Session::new();
-    ex(&mut again, "file.open", json!({"data": data, "name": "slots.figcraft"}));
+    ex(&mut again, "file.open", json!({"data": data, "name": "slots.trama"}));
     healthy(&again);
     let (slot, names) = slot_content(&again);
     assert_eq!(names, want);

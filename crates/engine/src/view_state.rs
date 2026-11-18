@@ -97,7 +97,7 @@ impl ViewState {
         self.zoom = z;
     }
     /// Fit a page rectangle into the viewport with margin.
-    pub fn fit(&mut self, r: figcraft_geom::Rect, max_zoom: f64) {
+    pub fn fit(&mut self, r: trama_geom::Rect, max_zoom: f64) {
         if !(r.width() > 0.0 || r.height() > 0.0) || !r.x0.is_finite() {
             self.cx = r.center().x;
             self.cy = r.center().y;
@@ -112,7 +112,7 @@ impl ViewState {
     }
     /// Fit a page rectangle for Zoom to selection: a 40 point margin on all four sides of the area
     /// above the bottom toolbar (`vw` by `vh - bottom_inset`), centred in that area.
-    pub fn fit_selection(&mut self, r: figcraft_geom::Rect, max_zoom: f64) {
+    pub fn fit_selection(&mut self, r: trama_geom::Rect, max_zoom: f64) {
         // A rectangle that isn't all finite numbers leaves the view as it is.
         if ![r.x0, r.y0, r.x1, r.y1].iter().all(|v| v.is_finite()) {
             return;

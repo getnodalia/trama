@@ -4,9 +4,9 @@
 //! screenshots).
 
 use egui::accesskit::Node;
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::component_swap_default_tests::tree;
 use crate::layers_drag_tests::Ui;

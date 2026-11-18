@@ -2,10 +2,10 @@
 //! rounded corners is outlined along each corner's radius and its smoothing, whatever the stroke's
 //! alignment; one with square corners keeps its box.
 
-use figcraft_doc::{Document, NodeId, geometry::shape_path};
-use figcraft_engine::Session;
-use figcraft_geom::kurbo::{BezPath, PathEl, Shape};
 use serde_json::{Value, json};
+use trama_doc::{Document, NodeId, geometry::shape_path};
+use trama_engine::Session;
+use trama_geom::kurbo::{BezPath, PathEl, Shape};
 
 use super::outline::outline_path;
 

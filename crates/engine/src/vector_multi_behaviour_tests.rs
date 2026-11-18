@@ -8,10 +8,10 @@
 // The tables read best as tuples.
 #![allow(clippy::type_complexity)]
 
-use figcraft_doc::{NodeId, NodeKind, StrokeCap, StrokeJoin, VectorNetwork};
-use figcraft_geom::kurbo::{CubicBez, ParamCurve, ParamCurveDeriv, ParamCurveNearest};
-use figcraft_geom::{BezPath, Point, Rect, Shape, Vec2};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, NodeKind, StrokeCap, StrokeJoin, VectorNetwork};
+use trama_geom::kurbo::{CubicBez, ParamCurve, ParamCurveDeriv, ParamCurveNearest};
+use trama_geom::{BezPath, Point, Rect, Shape, Vec2};
 
 use crate::Session;
 use crate::params::id_of;
@@ -203,8 +203,8 @@ fn corner_radius_mirroring_and_delete(s: &mut Session, a: NodeId, b: NodeId, atl
     assert!(net(s, a).vertices[atl].radius == 10.0 && net(s, b).vertices[btl].radius == 10.0, "the corner radius applies to every layer");
     ex(s, "vector.edit.mirroring", json!({"mode": "angle"}));
     assert!(
-        net(s, a).vertices[atl].mirror == Some(figcraft_doc::HandleMirroring::Angle)
-            && net(s, b).vertices[btl].mirror == Some(figcraft_doc::HandleMirroring::Angle),
+        net(s, a).vertices[atl].mirror == Some(trama_doc::HandleMirroring::Angle)
+            && net(s, b).vertices[btl].mirror == Some(trama_doc::HandleMirroring::Angle),
         "mirroring applies to every layer"
     );
     assert!(s.tool_key("Delete", false, false, false).unwrap());
@@ -360,7 +360,7 @@ fn rounding_points_next_to_curves() {
 fn stroke_bounds(s: &Session, id: NodeId) -> Rect {
     let doc = s.doc().unwrap();
     let n = doc.node(id).unwrap();
-    let (area, _) = figcraft_render::draw::stroke_fill(doc, n).unwrap();
+    let (area, _) = trama_render::draw::stroke_fill(doc, n).unwrap();
     let mut p = (*area).clone();
     p.apply_affine(doc.world_transform(id));
     p.bounding_box()
@@ -417,7 +417,7 @@ fn a_cap_and_a_join_per_point() {
     let back: VectorNetwork = serde_json::from_value(serde_json::to_value(&n).unwrap()).unwrap();
     assert_eq!(back.vertices[tip].join, Some(StrokeJoin::Round), "a point's join is saved");
     // SVG writes such strokes as outlines (attributes would apply one join to the whole path).
-    let svg = figcraft_svg::export_svg(s.doc().unwrap(), &[id], &figcraft_svg::SvgOptions::default()).unwrap();
+    let svg = trama_svg::export_svg(s.doc().unwrap(), &[id], &trama_svg::SvgOptions::default()).unwrap();
     assert!(!svg.contains("stroke-width"), "the SVG stroke is an outline");
     // Several layers at once.
     let mut s = Session::new();

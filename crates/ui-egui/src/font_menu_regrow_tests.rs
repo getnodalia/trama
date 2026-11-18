@@ -2,8 +2,8 @@
 //! it, clearing the filter grows it back, and the search field stays where it is (egui#5225).
 use egui::accesskit::{Node, Role};
 use egui::{Event, Key, Modifiers, Pos2, RawInput, Rect, vec2};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices};
 
@@ -88,8 +88,8 @@ fn search_top(nodes: &[Node], menu: Rect) -> f32 {
 
 #[test]
 fn the_font_menu_regrows_after_a_search_matches_nothing() {
-    figcraft_text::scan_system_fonts();
-    if figcraft_text::family_names().len() < 3 {
+    trama_text::scan_system_fonts();
+    if trama_text::family_names().len() < 3 {
         eprintln!("fewer than three font families; skipping");
         return;
     }

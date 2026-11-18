@@ -2,9 +2,9 @@
 //! 2026-11-12): offered for three or more layers forming a row, a column or a full grid, greyed out otherwise.
 
 use egui::Context;
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices};
 

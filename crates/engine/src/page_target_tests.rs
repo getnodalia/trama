@@ -1,8 +1,8 @@
 //! Page commands act on pages: a layer id (a rectangle, a frame) is refused before anything about
 //! the layer changes, as `page.select` already does.
 
-use figcraft_doc::{NodeId, NodeKind};
 use serde_json::{Value, json};
+use trama_doc::{NodeId, NodeKind};
 
 use crate::Session;
 

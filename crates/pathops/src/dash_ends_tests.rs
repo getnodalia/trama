@@ -3,9 +3,9 @@
 //! pattern as it is. The numbers in [`the_public_example_comes_out_the_same`] are from a public
 //! explanation of how the fit works.
 
-use figcraft_doc::{StrokeAlign, StrokeProps, WidthProfile};
-use figcraft_geom::Point;
-use figcraft_geom::kurbo::{BezPath, Rect, Shape};
+use trama_doc::{StrokeAlign, StrokeProps, WidthProfile};
+use trama_geom::Point;
+use trama_geom::kurbo::{BezPath, Rect, Shape};
 
 use crate::width::{dash_pattern, line_dashes, subpath_dashes};
 use crate::{stroke_center, stroke_outline};

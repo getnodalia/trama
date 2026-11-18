@@ -5,10 +5,10 @@
 //! any other layer. The metadata says what the object is for: which text a sticky note fits, what
 //! a connector joins, who placed a stamp.
 
-use figcraft_color::Color;
-use figcraft_geom::kurbo::{Ellipse, RoundedRect};
-use figcraft_geom::{BezPath, Point, Rect, Shape, Vec2};
 use serde::{Deserialize, Serialize};
+use trama_color::Color;
+use trama_geom::kurbo::{Ellipse, RoundedRect};
+use trama_geom::{BezPath, Point, Rect, Shape, Vec2};
 
 use crate::NodeId;
 
@@ -472,7 +472,7 @@ impl Stamp {
         }
     }
 
-    /// The mark, drawn for FigCraft from lines, arcs and simple outlines.
+    /// The mark, drawn for Trama from lines, arcs and simple outlines.
     pub fn mark(self) -> &'static [MarkPart] {
         match self {
             // A cuff and a raised hand with its thumb up.

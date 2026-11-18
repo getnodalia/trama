@@ -1,7 +1,4 @@
-# Builds and tests the workspace on FreeBSD, inside a FreeBSD VM on a Linux runner
-# (GitHub has no FreeBSD runners). It then runs packaging/freebsd/package.sh, the script
-# the release job runs, and checks the tarball, so a broken FreeBSD package fails here
-# before it can fail a release. Nothing is uploaded and no secrets are used.
+# FreeBSD build and package check in a QEMU VM.
 name: FreeBSD
 
 # The VM build is slow, so it runs nightly on main and on pushes to `release`, not on every pull
@@ -16,7 +13,7 @@ on:
       - packaging/freebsd/**
       - packaging/env.sh
   schedule:
-    - cron: "17 2 * * *"
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -28,8 +25,14 @@ permissions:
 
 jobs:
   freebsd:
-    # Intentionally tracked at @main (not SHA-pinned) so org-wide CI improvements, security fixes, and build optimizations propagate without PR churn across all craftapp repos.
-    uses: storytold/craft-common-actions/.github/workflows/freebsd.yml@main
+    uses: getnodalia/foundation/.github/workflows/freebsd.yml@976581262c95c0d95c0184149c0e1ba55485ccb3 # foundation main
     with:
-      run-package-check: true
-      craft-fonts-ref: 37827adc41fd165f9a9234ac40f94dbad353aa69
+      fonts-repository: getnodalia/foundation
+      fonts-ref: 37827adc41fd165f9a9234ac40f94dbad353aa69
+      # Build and test, then the release package and its tarball.
+      command: >-
+        cargo build --workspace --all-targets --locked &&
+        cargo test --workspace --locked &&
+        CARGO_BUILD_JOBS=4 bash packaging/freebsd/package.sh &&
+        ls dist/release/*-freebsd-x86_64.tar.gz &&
+        for a in dist/release/*-freebsd-x86_64.tar.gz; do tar -tzf "$a" > /dev/null; done

@@ -1,4 +1,4 @@
-use figcraft_doc::RouteEnd;
+use trama_doc::RouteEnd;
 
 use super::items::shape_padding;
 use super::{
@@ -207,7 +207,7 @@ fn route_mid(doc: &Document, id: NodeId) -> Option<Point> {
     let NodeKind::Vector { network } = &doc.node(id)?.kind else { return None };
     let w = doc.world_transform(id);
     let mut pts: Vec<Point> = Vec::new();
-    figcraft_geom::kurbo::flatten(network.stroke_path().iter(), 0.25, |el| {
+    trama_geom::kurbo::flatten(network.stroke_path().iter(), 0.25, |el| {
         if let PathEl::MoveTo(p) | PathEl::LineTo(p) = el {
             pts.push(w * p);
         }
@@ -274,11 +274,11 @@ pub(super) fn place_route(doc: &mut Document, id: NodeId, pts: &[Point], routing
     }
 }
 
-/// The page points connector `c` runs through (see [`figcraft_doc::route_points`]): from the
+/// The page points connector `c` runs through (see [`trama_doc::route_points`]): from the
 /// middle of the side of each attached layer facing the other end (or the side it names).
 pub fn route(doc: &Document, c: &Connector) -> Option<Vec<Point>> {
     let (from, to) = route_ends(doc, c)?;
-    figcraft_doc::route_along(from, to, c.routing, c.path.as_ref())
+    trama_doc::route_along(from, to, c.routing, c.path.as_ref())
 }
 
 /// Connector `c`'s ends as they are now.

@@ -4,8 +4,8 @@
 
 use base64::Engine as _;
 use egui::Pos2;
-use figcraft_engine::Session;
 use serde_json::{Value, json};
+use trama_engine::Session;
 
 use crate::colorpicker::PickerTarget;
 use crate::idle_tests::Harness;

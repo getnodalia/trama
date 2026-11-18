@@ -1,7 +1,7 @@
 use egui::{Pos2, RawInput, Rect, Vec2, vec2};
-use figcraft_engine::Session;
-use figcraft_ui_egui::{FigApp, NoServices};
 use serde_json::json;
+use trama_engine::Session;
+use trama_ui_egui::{FigApp, NoServices};
 
 fn frame(ctx: &egui::Context, app: &mut FigApp, size: Vec2) {
     let mut out = ctx.run_ui(RawInput { screen_rect: Some(Rect::from_min_size(Pos2::ZERO, size)), ..Default::default() }, |ui| app.ui(ui));

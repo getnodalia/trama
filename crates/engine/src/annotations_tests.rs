@@ -2,8 +2,8 @@
 
 use crate::components::tests::{ex, idv, node};
 use crate::{EngineError, Session};
-use figcraft_doc::*;
 use serde_json::json;
+use trama_doc::*;
 
 fn rect(s: &mut Session) -> NodeId {
     idv(&ex(s, "shape.rectangle", json!({"x": 10, "y": 20, "width": 120, "height": 40, "props": {"name": "Button", "fill": "#3366FF"}})))

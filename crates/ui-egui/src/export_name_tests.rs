@@ -3,8 +3,8 @@
 //! (#1650), at the default panel width and wider.
 
 use egui::{Rect, Shape};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::widgets::FIELD_H;

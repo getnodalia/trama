@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Trama
+GenericName=Interface Design Tool
+Comment=Design and prototype user interfaces
+Exec=trama %U
+TryExec=trama
+Icon=dev.danielmiguelt.Trama
+Terminal=false
+StartupNotify=true
+StartupWMClass=dev.danielmiguelt.Trama
+Categories=Graphics;2DGraphics;VectorGraphics;X-Design;
+Keywords=design;interface;ui;ux;prototype;wireframe;mockup;vector;layout;components;
+MimeType=application/x-trama;image/svg+xml;image/png;image/jpeg;application/x-sketch;x-scheme-handler/trama;

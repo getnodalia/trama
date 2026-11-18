@@ -14,12 +14,12 @@
 
 use std::collections::BTreeSet;
 
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{
+use serde_json::{Value, json};
+use trama_color::{Color, Paint};
+use trama_doc::{
     AutoLayout, BoardItem, Constraints, Document, HConstraint, LayoutMode, Node, NodeId, NodeKind, Sizing, StrokeAlign, TextAlignH, VConstraint,
 };
-use figcraft_geom::Affine;
-use serde_json::{Value, json};
+use trama_geom::Affine;
 
 use crate::board::{INK, add_text, require};
 use crate::cmd::CommandSpec;

@@ -2,13 +2,13 @@
 
 use std::collections::BTreeMap;
 
-use figcraft_color::{Color, Paint, PaintKind};
-use figcraft_doc::ParagraphStyle;
-use figcraft_doc::{
+use serde_json::{Value, json};
+use trama_color::{Color, Paint, PaintKind};
+use trama_doc::ParagraphStyle;
+use trama_doc::{
     Collection, CollectionId, Document, Effect, EffectKind, Mode, ModeId, Node, NodeId, NodeKind, Style, StyleId, StyleKind, TextData, TextStyle,
     Variable, VariableId, VariableType, VariableValue, Variables, trim_num,
 };
-use serde_json::{Value, json};
 
 use super::{CommandSpec, ok};
 use crate::params::{color_of, f64_of, get, id, num, paints_of, req_string, req_targets, string, targets};
@@ -899,7 +899,7 @@ pub(crate) fn bind_variable(cmd: &str, doc: &mut Document, ids: &[NodeId], field
 
 /// Remove every binding key of the slot (`fill` and `fills/0/color` name the same one); true when
 /// one was there.
-pub(crate) fn unbind_slot(n: &mut figcraft_doc::Node, fills: bool, index: usize) -> bool {
+pub(crate) fn unbind_slot(n: &mut trama_doc::Node, fills: bool, index: usize) -> bool {
     use super::lists::{BoundList, list_binding};
     let list = if fills { BoundList::Fills } else { BoundList::Strokes };
     let before = n.bound.len();

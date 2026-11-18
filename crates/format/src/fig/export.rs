@@ -18,20 +18,20 @@ use std::collections::BTreeMap;
 use std::io::Write;
 use std::sync::Arc;
 
-use figcraft_doc::color::{BlendMode, Color, GradientKind, ImageScaleMode, Paint, PaintKind};
-use figcraft_doc::geom::kurbo::PathEl;
-use figcraft_doc::geom::{Affine, BezPath};
-use figcraft_doc::proto::{
+use serde_json::Value;
+use sha1::Digest;
+use trama_doc::color::{BlendMode, Color, GradientKind, ImageScaleMode, Paint, PaintKind};
+use trama_doc::geom::kurbo::PathEl;
+use trama_doc::geom::{Affine, BezPath};
+use trama_doc::proto::{
     Action, Direction, Easing, GAMEPAD_BUTTONS, Interaction, KeyMods, Overflow, OverlayPosition, ScrollPosition, Transition, Trigger,
 };
-use figcraft_doc::{
+use trama_doc::{
     AutoLayout, BoolOp, ContentAlign, CrossAlign, Document, EffectKind, ExportSize, GridAlign, GridKind, GridTrack, HConstraint, LayoutMode,
     LetterSpacing, LineHeight, ListStyle, MainAlign, MaskType, Node, NodeId, NodeKind, NoiseMode, PropDef, Sizing, StrokeAlign, StrokeCap,
     StrokeJoin, StyleKind, TextAlignH, TextAlignV, TextAutoResize, TextCase, TextData, TextDecoration, TextDirection, TextStyle, VConstraint,
     VariableType, VariableValue, VectorNetwork, WindingRule,
 };
-use serde_json::Value;
-use sha1::Digest;
 
 use super::kiwi::{Kv, Schema, encode};
 use super::network;
@@ -423,7 +423,7 @@ fn join_name(j: StrokeJoin) -> &'static str {
 /// `3` quadratic, `4` cubic, each followed by its points as little-endian `f32` pairs.
 fn path_blob(p: &BezPath) -> Vec<u8> {
     let mut out = Vec::new();
-    let mut put = |cmd: u8, pts: &[figcraft_doc::geom::Point]| {
+    let mut put = |cmd: u8, pts: &[trama_doc::geom::Point]| {
         out.push(cmd);
         for q in pts {
             out.extend_from_slice(&(finite(q.x) as f32).to_le_bytes());
@@ -589,7 +589,7 @@ impl<'d> Exporter<'d> {
     fn message(&mut self) -> Kv<'static> {
         let doc = self.doc;
         self.assign();
-        let profile = if doc.color_profile == figcraft_doc::color::ColorProfile::DisplayP3 { "DISPLAY_P3" } else { "SRGB" };
+        let profile = if doc.color_profile == trama_doc::color::ColorProfile::DisplayP3 { "DISPLAY_P3" } else { "SRGB" };
         let mut root: Fields = vec![("guid", guid(0, 0)), ("phase", e("CREATED")), ("type", e("DOCUMENT")), ("name", s(&doc.name))];
         root.extend(root_fields());
         root.push(("documentColorProfile", e(profile)));

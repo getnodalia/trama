@@ -182,7 +182,7 @@ pub fn move_flags(ui: &Ui, salt: &'static str, len: usize, from: usize, to: usiz
     ui.data_mut(|d| {
         let flags: Vec<Option<bool>> = (0..len).map(|i| d.get_temp::<bool>(Id::unique((salt, i)))).collect();
         for (i, f) in flags.into_iter().enumerate() {
-            let j = figcraft_engine::cmd::lists::moved_index(i, from, to);
+            let j = trama_engine::cmd::lists::moved_index(i, from, to);
             match f {
                 Some(v) => {
                     d.insert_temp(Id::unique((salt, j)), v);
@@ -202,7 +202,7 @@ pub fn remove_flags(ui: &Ui, salt: &'static str, len: usize, removed: usize) {
             d.remove::<bool>(Id::unique((salt, i)));
         }
         for (i, f) in flags.into_iter().enumerate() {
-            if let (Some(j), Some(v)) = (figcraft_engine::cmd::lists::removed_index(i, removed), f) {
+            if let (Some(j), Some(v)) = (trama_engine::cmd::lists::removed_index(i, removed), f) {
                 d.insert_temp(Id::unique((salt, j)), v);
             }
         }

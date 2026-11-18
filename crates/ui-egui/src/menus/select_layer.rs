@@ -24,16 +24,16 @@ pub(super) fn select_layer_menu(app: &mut FigApp, ui: &mut Ui, pos: egui::Pos2, 
     let p = app.to_page(pos);
     let Ok(ds) = app.session.ds() else { return false };
     let tol = 2.0 / ds.view.zoom.max(1e-6);
-    let opts = figcraft_doc::geometry::HitOpts { locked: true };
-    let layers: Vec<(figcraft_doc::NodeId, usize, String, bool)> = {
-        let result = figcraft_engine::booleans::result_outline(&ds.doc, &ds.selection);
-        figcraft_doc::geometry::layers_at_opts(&ds.doc, ds.page, p, tol, Some(&result), opts)
+    let opts = trama_doc::geometry::HitOpts { locked: true };
+    let layers: Vec<(trama_doc::NodeId, usize, String, bool)> = {
+        let result = trama_engine::booleans::result_outline(&ds.doc, &ds.selection);
+        trama_doc::geometry::layers_at_opts(&ds.doc, ds.page, p, tol, Some(&result), opts)
             .into_iter()
             .take(40)
             .filter_map(|(id, depth)| {
                 ds.doc.node(id).map(|n| {
                     let name = if n.name.is_empty() { n.kind.type_name().to_lowercase() } else { n.name.clone() };
-                    (id, depth, name, figcraft_engine::tools::locked_in(&ds.doc, id))
+                    (id, depth, name, trama_engine::tools::locked_in(&ds.doc, id))
                 })
             })
             .collect()

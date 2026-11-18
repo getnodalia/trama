@@ -1001,7 +1001,7 @@ dependencies = [
 [[package]]
 name = "craft-atomic"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "rustix 1.1.5",
 ]
@@ -1009,12 +1009,12 @@ dependencies = [
 [[package]]
 name = "craft-docpath"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 
 [[package]]
 name = "craft-font-catalog"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "fontique",
  "skrifa 0.47.0",
@@ -1025,7 +1025,7 @@ dependencies = [
 [[package]]
 name = "craft-font-store"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-atomic",
  "craft-font-catalog",
@@ -1041,12 +1041,12 @@ dependencies = [
 [[package]]
 name = "craft-fonts-build"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 
 [[package]]
 name = "craft-i18n"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "fixed_decimal",
  "icu_decimal",
@@ -1069,7 +1069,7 @@ dependencies = [
 [[package]]
 name = "craft-keymap"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "egui",
  "serde",
@@ -1079,7 +1079,7 @@ dependencies = [
 [[package]]
 name = "craft-menu"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-keymap",
  "craft-quit",
@@ -1092,7 +1092,7 @@ dependencies = [
 [[package]]
 name = "craft-quit"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "dispatch2",
  "egui",
@@ -1103,7 +1103,7 @@ dependencies = [
 [[package]]
 name = "craft-settings"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-atomic",
  "dirs",
@@ -1114,7 +1114,7 @@ dependencies = [
 [[package]]
 name = "craft-ui"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "craft-fonts-build",
  "craft-i18n",
@@ -1134,7 +1134,7 @@ dependencies = [
 [[package]]
 name = "craft-update"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e98299546f5c5c3c22388d16507f8b5e61a5f280#e98299546f5c5c3c22388d16507f8b5e61a5f280"
+source = "git+https://github.com/getnodalia/foundation?rev=e98299546f5c5c3c22388d16507f8b5e61a5f280#e98299546f5c5c3c22388d16507f8b5e61a5f280"
 dependencies = [
  "chrono",
  "dunce",
@@ -1161,7 +1161,7 @@ dependencies = [
 [[package]]
 name = "craft-web-api"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
+source = "git+https://github.com/getnodalia/foundation?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
 dependencies = [
  "js-sys",
  "serde_json",
@@ -1172,7 +1172,7 @@ dependencies = [
 [[package]]
 name = "craft-web-host"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
+source = "git+https://github.com/getnodalia/foundation?rev=fd5e2feff6ea25bed371a99cc732b3968d621505#fd5e2feff6ea25bed371a99cc732b3968d621505"
 dependencies = [
  "wasm-bindgen",
  "web-sys",
@@ -1181,7 +1181,7 @@ dependencies = [
 [[package]]
 name = "craft-window"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "wayland-client",
 ]
@@ -1447,7 +1447,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 [[package]]
 name = "ecolor"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "emath",
@@ -1456,7 +1456,7 @@ dependencies = [
 [[package]]
 name = "eframe"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1491,7 +1491,7 @@ dependencies = [
 [[package]]
 name = "egui"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "accesskit",
  "ahash",
@@ -1510,7 +1510,7 @@ dependencies = [
 [[package]]
 name = "egui-wgpu"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1529,7 +1529,7 @@ dependencies = [
 [[package]]
 name = "egui-winit"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "accesskit_winit",
  "arboard",
@@ -1555,7 +1555,7 @@ dependencies = [
 [[package]]
 name = "egui_extras"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "egui",
@@ -1568,7 +1568,7 @@ dependencies = [
 [[package]]
 name = "egui_glow"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
  "egui",
@@ -1587,7 +1587,7 @@ checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 [[package]]
 name = "emath"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "bytemuck",
 ]
@@ -1677,7 +1677,7 @@ dependencies = [
 [[package]]
 name = "epaint"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -1703,7 +1703,7 @@ dependencies = [
 [[package]]
 name = "epaint_default_fonts"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[package]]
 name = "equivalent"
@@ -1784,7 +1784,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b97b65636e5b9ef369943878ac74335ba1c55c1cb6adbf1e2c293c624248d693"
 
 [[package]]
-name = "figcraft"
+name = "trama"
 version = "0.18.1"
 dependencies = [
  "arboard",
@@ -1795,11 +1795,11 @@ dependencies = [
  "eframe",
  "egui",
  "env_logger",
- "figcraft-collab-net",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-text",
- "figcraft-ui-egui",
+ "trama-collab-net",
+ "trama-engine",
+ "trama-format",
+ "trama-text",
+ "trama-ui-egui",
  "fmv-macos-events",
  "image",
  "log",
@@ -1817,32 +1817,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-cli"
+name = "trama-cli"
 version = "0.18.1"
 dependencies = [
  "clap",
  "clap_complete",
  "clap_mangen",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-mcp",
- "figcraft-render",
- "figcraft-svg",
- "figcraft-text",
+ "trama-doc",
+ "trama-engine",
+ "trama-format",
+ "trama-mcp",
+ "trama-render",
+ "trama-svg",
+ "trama-text",
  "serde_json",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "figcraft-collab"
+name = "trama-collab"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
  "chrono",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
  "flate2",
  "imbl",
  "postcard",
@@ -1853,13 +1853,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-collab-net"
+name = "trama-collab-net"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
- "figcraft-collab",
- "figcraft-doc",
- "figcraft-engine",
+ "trama-collab",
+ "trama-doc",
+ "trama-engine",
  "getrandom 0.4.3",
  "js-sys",
  "log",
@@ -1876,7 +1876,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-color"
+name = "trama-color"
 version = "0.18.1"
 dependencies = [
  "kurbo",
@@ -1885,11 +1885,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-doc"
+name = "trama-doc"
 version = "0.18.1"
 dependencies = [
- "figcraft-color",
- "figcraft-geom",
+ "trama-color",
+ "trama-geom",
  "imbl",
  "serde",
  "serde_json",
@@ -1898,7 +1898,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-engine"
+name = "trama-engine"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
@@ -1906,19 +1906,19 @@ dependencies = [
  "craft-font-catalog",
  "craft-font-store",
  "deunicode",
- "figcraft-collab",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-layout",
- "figcraft-pathops",
- "figcraft-pdf",
- "figcraft-plugin",
- "figcraft-render",
- "figcraft-svg",
- "figcraft-text",
- "figcraft-vectordrawable",
+ "trama-collab",
+ "trama-color",
+ "trama-doc",
+ "trama-format",
+ "trama-geom",
+ "trama-layout",
+ "trama-pathops",
+ "trama-pdf",
+ "trama-plugin",
+ "trama-render",
+ "trama-svg",
+ "trama-text",
+ "trama-vectordrawable",
  "image",
  "log",
  "regex",
@@ -1932,12 +1932,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-format"
+name = "trama-format"
 version = "0.18.1"
 dependencies = [
- "figcraft-doc",
- "figcraft-layout",
- "figcraft-pathops",
+ "trama-doc",
+ "trama-layout",
+ "trama-pathops",
  "flate2",
  "image",
  "ruzstd",
@@ -1949,7 +1949,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-geom"
+name = "trama-geom"
 version = "0.18.1"
 dependencies = [
  "kurbo",
@@ -1957,23 +1957,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-layout"
+name = "trama-layout"
 version = "0.18.1"
 dependencies = [
- "figcraft-doc",
- "figcraft-geom",
+ "trama-doc",
+ "trama-geom",
 ]
 
 [[package]]
-name = "figcraft-mcp"
+name = "trama-mcp"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
- "figcraft-collab-net",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-geom",
- "figcraft-render",
+ "trama-collab-net",
+ "trama-doc",
+ "trama-engine",
+ "trama-geom",
+ "trama-render",
  "image",
  "log",
  "proptest",
@@ -1981,24 +1981,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-pathops"
+name = "trama-pathops"
 version = "0.18.1"
 dependencies = [
- "figcraft-doc",
- "figcraft-geom",
+ "trama-doc",
+ "trama-geom",
  "linesweeper",
 ]
 
 [[package]]
-name = "figcraft-pdf"
+name = "trama-pdf"
 version = "0.18.1"
 dependencies = [
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
  "flate2",
  "krilla",
  "log",
@@ -2007,10 +2007,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-plugin"
+name = "trama-plugin"
 version = "0.18.1"
 dependencies = [
- "figcraft-color",
+ "trama-color",
  "serde",
  "serde_json",
  "sha2",
@@ -2020,16 +2020,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-render"
+name = "trama-render"
 version = "0.18.1"
 dependencies = [
  "crc32fast",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-text",
+ "trama-color",
+ "trama-doc",
+ "trama-format",
+ "trama-geom",
+ "trama-pathops",
+ "trama-text",
  "image",
  "log",
  "moxcms",
@@ -2039,19 +2039,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-server"
+name = "trama-server"
 version = "0.18.1"
 dependencies = [
  "chrono",
  "crc32fast",
  "ctrlc",
  "env_logger",
- "figcraft-collab",
- "figcraft-collab-net",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-plugin",
+ "trama-collab",
+ "trama-collab-net",
+ "trama-doc",
+ "trama-engine",
+ "trama-format",
+ "trama-plugin",
  "log",
  "rustix 1.1.5",
  "serde",
@@ -2064,29 +2064,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-svg"
+name = "trama-svg"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
  "flate2",
  "thiserror 2.0.21",
  "usvg",
 ]
 
 [[package]]
-name = "figcraft-text"
+name = "trama-text"
 version = "0.18.1"
 dependencies = [
  "core-text",
  "craft-font-catalog",
- "figcraft-doc",
- "figcraft-geom",
+ "trama-doc",
+ "trama-geom",
  "harfrust 0.13.3",
  "icu_segmenter",
  "log",
@@ -2098,7 +2098,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-ui-egui"
+name = "trama-ui-egui"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
@@ -2107,15 +2107,15 @@ dependencies = [
  "craft-update",
  "egui",
  "egui_extras",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-layout",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
+ "trama-color",
+ "trama-doc",
+ "trama-engine",
+ "trama-format",
+ "trama-geom",
+ "trama-layout",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
  "image",
  "log",
  "serde",
@@ -2126,21 +2126,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "figcraft-vectordrawable"
+name = "trama-vectordrawable"
 version = "0.18.1"
 dependencies = [
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
+ "trama-color",
+ "trama-doc",
+ "trama-geom",
+ "trama-pathops",
+ "trama-render",
+ "trama-text",
  "roxmltree 0.21.2",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "figcraft-web"
+name = "trama-web"
 version = "0.18.1"
 dependencies = [
  "base64 0.22.1",
@@ -2148,11 +2148,11 @@ dependencies = [
  "craft-web-host",
  "eframe",
  "egui",
- "figcraft-collab-net",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-text",
- "figcraft-ui-egui",
+ "trama-collab-net",
+ "trama-engine",
+ "trama-format",
+ "trama-text",
+ "trama-ui-egui",
  "js-sys",
  "log",
  "serde_json",
@@ -3161,7 +3161,7 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 [[package]]
 name = "krilla"
 version = "0.8.2"
-source = "git+https://github.com/storytold/craft-libs?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
+source = "git+https://github.com/getnodalia/foundation?rev=e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545#e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545"
 dependencies = [
  "base64 0.22.1",
  "bumpalo",
@@ -6552,7 +6552,7 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 [[package]]
 name = "winit"
 version = "0.30.13"
-source = "git+https://github.com/storytold/winit.git?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
+source = "git+https://github.com/getnodalia/foundation?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b3846ee8457d84ee4975110bfda6797c44dc"
 dependencies = [
  "ahash",
  "android-activity",
@@ -6766,7 +6766,7 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 name = "xtask"
 version = "0.18.1"
 dependencies = [
- "figcraft-engine",
+ "trama-engine",
  "serde_json",
 ]
 
@@ -7108,19 +7108,19 @@ dependencies = [
 [[patch.unused]]
 name = "egui_demo_lib"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_inspection"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_kittest"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
 
 [[patch.unused]]
 name = "egui_system_font_provider"
 version = "0.37.0"
-source = "git+https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"
+source = "git+https://github.com/getnodalia/foundation?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc799681571963842f95b55a6b68431b15a"

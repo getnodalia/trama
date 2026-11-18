@@ -2,9 +2,9 @@
 //! deleting, cutting and joining. Pure functions on a [`VectorNetwork`]; the session wrappers in
 //! `vectoredit.rs` re-fit the node afterwards.
 
-use figcraft_doc::{HandleMirroring, Region, Segment, VectorNetwork, Vertex, WindingRule};
-use figcraft_geom::kurbo::{CubicBez, ParamCurve, ParamCurveNearest};
-use figcraft_geom::{Affine, Point, Vec2};
+use trama_doc::{HandleMirroring, Region, Segment, VectorNetwork, Vertex, WindingRule};
+use trama_geom::kurbo::{CubicBez, ParamCurve, ParamCurveNearest};
+use trama_geom::{Affine, Point, Vec2};
 
 fn tvec(t: (f64, f64)) -> Vec2 {
     Vec2::new(t.0, t.1)
@@ -594,7 +594,7 @@ pub fn cut_vertex(net: &mut VectorNetwork, vi: usize) -> Vec<usize> {
 /// Returns the new ends.
 /// shortcut: crossings within 1% of a segment's ends are skipped; cut those at the point instead.
 pub fn cut_across(net: &mut VectorNetwork, a: Point, b: Point) -> Vec<usize> {
-    use figcraft_geom::kurbo::{Line, PathSeg};
+    use trama_geom::kurbo::{Line, PathSeg};
     if !(a.x.is_finite() && a.y.is_finite() && b.x.is_finite() && b.y.is_finite()) || (b - a).hypot() < 1e-9 {
         return vec![];
     }
@@ -977,7 +977,7 @@ mod tests {
     #[test]
     fn split_part_keeps_region_paint_metadata() {
         let mut n = square();
-        n.regions[0].fills = Some(vec![figcraft_color::Paint::solid(figcraft_color::Color::BLACK)]);
+        n.regions[0].fills = Some(vec![trama_color::Paint::solid(trama_color::Color::BLACK)]);
         let part = part(&n, &[0, 1, 2, 3]);
         assert_eq!(part.regions[0].fills, n.regions[0].fills);
     }
@@ -1257,8 +1257,8 @@ mod tests {
     /// is as long as the stroke (#1951).
     #[test]
     fn deleting_a_point_behind_a_curved_bridge_keeps_the_bridge_in_the_loop() {
-        use figcraft_geom::BezPath;
-        use figcraft_geom::kurbo::ParamCurveArclen;
+        use trama_geom::BezPath;
+        use trama_geom::kurbo::ParamCurveArclen;
         let pts = [(0.0, 0.0), (50.0, 0.0), (100.0, 0.0), (100.0, 50.0), (100.0, 100.0), (0.0, 100.0)].map(|(x, y)| Point::new(x, y));
         let mut n = VectorNetwork::from_points(&pts, true);
         connect(&mut n, 1, 3, (25.0, 25.0), (-25.0, -25.0)).unwrap();
@@ -1321,7 +1321,7 @@ mod tests {
         let cb = c.cubic(0).unwrap();
         let t = 0.7039;
         let p = cb.eval(t);
-        let d = figcraft_geom::kurbo::ParamCurveDeriv::deriv(&cb).eval(t).to_vec2().normalize();
+        let d = trama_geom::kurbo::ParamCurveDeriv::deriv(&cb).eval(t).to_vec2().normalize();
         let normal = Vec2::new(-d.y, d.x);
         assert!(erase(&mut c, p + normal * 0.5, 1.0));
         assert_eq!(c.segments.len(), 2);
@@ -1361,8 +1361,8 @@ mod tests {
 
     #[test]
     fn regions_over_one_open_chain_all_close_through_the_joining_segment() {
-        use figcraft_geom::BezPath;
-        use figcraft_geom::kurbo::ParamCurveArclen;
+        use trama_geom::BezPath;
+        use trama_geom::kurbo::ParamCurveArclen;
         let mut n = bridged_open_chain();
         for _ in 0..2 {
             n.regions.push(Region { loops: vec![vec![3, 1, 2, 0]], winding: WindingRule::NonZero, fills: None, ..Default::default() });
@@ -1429,7 +1429,7 @@ mod tests {
     /// middle point deleted: both fills close through the bridge (#1951).
     #[test]
     fn two_fills_that_shared_a_deleted_border_both_close_through_the_bridge() {
-        use figcraft_geom::Shape;
+        use trama_geom::Shape;
         let pts = [(0.0, 0.0), (50.0, 0.0), (100.0, 0.0), (100.0, 100.0), (50.0, 100.0), (0.0, 100.0)].map(|(x, y)| Point::new(x, y));
         let mut n = VectorNetwork::from_points(&pts, true);
         n.vertices.push(Vertex::new(50.0, 50.0));

@@ -2,8 +2,8 @@
 //! selected a collection with several modes lists them, as Figma's Page section does.
 
 use egui::{Event, Modifiers, PointerButton, Pos2};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 use crate::live_tests::{flat, text_center};

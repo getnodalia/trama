@@ -1,13 +1,13 @@
 {
-  "id": "figcraft",
-  "name": "FigCraft",
-  "upgradeCode": "7F8B9827-D065-41B7-A514-2A454B21F484",
+  "id": "trama",
+  "name": "Trama",
+  "upgradeCode": "33A433A8-CFE1-4969-ACAD-171AAB11DE3E",
   "sources": [
-    "figcraft.wxs"
+    "trama.wxs"
   ],
-  "icon": "assets/app-icon/figcraft.ico",
+  "icon": "assets/app-icon/trama.ico",
   "localization": [
-    "figcraft.en-us.wxl"
+    "trama.en-us.wxl"
   ],
   "extensions": [
     "UI",
@@ -15,109 +15,109 @@
   ],
   "payloads": [
     "NOTICE",
-    "figcraft-cli.exe",
-    "figcraft.exe"
+    "trama-cli.exe",
+    "trama.exe"
   ],
   "registry": [
     [
       "-1",
-      "Software\\Classes\\Figcraft.Image\\shell\\open\\command",
+      "Software\\Classes\\Trama.Image\\shell\\open\\command",
       "",
-      "\"[#FigcraftExe]\" \"%1\""
+      "\"[#TramaExe]\" \"%1\""
     ],
     [
       "-1",
       "Software\\Classes\\.svg\\OpenWithProgids",
-      "Figcraft.Image",
+      "Trama.Image",
       ""
     ],
     [
       "-1",
       "Software\\Classes\\.png\\OpenWithProgids",
-      "Figcraft.Image",
+      "Trama.Image",
       ""
     ],
     [
       "-1",
       "Software\\Classes\\.jpg\\OpenWithProgids",
-      "Figcraft.Image",
+      "Trama.Image",
       ""
     ],
     [
       "-1",
       "Software\\Classes\\.jpeg\\OpenWithProgids",
-      "Figcraft.Image",
+      "Trama.Image",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Figcraft.Sketch\\shell\\open\\command",
+      "Software\\Classes\\Trama.Sketch\\shell\\open\\command",
       "",
-      "\"[#FigcraftExe]\" \"%1\""
+      "\"[#TramaExe]\" \"%1\""
     ],
     [
       "-1",
       "Software\\Classes\\.sketch\\OpenWithProgids",
-      "Figcraft.Sketch",
+      "Trama.Sketch",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe",
+      "Software\\Classes\\Applications\\trama.exe",
       "FriendlyAppName",
-      "FigCraft"
+      "Trama"
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\shell\\open\\command",
+      "Software\\Classes\\Applications\\trama.exe\\shell\\open\\command",
       "",
-      "\"[#FigcraftExe]\" \"%1\""
+      "\"[#TramaExe]\" \"%1\""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\SupportedTypes",
-      ".figcraft",
+      "Software\\Classes\\Applications\\trama.exe\\SupportedTypes",
+      ".trama",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\SupportedTypes",
+      "Software\\Classes\\Applications\\trama.exe\\SupportedTypes",
       ".svg",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\SupportedTypes",
+      "Software\\Classes\\Applications\\trama.exe\\SupportedTypes",
       ".png",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\SupportedTypes",
+      "Software\\Classes\\Applications\\trama.exe\\SupportedTypes",
       ".jpg",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\SupportedTypes",
+      "Software\\Classes\\Applications\\trama.exe\\SupportedTypes",
       ".jpeg",
       ""
     ],
     [
       "-1",
-      "Software\\Classes\\Applications\\figcraft.exe\\SupportedTypes",
+      "Software\\Classes\\Applications\\trama.exe\\SupportedTypes",
       ".sketch",
       ""
     ],
     [
       "-1",
-      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\figcraft.exe",
+      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\trama.exe",
       "",
-      "[#FigcraftExe]"
+      "[#TramaExe]"
     ],
     [
       "-1",
-      "Software\\FigCraft",
+      "Software\\Trama",
       "InstallDir",
       "[INSTALLFOLDER]"
     ]

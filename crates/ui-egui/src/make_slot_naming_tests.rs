@@ -3,10 +3,10 @@
 //! what is typed names the slot on Enter, and Escape makes nothing.
 
 use egui::Event;
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
-use figcraft_engine::components::slot_name;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
+use trama_engine::components::slot_name;
 
 use crate::component_swap_default_tests::{centre, click, tree};
 use crate::layers_drag_tests::Ui;

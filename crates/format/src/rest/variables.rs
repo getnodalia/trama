@@ -5,11 +5,9 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_doc::color::PaintKind;
-use figcraft_doc::{
-    ALL_SCOPES, CODE_PLATFORMS, Collection, Mode, Node, NodeKind, Variable, VariableType, VariableValue, Variables, normalize_scopes,
-};
 use serde_json::{Map, Value, json};
+use trama_doc::color::PaintKind;
+use trama_doc::{ALL_SCOPES, CODE_PLATFORMS, Collection, Mode, Node, NodeKind, Variable, VariableType, VariableValue, Variables, normalize_scopes};
 
 use super::Ctx;
 use super::props::{clip_str, color, list, text};

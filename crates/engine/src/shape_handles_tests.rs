@@ -1,9 +1,9 @@
 //! On-canvas corner radius and star ratio handles (see `shape_handles.rs`).
 
-use figcraft_doc::{NodeId, NodeKind};
-use figcraft_geom::Point;
 use serde_json::{Value, json};
 use std::f64::consts::TAU;
+use trama_doc::{NodeId, NodeKind};
+use trama_geom::Point;
 
 use crate::Session;
 use crate::params::id_of;
@@ -71,7 +71,7 @@ fn polygon_and_star_handles() {
     );
     // The ratio handle sits on the first inner point; dragging it to the centre's side shrinks it.
     let ratio_at = hs[1].1;
-    let inner = figcraft_geom::star_points(200.0, 200.0, 5, 0.38)[1];
+    let inner = trama_geom::star_points(200.0, 200.0, 5, 0.38)[1];
     assert!((Point::new(ratio_at[0], ratio_at[1]) - inner).hypot() < 1e-6);
     let towards = Point::new(100.0, 100.0) + (inner - Point::new(100.0, 100.0)) * (0.5 / 0.38);
     drag(&mut s, (ratio_at[0], ratio_at[1]), (towards.x, towards.y), false);
@@ -136,7 +136,7 @@ fn a_polygon_has_a_count_handle_on_its_first_vertex_clockwise_from_the_top() {
     let poly = create(&mut s, "shape.polygon", json!({"x": 0, "y": 0, "width": 200, "height": 200}));
     s.execute("node.set", &json!({"ids": [poly], "props": {"pointCount": 5}})).unwrap();
     let h = count_handle(&s, poly);
-    let v1 = figcraft_geom::polygon_points(200.0, 200.0, 5)[1];
+    let v1 = trama_geom::polygon_points(200.0, 200.0, 5)[1];
     assert!((Point::new(h[0], h[1]) - v1).hypot() < 1e-6, "on vertex 1, not inset: {h:?} vs {v1:?}");
     assert!((h[0] - (100.0 + 100.0 * (TAU / 5.0).sin())).abs() < 1e-6, "72 degrees from the top");
     // Hovering it finds it, not the radius handle.
@@ -171,7 +171,7 @@ fn dragging_a_stars_count_handle_sets_its_points() {
     let mut s = Session::new();
     let star = create(&mut s, "shape.star", json!({"x": 0, "y": 0, "width": 200, "height": 200}));
     let h = count_handle(&s, star);
-    let outer = figcraft_geom::star_points(200.0, 200.0, 5, 0.38)[2];
+    let outer = trama_geom::star_points(200.0, 200.0, 5, 0.38)[2];
     assert!((Point::new(h[0], h[1]) - outer).hypot() < 1e-6, "on its first outer point clockwise from the top");
     for (deg, want) in [(90.0, 4), (45.0, 8), (130.0, 3), (1.0, 60)] {
         count_drag(&mut s, star, deg);

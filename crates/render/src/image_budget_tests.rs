@@ -4,8 +4,8 @@
 
 use std::sync::Arc;
 
-use figcraft_color::ColorProfile;
 use tiny_skia::Pixmap;
+use trama_color::ColorProfile;
 
 use super::*;
 

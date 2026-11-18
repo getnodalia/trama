@@ -13,7 +13,7 @@ use serde_json::{Value, json};
 
 use crate::Session;
 use crate::params::id_of;
-use figcraft_doc::{Effect, EffectKind, NodeId};
+use trama_doc::{Effect, EffectKind, NodeId};
 
 fn ex(s: &mut Session, cmd: &str, p: Value) -> Value {
     s.execute(cmd, &p).unwrap_or_else(|e| panic!("{cmd}: {e}"))
@@ -135,7 +135,7 @@ fn export_file_names_take_the_suffix_and_slashes_make_folders() {
         assert_eq!(names.get(i).map(String::as_str), Some(*want), "{why}");
     }
     // Into a folder: the slash makes a subfolder.
-    let dir = std::env::temp_dir().join(format!("figcraft-export-names-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-export-names-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     ex(&mut s, "file.exportLayers", json!({"ids": [close], "dir": dir.to_string_lossy()}));
@@ -354,7 +354,7 @@ fn svg_export_options() {
     assert!(!outlined.contains("<text"), "outline text is on by default: text becomes paths");
     let live = text(&export(&mut s, json!({"ids": [t], "format": "svg", "svgOutlineText": false})));
     // Without a font nothing lays out, so there is no text to keep (CI has no fonts).
-    let has_glyphs = figcraft_text::layout_node(s.doc().unwrap().node(t).unwrap()).is_some_and(|(l, _)| !l.glyphs.is_empty());
+    let has_glyphs = trama_text::layout_node(s.doc().unwrap().node(t).unwrap()).is_some_and(|(l, _)| !l.glyphs.is_empty());
     if has_glyphs {
         assert!(live.contains("<text") && live.contains("Hello"), "with outline text off, text stays text (selectable, needs the font)");
     }
@@ -379,19 +379,19 @@ fn copy_as_png_svg_and_code() {
     let doc = s.doc().unwrap();
     let png = crate::cmd::file::copy_png(doc, &[a, b]).unwrap();
     assert_eq!((png.width(), png.height()), (200, 40), "docs silent: Copy as PNG copies the selection at 2x, all of it in one image");
-    let svg = crate::cmd::file::export_bytes(doc, &[a, b], figcraft_doc::ExportFormat::Svg, 1.0).unwrap();
+    let svg = crate::cmd::file::export_bytes(doc, &[a, b], trama_doc::ExportFormat::Svg, 1.0).unwrap();
     assert!(text(&svg).starts_with("<svg width=\"100\""), "Copy as SVG is the selection's SVG export");
     let css = crate::codegen::code_for(doc, a, crate::codegen::CodeLang::Css);
     assert!(css.contains("background: #FF0000;"), "Copy as CSS is the layer's CSS from Inspect");
 }
 
 /// A red square with a fill-less pane over its right part, holding `effect` (#2213).
-fn pane_scene(effect: EffectKind) -> (figcraft_doc::Document, NodeId, NodeId) {
-    use figcraft_doc::{Document, NodeKind};
+fn pane_scene(effect: EffectKind) -> (trama_doc::Document, NodeId, NodeId) {
+    use trama_doc::{Document, NodeKind};
     let mut d = Document::new("blur-export");
     let page = d.first_page().unwrap();
     let under = d.create(page, NodeKind::Rectangle, "Under", 0.0, 0.0, 120.0, 120.0).unwrap();
-    d.get_mut(under).unwrap().fills = vec![figcraft_color::Paint::solid(figcraft_color::Color::from_hex("E03030").unwrap())];
+    d.get_mut(under).unwrap().fills = vec![trama_color::Paint::solid(trama_color::Color::from_hex("E03030").unwrap())];
     let pane = d.create(page, NodeKind::Rectangle, "Glass", 60.0, 20.0, 120.0, 80.0).unwrap();
     d.get_mut(pane).unwrap().fills = vec![];
     d.get_mut(pane).unwrap().effects = vec![Effect { kind: effect, visible: true }];
@@ -399,12 +399,12 @@ fn pane_scene(effect: EffectKind) -> (figcraft_doc::Document, NodeId, NodeId) {
 }
 
 /// The PNG export of `ids` as the Export command makes it, and what the canvas draws there.
-fn export_vs_canvas(d: &figcraft_doc::Document, ids: &[NodeId]) -> (image::RgbaImage, image::RgbaImage) {
-    let setting = figcraft_doc::ExportSetting::default();
+fn export_vs_canvas(d: &trama_doc::Document, ids: &[NodeId]) -> (image::RgbaImage, image::RgbaImage) {
+    let setting = trama_doc::ExportSetting::default();
     let page = d.first_page().unwrap();
     let area = crate::cmd::file::export_area(d, ids, &setting).unwrap();
-    let canvas = figcraft_render::render_area(d, &d.get(page).unwrap().children.clone(), area, 1.0).unwrap();
-    let canvas = image::RgbaImage::from_raw(canvas.width(), canvas.height(), figcraft_render::to_rgba8(&canvas)).unwrap();
+    let canvas = trama_render::render_area(d, &d.get(page).unwrap().children.clone(), area, 1.0).unwrap();
+    let canvas = image::RgbaImage::from_raw(canvas.width(), canvas.height(), trama_render::to_rgba8(&canvas)).unwrap();
     let (bytes, _) = crate::cmd::file::export_file(d, ids, &setting, 1.0).unwrap();
     (pixels(&bytes), canvas)
 }
@@ -414,7 +414,7 @@ fn export_vs_canvas(d: &figcraft_doc::Document, ids: &[NodeId]) -> (image::RgbaI
 /// beneath it as the backdrop (clipped to the layer) rather than blurring nothing.
 #[test]
 fn exporting_a_background_blur_layer_keeps_the_blurred_backdrop() {
-    let (d, _, pane) = pane_scene(EffectKind::BackgroundBlur(figcraft_doc::Blur::uniform(12.0)));
+    let (d, _, pane) = pane_scene(EffectKind::BackgroundBlur(trama_doc::Blur::uniform(12.0)));
     let (exported, canvas) = export_vs_canvas(&d, &[pane]);
     // The pane's left half sits over the red square, which ends at x = 120 (60 px into the pane).
     assert_ne!(canvas.get_pixel(60, 40).0, [0, 0, 0, 0], "the canvas draws the blurred backdrop");
@@ -426,16 +426,16 @@ fn exporting_a_background_blur_layer_keeps_the_blurred_backdrop() {
 /// its own, keeps the frame's fill and the blurred layer beneath it, opaque.
 #[test]
 fn a_blurred_pane_inside_a_frame_keeps_the_frame_and_the_layer_beneath() {
-    use figcraft_doc::{Document, NodeKind};
+    use trama_doc::{Document, NodeKind};
     let mut d = Document::new("blur-export-frame");
     let page = d.first_page().unwrap();
     let art = d.create(page, NodeKind::Frame, "Art", 0.0, 0.0, 300.0, 200.0).unwrap();
-    d.get_mut(art).unwrap().fills = vec![figcraft_color::Paint::solid(figcraft_color::Color::from_hex("FFFFFF").unwrap())];
+    d.get_mut(art).unwrap().fills = vec![trama_color::Paint::solid(trama_color::Color::from_hex("FFFFFF").unwrap())];
     let under = d.create(art, NodeKind::Rectangle, "Under", 0.0, 0.0, 120.0, 120.0).unwrap();
-    d.get_mut(under).unwrap().fills = vec![figcraft_color::Paint::solid(figcraft_color::Color::from_hex("E03030").unwrap())];
+    d.get_mut(under).unwrap().fills = vec![trama_color::Paint::solid(trama_color::Color::from_hex("E03030").unwrap())];
     let pane = d.create(art, NodeKind::Rectangle, "Glass", 60.0, 20.0, 120.0, 80.0).unwrap();
     d.get_mut(pane).unwrap().fills = vec![];
-    d.get_mut(pane).unwrap().effects = vec![Effect { kind: EffectKind::BackgroundBlur(figcraft_doc::Blur::uniform(12.0)), visible: true }];
+    d.get_mut(pane).unwrap().effects = vec![Effect { kind: EffectKind::BackgroundBlur(trama_doc::Blur::uniform(12.0)), visible: true }];
     let (exported, canvas) = export_vs_canvas(&d, &[pane]);
     assert_eq!(exported.get_pixel(60, 40), canvas.get_pixel(60, 40), "the blurred square under the pane");
     assert_eq!(exported.get_pixel(100, 40).0[3], 255, "the frame's white behind the pane, opaque");
@@ -444,7 +444,7 @@ fn a_blurred_pane_inside_a_frame_keeps_the_frame_and_the_layer_beneath() {
 /// #2213: the same for Glass.
 #[test]
 fn exporting_a_glass_layer_keeps_the_backdrop_it_bends() {
-    let (d, _, pane) = pane_scene(EffectKind::Glass(figcraft_doc::Glass::default()));
+    let (d, _, pane) = pane_scene(EffectKind::Glass(trama_doc::Glass::default()));
     let (exported, canvas) = export_vs_canvas(&d, &[pane]);
     assert_ne!(canvas.get_pixel(30, 40).0, [0, 0, 0, 0]);
     assert_eq!(exported.get_pixel(30, 40), canvas.get_pixel(30, 40), "export lost the backdrop the glass reads");
@@ -455,10 +455,10 @@ fn exporting_a_glass_layer_keeps_the_backdrop_it_bends() {
 /// is (the blurred red), and the layers over the pane stay out.
 #[test]
 fn a_blur_export_is_opaque_inside_the_pane_and_leaves_layers_above_out() {
-    let (mut d, _, pane) = pane_scene(EffectKind::BackgroundBlur(figcraft_doc::Blur::uniform(12.0)));
+    let (mut d, _, pane) = pane_scene(EffectKind::BackgroundBlur(trama_doc::Blur::uniform(12.0)));
     let page = d.first_page().unwrap();
-    let above = d.create(page, figcraft_doc::NodeKind::Rectangle, "Above", 0.0, 0.0, 200.0, 200.0).unwrap();
-    d.get_mut(above).unwrap().fills = vec![figcraft_color::Paint::solid(figcraft_color::Color::from_hex("0000FF").unwrap())];
+    let above = d.create(page, trama_doc::NodeKind::Rectangle, "Above", 0.0, 0.0, 200.0, 200.0).unwrap();
+    d.get_mut(above).unwrap().fills = vec![trama_color::Paint::solid(trama_color::Color::from_hex("0000FF").unwrap())];
     let (exported, _) = export_vs_canvas(&d, &[pane]);
     let left = exported.get_pixel(10, 40).0;
     assert_eq!(left[3], 255, "red under the pane: opaque");
@@ -470,7 +470,7 @@ fn a_blur_export_is_opaque_inside_the_pane_and_leaves_layers_above_out() {
 /// Guard: a layer without backdrop effects over another still exports alone ("contents only").
 #[test]
 fn a_layer_without_backdrop_effects_still_leaves_the_layers_below_out() {
-    let (mut d, _, pane) = pane_scene(EffectKind::BackgroundBlur(figcraft_doc::Blur::uniform(0.0)));
+    let (mut d, _, pane) = pane_scene(EffectKind::BackgroundBlur(trama_doc::Blur::uniform(0.0)));
     d.get_mut(pane).unwrap().effects.clear();
     let (exported, _) = export_vs_canvas(&d, &[pane]);
     assert!(exported.pixels().all(|p| p.0 == [0, 0, 0, 0]), "a fill-less pane alone exports clear");
@@ -478,7 +478,7 @@ fn a_layer_without_backdrop_effects_still_leaves_the_layers_below_out() {
 
 #[test]
 fn node_set_takes_back_the_export_settings_node_get_returns() {
-    use figcraft_doc::{ExportColorProfile, ExportFormat, ExportSetting, PrintSettings, VdCompat};
+    use trama_doc::{ExportColorProfile, ExportFormat, ExportSetting, PrintSettings, VdCompat};
 
     // Every multi-word field (and `quality`) away from its default.
     let expected = ExportSetting {

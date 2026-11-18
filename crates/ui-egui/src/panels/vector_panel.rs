@@ -4,9 +4,9 @@
 //! dimensions).
 
 use egui::{Id, Ui};
-use figcraft_doc::{Document, HandleMirroring, StrokeCap, StrokeJoin};
-use figcraft_engine::vectoredit::{self, VectorEdit};
 use serde_json::{Value, json};
+use trama_doc::{Document, HandleMirroring, StrokeCap, StrokeJoin};
+use trama_engine::vectoredit::{self, VectorEdit};
 
 use crate::FigApp;
 use crate::i18n::tr;
@@ -108,7 +108,7 @@ pub fn points(app: &mut FigApp, ui: &mut Ui, doc: &Document, ve: &VectorEdit) {
     let round = |v: f64| (v * 100.0).round() / 100.0;
     let parent_pts = vectoredit::selected_parent_points(doc, ve);
     // The value the selected points share (within 1e-6), or none: Mixed.
-    let shared = |axis: fn(&figcraft_geom::Point) -> f64| {
+    let shared = |axis: fn(&trama_geom::Point) -> f64| {
         let first = parent_pts.first().map(axis)?;
         parent_pts.iter().all(|p| (axis(p) - first).abs() < 1e-6).then(|| round(first))
     };

@@ -3,8 +3,8 @@
 //! unchanged. Off (the default), a wheel scrolls and Cmd/Ctrl+wheel zooms.
 
 use egui::{Event, Modifiers, MouseWheelSource, MouseWheelUnit, Pos2, RawInput, Rect, TouchPhase, Vec2, vec2};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use super::input::{invert_zoom_factor, is_mouse_wheel, swap_wheel};
 use crate::{FigApp, NoServices};

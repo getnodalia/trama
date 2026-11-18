@@ -3,9 +3,9 @@
 
 use crate::boolean::boolean_steps;
 use crate::boolean_cache_tests::{dark, outline, render};
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{BoolOp, Document, NodeId, NodeKind};
-use figcraft_geom::kurbo::Shape;
+use trama_color::{Color, Paint};
+use trama_doc::{BoolOp, Document, NodeId, NodeKind};
+use trama_geom::kurbo::Shape;
 
 /// The L of the measurement: a union of 200 by 100 and 100 by 200 rectangles, on a page of its own.
 fn l_group() -> (Document, NodeId, NodeId, NodeId) {
@@ -55,6 +55,6 @@ fn the_radius_keys_the_result_and_the_fold_is_not_redone() {
     assert_eq!(outline(&d, g), sharp, "radius 0 draws the fold itself");
     set_radius(&mut d, g, 20.0);
     let rounded = area(&d, g);
-    d.get_mut(b).unwrap().transform = figcraft_geom::Affine::translate((10.0, 0.0)) * d.node(b).unwrap().transform;
+    d.get_mut(b).unwrap().transform = trama_geom::Affine::translate((10.0, 0.0)) * d.node(b).unwrap().transform;
     assert!((area(&d, g) - rounded).abs() > 1.0, "moving an operand does not draw a stale rounded path");
 }

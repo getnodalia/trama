@@ -3,9 +3,9 @@
 //! imported `[4, 2, 1, 2]` stays whole.
 
 use egui::{Event, Id, Key, Modifiers};
-use figcraft_doc::{NodeId, StrokeCap};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::{NodeId, StrokeCap};
+use trama_engine::Session;
 
 use crate::export_preview_tests::{click, labelled};
 use crate::layers_drag_tests::Ui;

@@ -1,8 +1,8 @@
 //! Text styles linked on character ranges travel with components (publish and place).
 
 use crate::Session;
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 fn run(s: &mut Session, command: &str, params: Value) -> Value {
     s.execute(command, &params).unwrap_or_else(|e| panic!("{command}: {e}"))
@@ -47,7 +47,7 @@ fn component_place_imports_range_text_style() {
     let library = source.doc().unwrap().published.as_ref().unwrap().clone();
     assert!(library.doc.style(&range).is_some());
     let mut target = Session::new();
-    let path = "figcraft://library.test/range-styles";
+    let path = "trama://library.test/range-styles";
     target.libraries.insert(path, Ok(library));
     run(&mut target, "library.add", json!({"path":path}));
     let instance = node(run(&mut target, "library.place", json!({"library":publication["id"], "component":component})));

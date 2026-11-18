@@ -3,9 +3,9 @@
 //! picker show, not the layer's own fill at that index.
 
 use base64::Engine as _;
-use figcraft_color::{Color, ImageScaleMode, Paint, PaintKind};
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_color::{Color, ImageScaleMode, Paint, PaintKind};
+use trama_engine::Session;
 
 use super::crop_target;
 use crate::colorpicker::PickerTarget;

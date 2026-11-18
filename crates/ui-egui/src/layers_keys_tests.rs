@@ -3,9 +3,9 @@
 //! canvas gives arrows back to nudging. Delete after a click in the Pages list deletes the page.
 
 use egui::{Event, Key, Modifiers, Pos2, pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::layers_drag_tests::Ui;
 

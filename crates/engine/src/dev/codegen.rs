@@ -6,12 +6,12 @@
 //! their iOS and Android code syntax in SwiftUI and Compose. The output is a starting point, not a
 //! pixel-exact translation.
 
-use figcraft_color::{Color, Gradient, GradientKind, Paint, PaintKind};
-use figcraft_doc::{
+use serde_json::json;
+use trama_color::{Color, Gradient, GradientKind, Paint, PaintKind};
+use trama_doc::{
     ContentAlign, CrossAlign, Document, EffectKind, LayoutMode, LetterSpacing, LineHeight, MainAlign, Node, NodeId, NodeKind, Shadow, Sizing,
     TextAlignH, TextCase, TextDecoration, Variable,
 };
-use serde_json::json;
 
 use crate::cmd::CommandSpec;
 use crate::component_codegen::{Component, Param};
@@ -415,7 +415,7 @@ const PADDING: [[&str; 3]; 4] = [
     ["paddingLeft", "paddingHorizontal", "padding"],
 ];
 
-/// What code for `platform` (a [`figcraft_doc::CODE_PLATFORMS`] key) writes for a value of `n`: the
+/// What code for `platform` (a [`trama_doc::CODE_PLATFORMS`] key) writes for a value of `n`: the
 /// code syntax of the variable bound to the first of `fields` that has one, else `value`. Without a
 /// code syntax the value stays: a name made up here wouldn't exist in the code it lands in.
 fn named(doc: &Document, n: &Node, platform: &str, fields: &[&str], value: String) -> String {
@@ -527,7 +527,7 @@ mod tests {
     fn css_gradient_folds_in_paint_opacity() {
         let mut s = Session::new();
         let f = id_of(&s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 200, "height": 100})).unwrap()["id"]).unwrap();
-        let mut p = figcraft_color::Paint::gradient(figcraft_color::Gradient::default_for(figcraft_color::GradientKind::Linear, Color::BLACK));
+        let mut p = trama_color::Paint::gradient(trama_color::Gradient::default_for(trama_color::GradientKind::Linear, Color::BLACK));
         p.opacity = 0.5;
         s.doc_mut().unwrap().get_mut(f).unwrap().fills = vec![p];
         let css = code_for(s.doc().unwrap(), f, CodeLang::Css);
@@ -536,13 +536,13 @@ mod tests {
     }
 
     /// The measured frame: white at the bottom, a 20% gradient above it, 50% black on top.
-    fn layered_frame(s: &mut Session) -> figcraft_doc::NodeId {
+    fn layered_frame(s: &mut Session) -> trama_doc::NodeId {
         let f = id_of(&s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 200, "height": 120})).unwrap()["id"]).unwrap();
-        let mut g = figcraft_color::Paint::gradient(figcraft_color::Gradient::default_for(figcraft_color::GradientKind::Linear, Color::BLACK));
+        let mut g = trama_color::Paint::gradient(trama_color::Gradient::default_for(trama_color::GradientKind::Linear, Color::BLACK));
         g.opacity = 0.2;
-        let mut top = figcraft_color::Paint::solid(Color::BLACK);
+        let mut top = trama_color::Paint::solid(Color::BLACK);
         top.opacity = 0.5;
-        s.doc_mut().unwrap().get_mut(f).unwrap().fills = vec![figcraft_color::Paint::solid(Color::WHITE), g, top];
+        s.doc_mut().unwrap().get_mut(f).unwrap().fills = vec![trama_color::Paint::solid(Color::WHITE), g, top];
         f
     }
 
@@ -567,7 +567,7 @@ mod tests {
     fn one_solid_fill_stays_a_plain_colour() {
         let mut s = Session::new();
         let f = id_of(&s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 200, "height": 100})).unwrap()["id"]).unwrap();
-        s.doc_mut().unwrap().get_mut(f).unwrap().fills = vec![figcraft_color::Paint::solid(Color::WHITE)];
+        s.doc_mut().unwrap().get_mut(f).unwrap().fills = vec![trama_color::Paint::solid(Color::WHITE)];
         let css = code_for(s.doc().unwrap(), f, CodeLang::Css);
         assert!(css.contains("background: #FFFFFF;\n"), "{css}");
         assert!(!css.contains("gradient"), "{css}");
@@ -855,17 +855,17 @@ mod tests {
     }
 
     /// White, a 20% default linear gradient of black, then 50% black: bottom to top.
-    fn three_fills() -> Vec<figcraft_color::Paint> {
-        let mut gradient = figcraft_color::Paint::gradient(figcraft_color::Gradient::default_for(figcraft_color::GradientKind::Linear, Color::BLACK));
+    fn three_fills() -> Vec<trama_color::Paint> {
+        let mut gradient = trama_color::Paint::gradient(trama_color::Gradient::default_for(trama_color::GradientKind::Linear, Color::BLACK));
         gradient.opacity = 0.2;
-        let mut top = figcraft_color::Paint::solid(Color::BLACK);
+        let mut top = trama_color::Paint::solid(Color::BLACK);
         top.opacity = 0.5;
-        vec![figcraft_color::Paint::solid(Color::WHITE), gradient, top]
+        vec![trama_color::Paint::solid(Color::WHITE), gradient, top]
     }
 
     /// A 200 x `h` layer of `kind` (`frame`, `rectangle` or `ellipse`, a rectangle with corner
     /// radius 8) with exactly `fills`.
-    fn fill_layer(s: &mut Session, kind: &str, h: f64, fills: Vec<figcraft_color::Paint>) -> NodeId {
+    fn fill_layer(s: &mut Session, kind: &str, h: f64, fills: Vec<trama_color::Paint>) -> NodeId {
         let id = match kind {
             "frame" => id_of(&s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 200, "height": h})).unwrap()["id"]).unwrap(),
             _ => id_of(&s.execute(&format!("shape.{kind}"), &json!({"x": 0, "y": 0, "width": 200, "height": h})).unwrap()["id"]).unwrap(),
@@ -877,8 +877,8 @@ mod tests {
         id
     }
 
-    fn one_gradient(s: &mut Session, g: figcraft_color::Gradient) -> NodeId {
-        fill_layer(s, "frame", 120.0, vec![figcraft_color::Paint::gradient(g)])
+    fn one_gradient(s: &mut Session, g: trama_color::Gradient) -> NodeId {
+        fill_layer(s, "frame", 120.0, vec![trama_color::Paint::gradient(g)])
     }
 
     const SWIFT_WHITE: &str = "Color(red: 1, green: 1, blue: 1, opacity: 1)";
@@ -909,9 +909,9 @@ mod tests {
         ];
         assert_eq!(mods, want.iter().map(String::as_str).collect::<Vec<_>>(), "{code}");
         assert!(!code.contains(".background("), "{code}");
-        let mut half = figcraft_color::Paint::solid(Color::BLACK);
+        let mut half = trama_color::Paint::solid(Color::BLACK);
         half.opacity = 0.5;
-        let e = fill_layer(&mut s, "ellipse", 120.0, vec![figcraft_color::Paint::solid(Color::WHITE), half]);
+        let e = fill_layer(&mut s, "ellipse", 120.0, vec![trama_color::Paint::solid(Color::WHITE), half]);
         let code = code_for(s.doc().unwrap(), e, CodeLang::SwiftUi);
         assert!(code.contains(&format!(".overlay(Ellipse().fill({SWIFT_HALF}))")), "{code}");
     }
@@ -971,7 +971,7 @@ mod tests {
 
     #[test]
     fn native_gradients_are_written_as_gradients() {
-        use figcraft_color::{Gradient, GradientKind};
+        use trama_color::{Gradient, GradientKind};
         let mut s = Session::new();
         let radial = one_gradient(&mut s, Gradient::default_for(GradientKind::Radial, Color::BLACK));
         let doc = s.doc().unwrap();
@@ -1015,10 +1015,10 @@ mod tests {
 
     #[test]
     fn one_solid_fill_is_unchanged_in_native_code() {
-        let mut hidden = figcraft_color::Paint::solid(Color::BLACK);
+        let mut hidden = trama_color::Paint::solid(Color::BLACK);
         hidden.visible = false;
         let mut s = Session::new();
-        for fills in [vec![figcraft_color::Paint::solid(Color::WHITE)], vec![figcraft_color::Paint::solid(Color::WHITE), hidden]] {
+        for fills in [vec![trama_color::Paint::solid(Color::WHITE)], vec![trama_color::Paint::solid(Color::WHITE), hidden]] {
             let f = fill_layer(&mut s, "frame", 100.0, fills);
             let doc = s.doc().unwrap();
             let sw = code_for(doc, f, CodeLang::SwiftUi);

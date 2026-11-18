@@ -7,8 +7,8 @@
 
 use std::sync::LazyLock;
 
-use figcraft_doc::{Annotation, AnnotationCategory, Document, NodeId};
 use serde_json::{Value, json};
+use trama_doc::{Annotation, AnnotationCategory, Document, NodeId};
 
 use crate::cmd::CommandSpec;
 use crate::devinspect::{Prop, Section, properties};
@@ -384,11 +384,9 @@ pub fn specs() -> Vec<CommandSpec> {
             let color = match category_color(cmd, p)? {
                 Some(c) => c,
                 None => {
-                    let used = |c: &figcraft_color::Color| list.iter().any(|x| x.color.to_hex() == c.to_hex());
-                    let fallback = AnnotationCategory::COLORS
-                        .get(list.len() % AnnotationCategory::COLORS.len())
-                        .copied()
-                        .unwrap_or(figcraft_color::Color::BLACK);
+                    let used = |c: &trama_color::Color| list.iter().any(|x| x.color.to_hex() == c.to_hex());
+                    let fallback =
+                        AnnotationCategory::COLORS.get(list.len() % AnnotationCategory::COLORS.len()).copied().unwrap_or(trama_color::Color::BLACK);
                     AnnotationCategory::COLORS.iter().find(|c| !used(c)).copied().unwrap_or(fallback)
                 }
             };
@@ -463,7 +461,7 @@ fn category_name(cmd: &str, list: &[AnnotationCategory], editing: Option<usize>,
 }
 
 /// `color` from params, opaque.
-fn category_color(cmd: &str, p: &Value) -> crate::Result<Option<figcraft_color::Color>> {
+fn category_color(cmd: &str, p: &Value) -> crate::Result<Option<trama_color::Color>> {
     match get(p, "color") {
         Some(v) => Ok(Some(color_of(v).ok_or_else(|| bad(cmd, "`color` must be a colour (hex or CSS)"))?.with_alpha(1.0))),
         None => Ok(None),

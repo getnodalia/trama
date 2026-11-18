@@ -10,7 +10,7 @@ use serde_json::{Value, json};
 use crate::Session;
 use crate::params::id_of;
 use crate::textedit::{begin, insert, key, set_caret};
-use figcraft_doc::{DecorationLength, DecorationStyle, ListStyle, NodeId, ParaList, TextData, color::Color};
+use trama_doc::{DecorationLength, DecorationStyle, ListStyle, NodeId, ParaList, TextData, color::Color};
 
 fn text(s: &mut Session, chars: &str) -> NodeId {
     id_of(&s.execute("text.create", &json!({"text": chars, "x": 0, "y": 0, "props": {"fontSize": 20}})).unwrap()["id"]).unwrap()
@@ -63,7 +63,7 @@ fn a_list_with_a_start_number_toggles_off() {
     // numbered list, so the button turns it back to plain (#686).
     let mut s = Session::new();
     let t = text(&mut s, "two\nthree\nfour");
-    if let figcraft_doc::NodeKind::Text(td) = &mut s.doc_mut().unwrap().get_mut(t).unwrap().kind {
+    if let trama_doc::NodeKind::Text(td) = &mut s.doc_mut().unwrap().get_mut(t).unwrap().kind {
         let n = |start_offset| ParaList { list: N, indent: 0, start_offset, ..ParaList::default() };
         td.paragraphs = vec![n(1), n(0), n(0)];
     }
@@ -233,7 +233,7 @@ fn list_keys_at_list_items() {
         let t = text(&mut s, chars);
         let ps: Vec<ParaList> =
             before.iter().map(|(list, indent)| ParaList { list: *list, indent: *indent, start_offset: 0, ..ParaList::default() }).collect();
-        if let figcraft_doc::NodeKind::Text(td) = &mut s.doc_mut().unwrap().get_mut(t).unwrap().kind {
+        if let trama_doc::NodeKind::Text(td) = &mut s.doc_mut().unwrap().get_mut(t).unwrap().kind {
             td.paragraphs = ps;
         }
         begin(&mut s, t, Some(caret), false).unwrap();
@@ -285,7 +285,7 @@ fn paragraph_lists_follow_edits() {
             assert_eq!(t.paragraphs.len(), t.paragraph_count(), "{:?}", t.characters);
         }
         t.set_para_lists(rnd(n + 2), rnd(n + 2), |p| p.indent = 200);
-        assert!((0..t.paragraph_count()).all(|p| t.para_list(p).indent <= figcraft_doc::MAX_LIST_INDENT));
+        assert!((0..t.paragraph_count()).all(|p| t.para_list(p).indent <= trama_doc::MAX_LIST_INDENT));
     }
 }
 
@@ -391,9 +391,9 @@ fn inspect_css_and_files() {
     for style in ["dotted", "wavy"] {
         s.execute("node.set", &json!({"id": t, "props": {"textDecorationStyle": style, "textDecorationSkipInk": true}})).unwrap();
         let doc = s.doc().unwrap();
-        assert!(figcraft_render::render_node(doc, t, 1.0).is_some());
-        assert!(figcraft_svg::export_svg(doc, &[t], &figcraft_svg::SvgOptions::default()).is_some_and(|svg| !svg.contains("NaN")));
-        assert!(figcraft_pdf::export_nodes_pdf(doc, &[t]).is_ok());
+        assert!(trama_render::render_node(doc, t, 1.0).is_some());
+        assert!(trama_svg::export_svg(doc, &[t], &trama_svg::SvgOptions::default()).is_some_and(|svg| !svg.contains("NaN")));
+        assert!(trama_pdf::export_nodes_pdf(doc, &[t]).is_ok());
     }
 }
 
@@ -408,7 +408,7 @@ fn rest_import_lists_and_decorations() {
                   "textDecorationColor": {"value": {"type": "SOLID", "color": {"r": 0, "g": 0, "b": 1, "a": 1}}}},
         "lineTypes": ["ORDERED", "ORDERED", "UNORDERED"], "lineIndentations": [0, 1, 0]
     }]}]}});
-    let (doc, _) = figcraft_format::rest::import(&file, &figcraft_format::rest::no_images).unwrap();
+    let (doc, _) = trama_format::rest::import(&file, &trama_format::rest::no_images).unwrap();
     let t = doc.nodes().find_map(|n| n.kind.text()).unwrap();
     let got: Vec<(ListStyle, u8)> = (0..3).map(|p| (t.para_list(p).list, t.para_list(p).indent)).collect();
     assert_eq!(got, [(N, 0), (N, 1), (B, 0)], "each paragraph's list type and level");
@@ -454,7 +454,7 @@ fn splitting_a_plain_paragraph_that_kept_its_level_keeps_the_level() {
     let mut s = Session::new();
     let t = text(&mut s, "ab\ncd");
     let ps = vec![ParaList { list: N, start_offset: 4, ..ParaList::default() }, ParaList { list: N, indent: 1, ..ParaList::default() }];
-    if let figcraft_doc::NodeKind::Text(td) = &mut s.doc_mut().unwrap().get_mut(t).unwrap().kind {
+    if let trama_doc::NodeKind::Text(td) = &mut s.doc_mut().unwrap().get_mut(t).unwrap().kind {
         td.paragraphs = ps;
     }
     begin(&mut s, t, Some(3), false).unwrap();
@@ -491,8 +491,8 @@ fn a_list_back_from_a_fig_split_in_the_middle_restarts_at_one() {
     let mut s = Session::new();
     three_typed_items(&mut s, "5. a");
     crate::textedit::end(&mut s).unwrap();
-    let (bytes, _) = figcraft_format::fig::export(s.doc().unwrap(), None).unwrap();
-    let (back, _) = figcraft_format::fig::import(&bytes, "x").unwrap();
+    let (bytes, _) = trama_format::fig::export(s.doc().unwrap(), None).unwrap();
+    let (back, _) = trama_format::fig::import(&bytes, "x").unwrap();
     let t = back.nodes().find(|n| n.kind.text().is_some()).map(|n| n.id).unwrap();
     let mut s = Session::with_document(back);
     let d = data(&s, t);

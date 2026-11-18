@@ -1,6 +1,6 @@
 //! Starter templates: documents to begin from, built in code by running commands (no template
 //! files ship with the app). Everything in them is original and synthetic: the Ridgeline names,
-//! people and figures are invented, the pictures are drawn from shapes and the icons are FigCraft's
+//! people and figures are invented, the pictures are drawn from shapes and the icons are Trama's
 //! own ([`glyphs`]).
 //!
 //! Each template is real, editable content: shared colour and text styles, auto layout,
@@ -18,9 +18,9 @@ mod slides;
 mod social;
 mod wireframe;
 
-use figcraft_color::Color;
-use figcraft_doc::Document;
 use serde_json::{Value, json};
+use trama_color::Color;
+use trama_doc::Document;
 
 use crate::cmd::CommandSpec;
 use crate::params::string;

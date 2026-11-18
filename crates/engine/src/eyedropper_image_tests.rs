@@ -11,12 +11,12 @@ use crate::tools::{PointerEvent, PointerKind};
 /// A 9 x 9 image of `back` with a 1 px vertical line of `line` in column 4 (a thin border in a
 /// screenshot, as in the report).
 fn line_png(back: [u8; 3], line: [u8; 3]) -> Vec<u8> {
-    let mut p = figcraft_render::Pixmap::new(9, 9).unwrap();
+    let mut p = trama_render::Pixmap::new(9, 9).unwrap();
     for (i, px) in p.data_mut().chunks_exact_mut(4).enumerate() {
         let c = if i % 9 == 4 { line } else { back };
         px.copy_from_slice(&[c[0], c[1], c[2], 255]);
     }
-    figcraft_render::encode_png(&p).unwrap()
+    trama_render::encode_png(&p).unwrap()
 }
 
 /// The colour the eyedropper picks at page point (x, y) at `zoom`.

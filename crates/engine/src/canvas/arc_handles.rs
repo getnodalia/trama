@@ -16,9 +16,9 @@
 
 use std::f64::consts::TAU;
 
-use figcraft_doc::{Document, NodeId, NodeKind};
-use figcraft_geom::{Affine, Point, Vec2};
 use serde::Serialize;
+use trama_doc::{Document, NodeId, NodeKind};
+use trama_geom::{Affine, Point, Vec2};
 
 /// One of an ellipse's arc handles.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]

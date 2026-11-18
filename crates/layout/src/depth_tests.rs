@@ -3,7 +3,7 @@
 //! Each case runs on a 1 MB stack, the main thread's on Windows; thousands of levels overflowed it.
 
 use super::*;
-use figcraft_doc::{AutoLayout, Constraints, Document, HConstraint, NodeKind, VConstraint};
+use trama_doc::{AutoLayout, Constraints, Document, HConstraint, NodeKind, VConstraint};
 
 /// Far deeper than the nesting the layout follows.
 const DEEP: usize = 5000;
@@ -96,7 +96,7 @@ fn deeply_nested_fill_frames_lay_out_without_running_out_of_stack() {
 
 #[test]
 fn snap_lines_are_bounded_across_a_frames_grids() {
-    use figcraft_doc::{Document, GridKind, LayoutGrid, NodeKind};
+    use trama_doc::{Document, GridKind, LayoutGrid, NodeKind};
     let mut d = Document::new("t");
     let p = d.first_page().unwrap();
     let f = d.create(p, NodeKind::Frame, "F", 0.0, 0.0, 4000.0, 4000.0).unwrap();

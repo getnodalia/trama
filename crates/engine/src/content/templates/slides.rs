@@ -2,8 +2,8 @@
 //! figure, a chart, closing) with their own text styles and a footer component whose page number
 //! is a property.
 
-use figcraft_doc::NodeId;
 use serde_json::{Value, json};
+use trama_doc::NodeId;
 
 use super::glyphs;
 use super::kit::{ACCENT, BORDER, BOTTOM_EDGE, CARD, DEEP, H, INK, Kit, MUTED, ON_BRAND, PAGE, PRIMARY, TOP_EDGE, V, merged};

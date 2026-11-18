@@ -3,8 +3,8 @@
 
 use crate::Session;
 use crate::tools::{PointerEvent, PointerKind, ToolId};
-use figcraft_doc::NodeKind;
 use serde_json::json;
+use trama_doc::NodeKind;
 
 fn click(s: &mut Session, x: f64, y: f64) {
     for kind in [PointerKind::Down, PointerKind::Up] {

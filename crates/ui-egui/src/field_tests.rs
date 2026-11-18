@@ -6,9 +6,9 @@
 
 use egui::accesskit::Role;
 use egui::{Event, Id, Key, Modifiers, Pos2, pos2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::a11y::focused_name;
 use crate::field_math::{Rel, Typed, eval, parse, stepped};
@@ -391,7 +391,7 @@ fn scrubbing_the_label_moves_the_value_and_is_one_undo_step() {
     scrub(&mut u, "Opacity", -30.0, Modifiers::NONE);
     assert_eq!(u.app.session.doc().unwrap().node(a).unwrap().opacity, 0.7);
     scrub(&mut u, "Rotation", 15.0, Modifiers::NONE);
-    let rot = figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
+    let rot = trama_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
     assert!((rot.abs() - 15.0).abs() < 1e-6, "rotation {rot}");
     // A press on the label that doesn't move changes nothing.
     let before = (geom(&u, a), undo_steps(&u));
@@ -437,7 +437,7 @@ fn the_arrow_keys_step_by_the_nudge_amounts_and_fractional_fields_by_their_own()
     key(&mut u, Key::ArrowUp, Modifiers::NONE);
     key(&mut u, Key::ArrowUp, shift);
     key(&mut u, Key::Escape, Modifiers::NONE);
-    let rot = figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
+    let rot = trama_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
     assert!((rot.abs() - 11.0).abs() < 1e-6, "rotation {rot}: the steps stay after Escape");
 }
 
@@ -453,8 +453,8 @@ fn the_rotation_field_shows_and_sets_the_rotation_on_the_page() {
     let mut u = Ui::new(s);
     u.ctx.enable_accesskit();
     u.frame(vec![]);
-    let page = |u: &Ui, n: NodeId| figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().world_transform(n));
-    let local = |u: &Ui, n: NodeId| figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().node(n).unwrap().transform);
+    let page = |u: &Ui, n: NodeId| trama_geom::rotation_degrees(u.app.session.doc().unwrap().world_transform(n));
+    let local = |u: &Ui, n: NodeId| trama_geom::rotation_degrees(u.app.session.doc().unwrap().node(n).unwrap().transform);
     assert_eq!(field(&mut u, "Rotation").1, "0°");
     type_into(&mut u, "Rotation", "7", Key::Enter);
     assert!((page(&u, r) - 7.0).abs() < 1e-6 && (local(&u, r) + 3.0).abs() < 1e-6, "{} {}", page(&u, r), local(&u, r));
@@ -497,7 +497,7 @@ fn a_relative_rotation_edit_turns_a_selected_parent_before_its_child_whatever_th
     let mut u = Ui::new(s);
     u.ctx.enable_accesskit();
     u.frame(vec![]);
-    let page = |u: &Ui, n: NodeId| figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().world_transform(n));
+    let page = |u: &Ui, n: NodeId| trama_geom::rotation_degrees(u.app.session.doc().unwrap().world_transform(n));
     assert_eq!(field(&mut u, "Rotation").1, "Mixed");
     type_into(&mut u, "Rotation", "+10", Key::Enter);
     assert!((page(&u, f) - 20.0).abs() < 1e-6 && (page(&u, c) - 40.0).abs() < 1e-6, "{} {}", page(&u, f), page(&u, c));
@@ -583,9 +583,9 @@ fn the_save_shortcut_saves_from_a_field_with_what_was_typed() {
     // Shift+Cmd/Ctrl+S does the same through Save as.
     let cmd = if cfg!(target_os = "macos") { Modifiers::COMMAND } else { Modifiers::COMMAND.plus(Modifiers::CTRL) };
     let (mut u, a, _) = setup();
-    let dir = std::env::temp_dir().join(format!("figcraft-save-from-field-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-save-from-field-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let (path, copy) = (dir.join("doc.figcraft"), dir.join("copy.figcraft"));
+    let (path, copy) = (dir.join("doc.trama"), dir.join("copy.trama"));
     u.app.session.execute("file.saveAs", &json!({"path": path.to_string_lossy()})).unwrap();
     let asked = std::rc::Rc::new(std::cell::Cell::new(0));
     u.app.services = Box::new(SaveAsPicker { path: Some(copy.clone()), asked: asked.clone() });
@@ -701,7 +701,7 @@ fn lch_and_oklch_picker_fields_edit_lightness_keeping_hue() {
         let from = lead(&u, Id::unique(("cp_f", l)));
         drag(&mut u, from, -20.0, Modifiers::NONE);
         let after = color(&u);
-        let hue = |c| figcraft_color::Oklch::from_color(c).h;
+        let hue = |c| trama_color::Oklch::from_color(c).h;
         assert!(after.luminance() < before.luminance(), "{name}: darker");
         assert!((hue(after) - hue(before)).abs() < 3.0, "{name}: hue kept {} → {}", hue(before), hue(after));
         assert_eq!(undo_steps(&u), steps + 1, "{name}: one undo step");
@@ -742,7 +742,7 @@ fn oklch_keeps_a_hue_typed_on_a_grey() {
     u.frame(vec![]);
     assert_eq!(kept_polar(&u)[2].round(), 250.0, "the hue stays on a grey");
     type_into_picker(&mut u, "oklch_c", "0.1");
-    let ok = figcraft_color::Oklch::from_color(color(&u));
+    let ok = trama_color::Oklch::from_color(color(&u));
     assert!(ok.c > 0.05 && (ok.h - 250.0).abs() < 3.0, "chroma raised along the typed hue: {ok:?}");
 }
 
@@ -758,7 +758,7 @@ fn lch_keeps_the_typed_chroma_while_the_colour_is_out_of_srgb() {
     assert_eq!(kept_polar(&u)[2], hue, "hue kept near white");
     // Back down: the chroma and hue asked for come back instead of a grey or a red.
     type_into_picker(&mut u, "lch_l", "60");
-    let lch = figcraft_color::Lch::from_color(color(&u));
+    let lch = trama_color::Lch::from_color(color(&u));
     assert!(lch.c > 50.0 && (lch.h - hue as f32).abs() < 2.0, "blue again: {lch:?} (hue {hue})");
 }
 
@@ -780,7 +780,7 @@ fn scrubbing_a_prototype_delay_sets_it_once_when_let_go() {
     let from = lead(&u, Id::unique(("proto_delay", f1, 0usize)));
     drag(&mut u, from, 30.0, Modifiers::NONE);
     let ms = match u.app.session.doc().unwrap().node(f1).unwrap().interactions[0].trigger {
-        figcraft_doc::proto::Trigger::AfterDelay { ms } => ms,
+        trama_doc::proto::Trigger::AfterDelay { ms } => ms,
         _ => panic!("still after a delay"),
     };
     assert_eq!((ms, undo_steps(&u)), (800, steps + 1));
@@ -821,7 +821,7 @@ fn pressing_k_focuses_the_scale_field_with_its_text_selected() {
     assert!(!scale_field_focused(&u));
     key(&mut u, Key::K, Modifiers::NONE);
     u.frame(vec![]);
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Scale);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Scale);
     assert!(scale_field_focused(&u), "the scale field has the keyboard");
     let state = egui::TextEdit::load_state(&u.ctx, Id::unique("scale_k").with("te")).expect("the editor exists");
     let range = state.cursor.char_range().expect("a selection");
@@ -844,7 +844,7 @@ fn a_selection_after_k_does_not_move_the_keyboard_to_the_scale_field() {
     for _ in 0..3 {
         u.frame(vec![]);
     }
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Scale);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Scale);
     assert!(!scale_field_focused(&u), "the canvas keeps the keyboard");
 }
 
@@ -856,7 +856,7 @@ fn ctrl_enter_in_the_scale_field_keeps_the_scale_tool() {
     u.frame(vec![]);
     key(&mut u, Key::Enter, Modifiers::CTRL);
     u.frame(vec![]);
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Scale);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Scale);
 }
 
 /// An Enter on the first frame the panel is back from another tab (the field not yet focused again)
@@ -873,7 +873,7 @@ fn enter_on_the_first_frame_back_from_another_tab_keeps_the_scale_tool() {
     u.app.ui.right_tab = crate::state::RightTab::Design;
     key(&mut u, Key::Enter, Modifiers::NONE);
     u.frame(vec![]);
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Scale);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Scale);
 }
 
 /// The Scale tool chosen again while the Design tab was away (Prototype tab, Move, then K): the
@@ -938,7 +938,7 @@ fn enter_in_another_field_after_tab_keeps_the_scale_tool() {
     }
     u.frame(vec![ev(Key::Enter, true), ev(Key::Enter, false)]);
     u.frame(vec![]);
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Scale);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Scale);
 }
 
 /// K, 2, Enter: 100 x 100 becomes 200 x 200 about the panel's origin (the centre), the tool is Move, one undo step.
@@ -954,7 +954,7 @@ fn k_two_enter_scales_the_selection_by_two() {
     // About the panel's origin, which starts at the centre as Figma's grid does.
     assert_eq!(geom(&u, r), (-50.0, -50.0, 200.0, 200.0));
     assert!(!scale_field_focused(&u), "the field let go of the keyboard");
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Move);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Move);
     assert_eq!(u.app.session.ds().unwrap().selection, vec![r]);
     assert_eq!(undo_steps(&u), steps + 1);
     u.app.run("edit.undo", json!({}));
@@ -988,7 +988,7 @@ fn escape_in_the_scale_field_closes_it_and_changes_nothing() {
     u.frame(vec![]);
     assert_eq!(geom(&u, r), (0.0, 0.0, 100.0, 100.0));
     assert!(!scale_field_focused(&u), "the field let go of the keyboard");
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::ToolId::Move);
+    assert_eq!(u.app.session.tool.tool, trama_engine::ToolId::Move);
     assert_eq!(u.app.session.ds().unwrap().selection, vec![r]);
     assert_eq!(undo_steps(&u), steps);
 }
@@ -1177,9 +1177,9 @@ fn a_deferred_field_save_keeps_its_document_when_the_next_input_switches_tabs() 
         [(false, false, false), (true, false, false), (false, true, false), (true, true, false), (false, true, true), (true, true, true)]
     {
         let (mut u, a, _) = setup();
-        let dir = std::env::temp_dir().join(format!("figcraft-deferred-field-tab-{}-{save_as}-{same_batch}-{discard}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("trama-deferred-field-tab-{}-{save_as}-{same_batch}-{discard}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let (path, copy, other) = (dir.join("a.figcraft"), dir.join("copy.figcraft"), dir.join("b.figcraft"));
+        let (path, copy, other) = (dir.join("a.trama"), dir.join("copy.trama"), dir.join("b.trama"));
         u.app.session.execute("file.saveAs", &json!({"path": path.to_string_lossy()})).unwrap();
         let owner = u.app.session.ds().unwrap().uid;
         u.app.session.execute("file.new", &json!({"name": "Deferred B"})).unwrap();
@@ -1270,9 +1270,9 @@ fn a_deferred_field_save_does_not_retarget_a_closed_moved_or_foreign_owner() {
         for save_as in [false, true] {
             let (mut u, a, _) = setup();
             u.ctx.set_embed_viewports(false);
-            let dir = std::env::temp_dir().join(format!("figcraft-deferred-field-invalid-{}-{change}-{save_as}", std::process::id()));
+            let dir = std::env::temp_dir().join(format!("trama-deferred-field-invalid-{}-{change}-{save_as}", std::process::id()));
             std::fs::create_dir_all(&dir).unwrap();
-            let (path, other, copy) = (dir.join("a.figcraft"), dir.join("b.figcraft"), dir.join("copy.figcraft"));
+            let (path, other, copy) = (dir.join("a.trama"), dir.join("b.trama"), dir.join("copy.trama"));
             u.app.session.execute("file.saveAs", &json!({"path": path.to_string_lossy()})).unwrap();
             let owner = u.app.session.ds().unwrap().uid;
             u.app.session.execute("file.new", &json!({"name": "Deferred B"})).unwrap();
@@ -1386,9 +1386,9 @@ fn save_events(route: &str, save_as: bool, tab_at: egui::Pos2) -> (Vec<Event>, M
 /// even though both panels use the same widget ID.
 fn prepared_save_cannot_enter_a_replacement(route: &str, save_as: bool, discard: bool) {
     let (mut u, a, _) = setup();
-    let dir = std::env::temp_dir().join(format!("figcraft-field-save-owner-{}-{route}-{save_as}-{discard}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("trama-field-save-owner-{}-{route}-{save_as}-{discard}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let (path, other, copy) = (dir.join("a.figcraft"), dir.join("b.figcraft"), dir.join("copy.figcraft"));
+    let (path, other, copy) = (dir.join("a.trama"), dir.join("b.trama"), dir.join("copy.trama"));
     u.app.session.execute("file.saveAs", &json!({"path": path.to_string_lossy()})).unwrap();
     let owner = u.app.session.ds().unwrap().uid;
     let owner_bytes = std::fs::read(&path).unwrap();
@@ -1558,7 +1558,7 @@ fn page_background_shows_fractional_opacity_like_fill_and_keeps_it_when_opening_
     assert_eq!(field(&mut u, "Opacity").1, "50.2%");
     let page = u.app.session.page().unwrap();
     let background = |u: &Ui| match u.app.session.doc().unwrap().node(page).unwrap().kind {
-        figcraft_doc::NodeKind::Page { background, .. } => background,
+        trama_doc::NodeKind::Page { background, .. } => background,
         _ => panic!("the page"),
     };
     let original = background(&u);
@@ -1633,7 +1633,7 @@ fn the_page_background_opacity_field_sets_the_page_colour_alpha() {
     let page_bg = |u: &Ui| {
         let page = u.app.session.page().unwrap();
         match &u.app.session.doc().unwrap().node(page).unwrap().kind {
-            figcraft_doc::NodeKind::Page { background, .. } => *background,
+            trama_doc::NodeKind::Page { background, .. } => *background,
             _ => panic!("the page"),
         }
     };

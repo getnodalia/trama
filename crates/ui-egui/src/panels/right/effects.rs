@@ -161,7 +161,7 @@ fn effect_settings(app: &mut FigApp, ui: &mut Ui, ids: &[NodeId], i: usize, e: &
         None => {}
     };
     // A new colour for the effect (`secondary`: a duo noise's second colour).
-    let edit_color = |app: &mut FigApp, secondary: bool, c: figcraft_color::Color, scrub: Option<bool>| {
+    let edit_color = |app: &mut FigApp, secondary: bool, c: trama_color::Color, scrub: Option<bool>| {
         let mut e2 = e.clone();
         if let Some(slot) = e2.color_mut(secondary) {
             *slot = c;
@@ -346,7 +346,7 @@ fn effect_settings(app: &mut FigApp, ui: &mut Ui, ids: &[NodeId], i: usize, e: &
 }
 
 /// Applies a new colour to an effect: (app, secondary colour, colour, scrubbing: `Some(done)`).
-type ColorEdit<'a> = dyn Fn(&mut FigApp, bool, figcraft_color::Color, Option<bool>) + 'a;
+type ColorEdit<'a> = dyn Fn(&mut FigApp, bool, trama_color::Color, Option<bool>) + 'a;
 
 /// `e` with `f` applied to its kind.
 fn tweaked(e: &Effect, f: impl FnOnce(&mut EffectKind)) -> Effect {
@@ -362,7 +362,7 @@ fn fx_color(app: &mut FigApp, ui: &mut Ui, ids: &[NodeId], i: usize, e: &Effect,
     let sw = widgets::swatch(ui, &Paint::solid(c), 16.0);
     app.picker_control(crate::colorpicker::PickerTarget::Effect { ids: ids.to_vec(), index: i, secondary }, &sw);
     if let Some(h) = widgets::text_field(ui, Id::unique(("fx_c", i, secondary)), &c.to_hex(), 80.0, "")
-        && let Some(nc) = figcraft_color::Color::from_hex_or_name(&h)
+        && let Some(nc) = trama_color::Color::from_hex_or_name(&h)
     {
         edit(app, secondary, nc.with_alpha(c.a), None);
     }
@@ -568,7 +568,7 @@ fn grid_settings(app: &mut FigApp, ui: &mut Ui, ids: &[NodeId], list: &[LayoutGr
         let (sw, _) = ui.allocate_exact_size(vec2(16.0, 16.0), Sense::hover());
         widgets::paint_swatch(ui.painter(), sw, &Paint::solid(g.color));
         if let Some(h) = widgets::text_field(ui, Id::unique(("grid_hex", i)), &g.color.to_hex(), 80.0, "")
-            && let Some(c) = figcraft_color::Color::from_hex_or_name(&h)
+            && let Some(c) = trama_color::Color::from_hex_or_name(&h)
         {
             app.run("node.set", set(&|x| x.color = c.with_alpha(x.color.a)));
         }

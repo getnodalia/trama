@@ -1,9 +1,9 @@
 //! The Dash cap draws both ends of every dash, on Dash and Custom strokes alike. Unset, dashes keep
 //! the end point caps they have always taken, so older files look the same.
 
-use figcraft_doc::{StrokeAlign, StrokeCap, StrokeProps, WidthPreset};
-use figcraft_geom::Point;
-use figcraft_geom::kurbo::{BezPath, Shape};
+use trama_doc::{StrokeAlign, StrokeCap, StrokeProps, WidthPreset};
+use trama_geom::Point;
+use trama_geom::kurbo::{BezPath, Shape};
 
 use crate::{stroke_center, stroke_outline};
 

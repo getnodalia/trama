@@ -26,7 +26,7 @@ These apply to native Craft apps and to shared Rust libraries. Select them by re
 
 1. **Never crash.** Non-test code does not panic and has no `unsafe`, except where the repository file names an exception. Return errors, treat input as hostile, and bound recursion and allocations. New production crate roots copy the `deny` attribute from an existing crate: `clippy::unwrap_used`, `clippy::expect_used`, `clippy::panic`, `clippy::unimplemented`, `clippy::todo`, `clippy::unreachable`. Every crash fix comes with a test that panicked before the fix.
 2. **Clean room.** Learn from observed behaviour and public specifications. Do not copy another product's code, assets, strings or artwork. Check a dependency's licence before adding it.
-3. **Assets and fonts.** Every asset is original or suitably licensed, and is recorded in `ATTRIBUTION.md` in the same change. Font files live in [storytold/craft-fonts](https://github.com/storytold/craft-fonts), not in the app repository.
+3. **Assets and fonts.** Every asset is original or suitably licensed, and is recorded in `ATTRIBUTION.md` in the same change. Font files live in [getnodalia/foundation (vendor/craft-fonts/main)](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main), not in the app repository.
 4. **Rust only for native Craft apps.** No handwritten JavaScript or TypeScript, and no Tauri, Electron or webview shell, in those apps. Shared tooling follows its documented technical scope and maintainer-approved exceptions. Craft PR Review's existing Tauri and TypeScript UI is one such exception. It does not relax this rule for native apps. Preserve any existing web build.
 5. **Time goes through `chrono`.** Do not hand-roll calendar conversion. For dates beyond what `chrono` can represent, follow [standards/time.md](https://github.com/storytold/craft-contrib/blob/main/standards/time.md).
 6. **Contributor credits.** Add or edit only your own person's entry in `contributors/people.toml`, and only after asking them. Never guess a name or hand-edit `contributors.json`.
@@ -51,13 +51,13 @@ Dependencies and assets use SPDX identifiers. An expression is allowed when ever
 `LicenseRef-Storyteller-Trademark` is not in this list. It covers Storyteller brand marks only, where a repository already says so.
 <!-- craft-house-rules:end -->
 
-# FigCraft — instructions for agents
+# Trama — instructions for agents
 
-FigCraft is a clean-room, open-source, pure-Rust (egui) reimplementation of the Figma design workflow:
+Trama is a clean-room, open-source, pure-Rust (egui) reimplementation of the Figma design workflow:
 interface design, auto layout, components and variants, styles and variables, prototyping and
 inspection. It runs natively on macOS, Windows, Linux and FreeBSD, and in the browser via WASM.
-Siblings: `../vectorcraft` (Illustrator-class), `../photocraft` (Photoshop-class), `../designcraft`
-(InDesign-class) and the other Crafting Apps; same conventions.
+Siblings: `../pluma` (Illustrator-class), `../lienzo` (Photoshop-class), `../pliego`
+(InDesign-class) and the other Nodalia apps; same conventions.
 
 Repos don't share code.
 
@@ -86,25 +86,25 @@ Do not ask for it, and do not stop when it is absent.
   other product, or from any source whose licence doesn't allow it.** This includes "lookalike"
   redraws of their icons. Breaking this rule is the worst thing you can do in this repo.
 - Every image, icon, font or other asset must be one of:
-  - original work created for FigCraft by a contributor (licensed MIT OR Apache-2.0);
+  - original work created for Trama by a contributor (licensed MIT OR Apache-2.0);
   - OSI open source;
   - public domain / CC0;
   - Creative Commons with redistribution allowed.
 - **Every asset file must have a row in [`ATTRIBUTION.md`](ATTRIBUTION.md)** (path, author, source,
   licence, notes). `cargo xtask assets` (part of `cargo xtask ci`) fails on any unlisted file under
   `assets/`, `docs/brand/` or `docs/images/`.
-- FigCraft's UI icons are drawn in code (`crates/ui-egui/src/icons.rs`) from simple primitives and
+- Trama's UI icons are drawn in code (`crates/ui-egui/src/icons.rs`) from simple primitives and
   are original. Keep it that way: new icons are new code, designed from scratch.
 - The app icon is the owner's chameleon drawing, vectorised (`assets/app-icon/README.md`); `cargo xtask icon`
-  renders the PNGs and `.ico` from `assets/app-icon/figcraft.svg`.
-- **Fonts live in [storytold/craft-fonts](https://github.com/storytold/craft-fonts), never in this
+  renders the PNGs and `.ico` from `assets/app-icon/trama.svg`.
+- **Fonts live in [getnodalia/foundation (vendor/craft-fonts/main)](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main), never in this
   repo.** The app uses it only through the optional `CRAFT_FONTS_DIR` build input
   (`.cargo/config.toml` points it at `../craft-fonts` for local builds; `crates/text/build.rs`
   embeds it). Everything must build, test and run without it (system fonts are scanned at runtime).
 - Demo and test content is synthetic or public domain; never personal photos or data.
 - Code and original assets are MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`, `NOTICE`). The
-  ArtCraft logos in `docs/brand/` are trademarks, not open source, under
-  `docs/brand/LICENSE-brand.txt`: never modify them or use them outside FigCraft.
+  Nodalia logos in `docs/brand/` are trademarks, not open source, under
+  `docs/brand/LICENSE-brand.txt`: never modify them or use them outside Trama.
 - If the provenance of an asset is unclear, don't add it.
 
 ### Never crash
@@ -114,7 +114,7 @@ Do not ask for it, and do not stop when it is absent.
 - New workspace crates include `[lints] workspace = true` in `Cargo.toml`. Production crate roots
   declare the crate-level lint attributes before modules or other crate items; crate-level `//!`
   documentation may precede them.
-- `figcraft_engine::guard` turns a panicking command into `EngineError::Internal` and the document
+- `trama_engine::guard` turns a panicking command into `EngineError::Internal` and the document
   is rolled back; the desktop app also guards each UI frame and writes recovery copies. These are
   safety nets, not substitutes for `Result`.
 - `unsafe_code = "forbid"` workspace-wide.
@@ -140,7 +140,7 @@ Do not ask for it, and do not stop when it is absent.
 milestone id in the message (`M2.1: auto layout wrap`). Commit after every landed arc of work.
 
 ## Running and looking at the app
-- `cargo run -p figcraft -- --control <port> [file.figcraft|file.svg|image]`. Pick a free port
+- `cargo run -p trama -- --control <port> [file.trama|file.svg|image]`. Pick a free port
   (`python3 -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])'`);
   sibling apps use the control channel too.
 - Drive it with JSON lines, e.g.
@@ -149,7 +149,7 @@ milestone id in the message (`M2.1: auto layout wrap`). Commit after every lande
   in `crates/ui-egui/src/control.rs` and `docs/control-protocol.md`.
 - **For UI work, look at the result** (take a screenshot and read the PNG). Compare with the
   incumbent side by side where the owner allows (`plan/figma/`).
-- Headless: `figcraft-cli` (`info`, `export`, `run`, `commands`, `mcp`). MCP: `figcraft-cli mcp`
+- Headless: `trama-cli` (`info`, `export`, `run`, `commands`, `mcp`). MCP: `trama-cli mcp`
   (see `docs/mcp.md`).
 - Parallel agents: separate `CARGO_TARGET_DIR` per agent, edit only the crates/files you own,
   write manifests atomically, delete your target dir when done (disk is limited).

@@ -2,9 +2,9 @@
 //! are left out (and come back), files that spell every field out still open, and the header is
 //! read without building the document.
 
-use figcraft_doc::color::{BlendMode, Color, Paint};
-use figcraft_doc::geom::Affine;
-use figcraft_doc::{
+use trama_doc::color::{BlendMode, Color, Paint};
+use trama_doc::geom::Affine;
+use trama_doc::{
     AutoLayout, ChildLayout, Document, Effect, EffectKind, ExportSetting, Node, NodeKind, Shadow, Sizing, StrokeAlign, TextAlignH, TextData,
 };
 
@@ -133,7 +133,7 @@ fn defaults_are_left_out_and_come_back() {
     let r = d.create(p, NodeKind::Rectangle, "Plain", 5.0, 0.0, 10.0, 10.0).unwrap();
     let t = d.create(p, NodeKind::Text(TextData::new("Hi")), "Text", 0.0, 20.0, 10.0, 10.0).unwrap();
     let v = to_json(&d).unwrap();
-    let node = |id: figcraft_doc::NodeId| v["nodes"][id.0.to_string()].as_object().unwrap().clone();
+    let node = |id: trama_doc::NodeId| v["nodes"][id.0.to_string()].as_object().unwrap().clone();
     let plain = node(r);
     for field in [
         "visible",
@@ -187,7 +187,7 @@ fn files_with_every_field_spelled_out_still_open() {
         }}"#;
     let (d, issues) = load_bytes(old.as_bytes()).unwrap();
     assert!(issues.is_empty(), "{issues:?}");
-    let n: &Node = d.node(figcraft_doc::NodeId(2)).unwrap();
+    let n: &Node = d.node(trama_doc::NodeId(2)).unwrap();
     assert_eq!((n.name.as_str(), n.width, n.height, n.visible, n.opacity), ("Card background", 160.0, 64.0, true, 1.0));
     assert_eq!(n.fills.len(), 1);
     // Written again, it's the short form, and reads back the same.

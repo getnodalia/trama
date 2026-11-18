@@ -1,8 +1,8 @@
 //! Increase and decrease font weight step through the styles the family has, by weight with the
 //! same slant and width (#1831), not by 100 to a canonical name no face provides.
 
-use figcraft_doc::{NodeId, TextStyle};
 use serde_json::json;
+use trama_doc::{NodeId, TextStyle};
 
 use crate::Session;
 use crate::cmd::text::{name_weight, next_style};
@@ -167,10 +167,10 @@ fn font_style(s: &Session, t: NodeId) -> String {
 
 #[test]
 fn the_commands_land_on_styles_the_family_has() {
-    figcraft_text::scan_system_fonts();
+    trama_text::scan_system_fonts();
     // Any installed family with a Regular face and a style the step takes it to (CI machines differ).
-    let pick = figcraft_text::family_names().into_iter().find_map(|f| {
-        let st = figcraft_text::family_style_weights(&f);
+    let pick = trama_text::family_names().into_iter().find_map(|f| {
+        let st = trama_text::family_style_weights(&f);
         let up = next_style(&st, &at("Regular"), true).filter(|_| st.iter().any(|(x, _)| x == "Regular"))?;
         Some((f, st, up))
     });

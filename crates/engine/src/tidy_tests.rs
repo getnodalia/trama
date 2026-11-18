@@ -1,11 +1,11 @@
 //! Tidy up (`arrange.tidy`) against what was measured in Figma's web app on 2026-11-12: a row, a
 //! column and a 2 x 3 grid of unequal sizes, eight runs on the gap, and the cases where the menu
 //! row is greyed out. Figma keeps the order and sizes, evens one gap per axis and keeps the first
-//! layer where it is. Tests whose message says "not measured in Figma" pin FigCraft's own choice.
+//! layer where it is. Tests whose message says "not measured in Figma" pin Trama's own choice.
 
 use crate::Session;
-use figcraft_doc::NodeId;
 use serde_json::json;
+use trama_doc::NodeId;
 
 fn make(s: &mut Session, x: f64, y: f64, w: f64, h: f64) -> NodeId {
     NodeId(s.execute("shape.rectangle", &json!({"x": x, "y": y, "width": w, "height": h})).unwrap()["id"].as_u64().unwrap())
@@ -291,17 +291,17 @@ fn a_rotated_layer_is_tidied_by_its_box() {
     let m = make(&mut s, 80., 0., 40., 40.);
     let c = make(&mut s, 200., 0., 50., 50.);
     s.execute("node.set", &json!({"id": m, "props": {"rotation": 30}})).unwrap();
-    let boxes = |s: &Session| -> Vec<figcraft_geom::Rect> { [a, m, c].iter().map(|i| s.doc().unwrap().world_bounds(*i).unwrap()).collect() };
+    let boxes = |s: &Session| -> Vec<trama_geom::Rect> { [a, m, c].iter().map(|i| s.doc().unwrap().world_bounds(*i).unwrap()).collect() };
     let b = boxes(&s);
     let (g1, g2) = (b[1].x0 - b[0].x1, b[2].x0 - b[1].x1);
     let want = ((g1 + g2) / 2.0 + 0.5).floor();
-    let rot = figcraft_geom::rotation_degrees(s.doc().unwrap().node(m).unwrap().transform);
+    let rot = trama_geom::rotation_degrees(s.doc().unwrap().node(m).unwrap().transform);
     tidy(&mut s, &[a, m, c]);
     let b = boxes(&s);
     assert_eq!(b[0].x0, 0.0);
     assert!(((b[1].x0 - b[0].x1) - want).abs() < 1e-6);
     assert!(((b[2].x0 - b[1].x1) - want).abs() < 1e-6);
-    let after = figcraft_geom::rotation_degrees(s.doc().unwrap().node(m).unwrap().transform);
+    let after = trama_geom::rotation_degrees(s.doc().unwrap().node(m).unwrap().transform);
     assert!((rot - after).abs() < 1e-9, "rotation unchanged");
 }
 

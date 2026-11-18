@@ -119,7 +119,7 @@ pub(super) fn set(s: &mut Session, p: &Value) -> Result<Value> {
             && !props.contains_key("y")
             && ds.selection == ids
     });
-    let pinned: Vec<(NodeId, figcraft_geom::Point)> = match pivot {
+    let pinned: Vec<(NodeId, trama_geom::Point)> = match pivot {
         Some(o) => roots(&ds.doc, &ids)
             .into_iter()
             .map(|i| (i, ds.doc.world_transform(i)))
@@ -189,7 +189,7 @@ pub(super) fn set(s: &mut Session, p: &Value) -> Result<Value> {
 /// face has another weight or slant than the name asks for ("Black" on a family whose heaviest is
 /// Bold), say which face it is. Families that aren't installed, and names that match a style or a
 /// named instance (spelled any way: "SemiBold", "Semi Bold"), say nothing.
-fn font_style_warnings(doc: &figcraft_doc::Document, ids: &[NodeId], props: &serde_json::Map<String, Value>) -> Vec<String> {
+fn font_style_warnings(doc: &trama_doc::Document, ids: &[NodeId], props: &serde_json::Map<String, Value>) -> Vec<String> {
     let Some(style) = props.get("fontStyle").and_then(Value::as_str) else { return Vec::new() };
     let mut families: Vec<String> = match props.get("fontFamily").and_then(Value::as_str) {
         Some(f) => vec![f.to_string()],
@@ -203,15 +203,15 @@ fn font_style_warnings(doc: &figcraft_doc::Document, ids: &[NodeId], props: &ser
     families.sort();
     families.dedup();
     let norm = |s: &str| s.to_lowercase().replace([' ', '-', '_'], "");
-    let (want_w, want_i) = (i32::from(figcraft_doc::style_weight(style)), style.to_lowercase().contains("italic"));
+    let (want_w, want_i) = (i32::from(trama_doc::style_weight(style)), style.to_lowercase().contains("italic"));
     families
         .into_iter()
         .filter_map(|family| {
-            let styles = figcraft_text::family_styles(&family);
+            let styles = trama_text::family_styles(&family);
             if styles.is_empty() || styles.iter().any(|x| norm(x) == norm(style)) {
                 return None;
             }
-            let face = figcraft_text::find_face(&family, style).filter(|f| f.family.eq_ignore_ascii_case(&family))?;
+            let face = trama_text::find_face(&family, style).filter(|f| f.family.eq_ignore_ascii_case(&family))?;
             let w = face.axis("wght").map_or(i32::from(face.weight), |a| a.clamp(f64::from(want_w)).round() as i32);
             if face.instance(style).is_some() || (w == want_w && face.italic == want_i) {
                 return None;
@@ -244,7 +244,7 @@ pub(super) fn stroke_brush(s: &mut Session, p: &Value) -> Result<Value> {
     for i in ids {
         let n = doc.get_mut(i)?;
         if brush.is_some() && n.strokes.is_empty() {
-            n.strokes.push(figcraft_color::Paint::solid(figcraft_color::Color::BLACK));
+            n.strokes.push(trama_color::Paint::solid(trama_color::Color::BLACK));
         }
         n.stroke.brush = brush.clone();
     }
@@ -315,10 +315,10 @@ pub(crate) fn fill_regions(s: &Session, cmd: &str, p: &Value, ids: &[NodeId]) ->
 /// fills keeps inheriting when `f` leaves the stack as it was, so later edits of the layer's
 /// fills still reach it; a region's own stack is only replaced once `f` succeeds.
 pub(crate) fn edit_region_fills(
-    doc: &mut figcraft_doc::Document,
+    doc: &mut trama_doc::Document,
     id: NodeId,
     regions: &[usize],
-    mut f: impl FnMut(&mut Vec<figcraft_color::Paint>) -> Result<()>,
+    mut f: impl FnMut(&mut Vec<trama_color::Paint>) -> Result<()>,
 ) -> Result<()> {
     let inherited = doc.get(id)?.fills.clone();
     let NodeKind::Vector { network } = &mut doc.get_mut(id)?.kind else { return Err(bad("fill", "not a vector layer")) };
@@ -344,7 +344,7 @@ pub(super) fn paint_list(s: &mut Session, p: &Value, fills: bool, add: bool) -> 
         };
         edit_region_fills(s.doc_mut()?, id, &regions, |list| {
             if add {
-                list.push(paint.clone().unwrap_or_else(|| figcraft_color::Paint::solid(figcraft_color::Color::DEFAULT_SHAPE)));
+                list.push(paint.clone().unwrap_or_else(|| trama_color::Paint::solid(trama_color::Color::DEFAULT_SHAPE)));
             } else {
                 let idx = index.unwrap_or(list.len().saturating_sub(1));
                 if idx < list.len() {
@@ -375,9 +375,9 @@ pub(super) fn paint_list(s: &mut Session, p: &Value, fills: bool, add: bool) -> 
         if add {
             let paint = match get(p, "paint").or_else(|| get(p, "color")) {
                 Some(v) => paint_of(v).ok_or_else(|| bad(cmd, "invalid paint"))?,
-                None if fills && frameish => figcraft_color::Paint::solid(figcraft_color::Color::WHITE),
-                None if fills => figcraft_color::Paint::solid(figcraft_color::Color::DEFAULT_SHAPE),
-                None => figcraft_color::Paint::solid(figcraft_color::Color::BLACK),
+                None if fills && frameish => trama_color::Paint::solid(trama_color::Color::WHITE),
+                None if fills => trama_color::Paint::solid(trama_color::Color::DEFAULT_SHAPE),
+                None => trama_color::Paint::solid(trama_color::Color::BLACK),
             };
             list.push(paint);
         } else {
@@ -405,12 +405,12 @@ fn paint_set_in(s: &mut Session, p: &Value, fills: bool, to_regions: bool) -> Re
     };
     let col = color(p, "color");
     // The edit of one paint slot, the same for a layer's list and a region's.
-    let edit_slot = |slot: &mut figcraft_color::Paint| {
+    let edit_slot = |slot: &mut trama_color::Paint| {
         if let Some(np) = &new_paint {
             *slot = np.clone();
         }
         if let Some(c) = col {
-            slot.kind = figcraft_color::PaintKind::Solid { color: c.with_alpha(1.0) };
+            slot.kind = trama_color::PaintKind::Solid { color: c.with_alpha(1.0) };
             if c.a < 1.0 {
                 slot.opacity = c.a;
                 slot.color_alpha = c.a;
@@ -430,7 +430,7 @@ fn paint_set_in(s: &mut Session, p: &Value, fills: bool, to_regions: bool) -> Re
     if let Some((id, regions)) = fill_regions(s, cmd, p, &ids)?.filter(|_| fills && to_regions) {
         edit_region_fills(s.doc_mut()?, id, &regions, |list| {
             if list.is_empty() {
-                list.push(figcraft_color::Paint::solid(figcraft_color::Color::DEFAULT_SHAPE));
+                list.push(trama_color::Paint::solid(trama_color::Color::DEFAULT_SHAPE));
             }
             let at = idx.unwrap_or(list.len().saturating_sub(1));
             let Some(slot) = list.get_mut(at) else { return Err(bad(cmd, format!("no paint at index {at}"))) };
@@ -448,7 +448,7 @@ fn paint_set_in(s: &mut Session, p: &Value, fills: bool, to_regions: bool) -> Re
         let list = if fills { &mut n.fills } else { &mut n.strokes };
         let at = idx.unwrap_or(list.len().saturating_sub(1));
         if list.is_empty() {
-            list.push(figcraft_color::Paint::solid(if fills { figcraft_color::Color::DEFAULT_SHAPE } else { figcraft_color::Color::BLACK }));
+            list.push(trama_color::Paint::solid(if fills { trama_color::Color::DEFAULT_SHAPE } else { trama_color::Color::BLACK }));
         }
         let Some(slot) = list.get_mut(at) else { return Err(bad(cmd, format!("no paint at index {at}"))) };
         let old = slot.clone();
@@ -475,7 +475,7 @@ pub(super) fn paint_copy(s: &mut Session, p: &Value, fills: bool) -> Result<Valu
         // Regions selected in vector edit mode: their own fills, as the Fill section lists them
         // (#1875); a text's fills are what its characters show (#1856).
         let regions = if fills { crate::vectoredit::selected_region_fills(s, id) } else { None };
-        let list: Vec<figcraft_color::Paint> = match regions {
+        let list: Vec<trama_color::Paint> = match regions {
             Some(Some(list)) => list,
             Some(None) => return Err(bad(cmd, "the selected regions' fills differ")),
             None if fills => crate::cmd::lists::character_fills(n).unwrap_or_default(),
@@ -488,7 +488,7 @@ pub(super) fn paint_copy(s: &mut Session, p: &Value, fills: bool) -> Result<Valu
     // An image paint names its data by key: take the data along, so a paste into another file has
     // it too. A pattern names a layer in this file, so the file is recorded with the copy.
     let mut images = std::collections::BTreeMap::new();
-    if let figcraft_color::PaintKind::Image(img) = &paint.kind
+    if let trama_color::PaintKind::Image(img) = &paint.kind
         && let Some(d) = s.doc()?.images.get(&img.image)
     {
         images.insert(img.image.clone(), d.clone());
@@ -515,7 +515,7 @@ pub(super) fn paint_paste(s: &mut Session, p: &Value, fills: bool) -> Result<Val
     // A copied pattern pointing at a target or a layer inside it would make the layer pattern
     // itself; `fill.pattern` refuses the same, and the renderer would drop the pattern. Its node id
     // only names something in the file it was copied from, where it may be an unrelated layer.
-    if let figcraft_color::PaintKind::Pattern(pt) = &paint.kind {
+    if let trama_color::PaintKind::Pattern(pt) = &paint.kind {
         if s.ds()?.uid != s.clipboard.paint_source_doc {
             return Err(bad(cmd, "a pattern can't be pasted into another file"));
         }
@@ -525,7 +525,7 @@ pub(super) fn paint_paste(s: &mut Session, p: &Value, fills: bool) -> Result<Val
         }
     }
     // An image paint names its data by key; a copy from another file brings the data with it.
-    if let figcraft_color::PaintKind::Image(img) = &mut paint.kind {
+    if let trama_color::PaintKind::Image(img) = &mut paint.kind {
         let copied = img.image.clone();
         if let Some(d) = s.clipboard.paint_images.get(&copied).cloned() {
             let doc = s.doc_mut()?;
@@ -534,7 +534,7 @@ pub(super) fn paint_paste(s: &mut Session, p: &Value, fills: bool) -> Result<Val
             // can be taken too — images are usually keyed by their hash, so the copied key often
             // is that hash — and then a numbered variant of it. Image keys become archive member
             // names, which keep only letters and digits, so the number is appended plainly.
-            let base = if doc.images.get(&copied).is_some_and(|existing| existing != &d) { figcraft_format::image_hash(&d.bytes) } else { copied };
+            let base = if doc.images.get(&copied).is_some_and(|existing| existing != &d) { trama_format::image_hash(&d.bytes) } else { copied };
             let mut key = base.clone();
             let mut n = 0u32;
             while doc.images.get(&key).is_some_and(|existing| existing != &d) {
@@ -577,16 +577,15 @@ pub(super) fn pattern_fill(s: &mut Session, p: &Value) -> Result<Value> {
     if req_targets(CMD, s, p)?.iter().any(|t| doc.is_ancestor(*t, src)) {
         return Err(bad(CMD, "a layer can't be filled with itself or a layer inside it"));
     }
-    let mut pt = figcraft_color::PatternPaint::new(src.0);
+    let mut pt = trama_color::PatternPaint::new(src.0);
     pt.tile = parse(CMD, p, "tile")?.unwrap_or_default();
     pt.align = parse(CMD, p, "align")?.unwrap_or_default();
     pt.spacing = parse(CMD, p, "spacing")?.unwrap_or_default();
-    let (lo, hi) = figcraft_color::PatternPaint::SCALE_RANGE;
+    let (lo, hi) = trama_color::PatternPaint::SCALE_RANGE;
     pt.scale = num(p, "scale").filter(|v| v.is_finite()).unwrap_or(1.0).clamp(lo, hi);
     let mut q = if p.is_object() { p.clone() } else { json!({}) };
-    q["paint"] =
-        serde_json::to_value(figcraft_color::Paint { kind: figcraft_color::PaintKind::Pattern(pt), ..figcraft_color::Paint::pattern(src.0) })
-            .map_err(|e| bad(CMD, e.to_string()))?;
+    q["paint"] = serde_json::to_value(trama_color::Paint { kind: trama_color::PaintKind::Pattern(pt), ..trama_color::Paint::pattern(src.0) })
+        .map_err(|e| bad(CMD, e.to_string()))?;
     paint_set_in(s, &q, true, false)
 }
 

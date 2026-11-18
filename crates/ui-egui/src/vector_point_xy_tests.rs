@@ -2,9 +2,9 @@
 //! "Mixed", and a typed value sets every selected point's own coordinate.
 
 use egui::{Key, Modifiers};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::field_tests::{field, scrub, type_into, undo_steps};
 use crate::layers_drag_tests::Ui;
@@ -25,7 +25,7 @@ fn xs(u: &Ui, id: NodeId) -> Vec<(f64, f64)> {
     let doc = u.app.session.doc().unwrap();
     // In the parent's coordinates: the layer re-fits its box after an edit.
     let t = doc.node(id).unwrap().transform;
-    figcraft_engine::vectoredit::network(doc, id).unwrap().vertices.iter().map(|v| t * v.point()).map(|p| (p.x, p.y)).collect()
+    trama_engine::vectoredit::network(doc, id).unwrap().vertices.iter().map(|v| t * v.point()).map(|p| (p.x, p.y)).collect()
 }
 
 #[test]

@@ -1,8 +1,8 @@
 //! Image paints: adjustment presets, built in and saved in the file, and Crop image.
 
-use figcraft_color::{ImageFilters, ImageScaleMode, Paint, PaintKind};
-use figcraft_doc::{Document, ImagePreset, Node};
 use serde_json::{Value, json};
+use trama_color::{ImageFilters, ImageScaleMode, Paint, PaintKind};
+use trama_doc::{Document, ImagePreset, Node};
 
 use super::{CommandSpec, ok};
 use crate::params::{f64_of, get, req_index, req_string, req_targets, string, targets};

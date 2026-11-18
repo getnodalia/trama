@@ -7,10 +7,10 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use egui::{Align2, CornerRadius, Id, Rect, Sense, Ui, pos2, vec2};
-use figcraft_doc::{Document, NodeId};
-use figcraft_engine::branches::{self, BranchState, Review, Side, SideChanges};
-use figcraft_engine::devcompare::ChangeKind;
 use serde_json::json;
+use trama_doc::{Document, NodeId};
+use trama_engine::branches::{self, BranchState, Review, Side, SideChanges};
+use trama_engine::devcompare::ChangeKind;
 
 use crate::FigApp;
 use crate::dev_compare::{self, BAR_H, LIST_W, Mode, Shot};

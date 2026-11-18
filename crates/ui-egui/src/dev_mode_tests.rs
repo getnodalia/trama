@@ -4,15 +4,15 @@
 
 use egui::accesskit::{Node, Role};
 use egui::{Event, Key, MouseWheelUnit, Pos2, TouchPhase, pos2, vec2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_doc::NodeId;
+use trama_engine::Session;
 
 use crate::dev_compare::Mode;
 use crate::dev_mode::CategoryFilter;
 use crate::present_tests::{Ui, id};
 
-fn setup() -> (Ui, figcraft_doc::NodeId, figcraft_doc::NodeId) {
+fn setup() -> (Ui, trama_doc::NodeId, trama_doc::NodeId) {
     let mut s = Session::new();
     let f = id(&s.execute("frame.create", &json!({"x": 0, "y": 0, "width": 300, "height": 400, "name": "Login"})).unwrap());
     let r = id(&s
@@ -233,10 +233,10 @@ fn a_note_request_for_a_layer_that_is_not_selected_is_dropped() {
 fn the_toolbar_keeps_the_inspect_tab_for_the_annotation_tool() {
     let (mut u, _, r) = setup();
     u.app.session.execute("select.set", &json!({"ids": [r]})).unwrap();
-    crate::toolbar::choose(&mut u.app, figcraft_engine::ToolId::Annotation);
+    crate::toolbar::choose(&mut u.app, trama_engine::ToolId::Annotation);
     u.frames(2, Vec::new);
     assert_eq!(u.app.ui.right_tab, crate::RightTab::Inspect);
     assert!(u.ctx.memory(|m| m.has_focus(egui::Id::unique(("annot_new", r)).with("te"))), "the note field has the caret");
-    crate::toolbar::choose(&mut u.app, figcraft_engine::ToolId::Rectangle);
+    crate::toolbar::choose(&mut u.app, trama_engine::ToolId::Rectangle);
     assert_eq!(u.app.ui.right_tab, crate::RightTab::Design, "a drawing tool leaves it");
 }

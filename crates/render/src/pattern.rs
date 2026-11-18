@@ -4,10 +4,10 @@
 use std::cell::Cell;
 use std::sync::Arc;
 
-use figcraft_color::{PatternCell, PatternPaint};
-use figcraft_doc::{Document, NodeId};
-use figcraft_geom::Affine;
 use tiny_skia::{FilterQuality, Pixmap, SpreadMode, Transform};
+use trama_color::{PatternCell, PatternPaint};
+use trama_doc::{Document, NodeId};
+use trama_geom::Affine;
 
 use crate::draw::{Bounds, Ctx, draw_node};
 use crate::paint::Prepared;

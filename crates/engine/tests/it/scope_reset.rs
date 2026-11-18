@@ -1,5 +1,5 @@
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 fn scopes(session: &Session, variable: &str) -> Option<Vec<String>> {
     session.doc().unwrap().variables.get(variable).unwrap().scopes.clone()

@@ -16,8 +16,8 @@
 //! goes by what the system clipboard holds, as it does for copied layers.
 
 use egui::{Color32, Context, Rect, Response};
-use figcraft_doc::NodeId;
 use serde_json::json;
+use trama_doc::NodeId;
 
 use crate::{FigApp, RightTab};
 
@@ -52,9 +52,9 @@ impl PropertyKind {
     /// stands for copied layers, so a paste never makes a text layer of it.
     fn marker(self) -> &'static str {
         match self {
-            PropertyKind::Fill => "figcraft://clipboard/fill",
-            PropertyKind::Stroke => "figcraft://clipboard/stroke",
-            PropertyKind::Effect => "figcraft://clipboard/effect",
+            PropertyKind::Fill => "trama://clipboard/fill",
+            PropertyKind::Stroke => "trama://clipboard/stroke",
+            PropertyKind::Effect => "trama://clipboard/effect",
         }
     }
 
@@ -169,8 +169,8 @@ pub(crate) fn fill(app: &FigApp, kind: PropertyKind, index: usize, selected: Col
 pub(crate) fn follow(app: &mut FigApp, kind: PropertyKind, from: usize, to: Option<usize>) {
     let Some(h) = app.ui.property_row.as_mut().filter(|h| h.kind == kind) else { return };
     let moved = match to {
-        Some(to) => Some(figcraft_engine::cmd::lists::moved_index(h.index, from, to)),
-        None => figcraft_engine::cmd::lists::removed_index(h.index, from),
+        Some(to) => Some(trama_engine::cmd::lists::moved_index(h.index, from, to)),
+        None => trama_engine::cmd::lists::removed_index(h.index, from),
     };
     match moved {
         Some(i) => h.index = i,
@@ -203,7 +203,7 @@ pub(crate) fn copy(app: &mut FigApp, kind: PropertyKind, index: usize, ids: &[No
         let text = match kind {
             PropertyKind::Effect => None,
             PropertyKind::Fill | PropertyKind::Stroke => {
-                serde_json::from_value::<figcraft_color::Paint>(copied).ok().and_then(|p| p.solid_color()).map(figcraft_color::Color::to_css_hex)
+                serde_json::from_value::<trama_color::Paint>(copied).ok().and_then(|p| p.solid_color()).map(trama_color::Color::to_css_hex)
             }
         }
         .unwrap_or_else(|| kind.marker().to_string());

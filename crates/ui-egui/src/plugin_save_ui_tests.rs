@@ -4,8 +4,8 @@
 use std::sync::{Arc, Mutex};
 
 use base64::Engine as _;
-use figcraft_engine::Session;
 use serde_json::json;
+use trama_engine::Session;
 
 use crate::{FigApp, NoServices, Services};
 

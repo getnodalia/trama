@@ -3,8 +3,8 @@
 use crate::Session;
 use crate::components::tests::{ex, idv};
 use crate::tools::{PointerEvent, PointerKind};
-use figcraft_doc::*;
 use serde_json::json;
+use trama_doc::*;
 
 fn frame(s: &mut Session, x: f64, name: &str) -> NodeId {
     idv(&ex(s, "frame.create", json!({"x": x, "y": 0, "width": 200, "height": 200, "name": name})))
