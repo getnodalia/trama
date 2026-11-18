@@ -63,7 +63,8 @@ jobs:
           # "Upstream-Commit:" trailer. Upstream's own commits are not pushed here, and the mirror
           # keeps the previous mirror's .github/workflows, so the default token can push the branch
           # (it may not create or change workflow files).
-          prev="$(git log -1 --format=%H --grep='^Upstream-Commit: ' HEAD)"
+          # Merge sync pull requests with a merge commit: a squash would drop the mirror commit.
+          prev="$(git log -1 --format=%H -E --grep="^Upstream [0-9a-f]{8} with this app's names$" HEAD)"
           if [ -z "$prev" ]; then
             echo "::error::No mirror commit in this branch's history: see docs/upstream.md for how it starts."
             exit 1

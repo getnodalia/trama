@@ -9,6 +9,7 @@ description = "Trama SVG export (shapes, gradients, images, strokes, effects as 
 workspace = true
 
 [dependencies]
+craft-xml = { workspace = true }
 trama-geom = { workspace = true }
 trama-color = { workspace = true }
 trama-doc = { workspace = true }
