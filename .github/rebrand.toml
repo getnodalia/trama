@@ -43,6 +43,8 @@ keep = [
     '(?<=, "figcraft", ")FigCraft(?="\])',
     '(?<="TRAMA", ")figcraft(?=")',
     '(?<=eq_ignore_ascii_case\(")figcraft(?=")',
+    # The shared native-format crate in getnodalia/foundation keeps its published name.
+    "craft[-_]figcraft[-_]format",
     # Credit for work done upstream.
     "FigCraft contributors",
     "colaboradores de FigCraft",
