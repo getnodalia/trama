@@ -237,16 +237,16 @@ manifest.
 
 ```toml
 [patch.crates-io]
-egui = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-eframe = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-egui-wgpu = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-egui-winit = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-egui_extras = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-ecolor = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-epaint = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-emath = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-epaint_default_fonts = { git = "https://github.com/storytold/egui", rev = "STORYTOLD_EGUI_FINAL_REV" }
-winit = { git = "https://github.com/storytold/winit", rev = "STORYTOLD_WINIT_FINAL_REV" }
+egui = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+eframe = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+egui-wgpu = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+egui-winit = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+egui_extras = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+ecolor = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+epaint = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+emath = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+epaint_default_fonts = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_EGUI_FINAL_REV" }
+winit = { git = "https://github.com/getnodalia/foundation", rev = "STORYTOLD_WINIT_FINAL_REV" }
 ```
 
 Only patch crates Trama actually resolves. `ecolor`, `emath` and `epaint_default_fonts` are pulled
