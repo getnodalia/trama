@@ -1946,7 +1946,7 @@ status = "draft — needs native review"
 "Ctrl+Alt+← ↑ → ↓" = "Ctrl+Alt+← ↑ → ↓"
 "Ctrl+click a padding field" = "Ctrl+klik na polje unutrašnje margine"
 "Delete results" = "Izbriši rezultate"
-"Delete {n} variables" = { one = "Izbriši {n} varijablu", other = "Izbriši {n} varijabli" }
+"Delete {n} variables" = { one = "Izbriši {n} varijablu", few = "Izbriši {n} varijable", other = "Izbriši {n} varijabli" }
 "Disconnected. Reconnecting…" = "Prekinuta veza. Ponovno povezivanje…"
 "Disconnected. Your edits stay here and sync when the connection returns. Reconnecting…" = "Prekinuta veza. Vaše izmjene ostaju ovdje i sinhroniziraju se kad se veza vrati. Ponovno povezivanje…"
 "Double-click an edge of an auto layout frame" = "Dvostruki klik na rub okvira s automatskim rasporedom"
@@ -2018,8 +2018,8 @@ status = "draft — needs native review"
 "{insertions} · {detachments}" = "{insertions} · {detachments}"
 "{name} ×{n}" = "{name} ×{n}"
 "{name}, disconnected from its live session" = "{name}, prekinuta veza sa sesijom uživo"
-"{n} detached" = { one = "{n} odvojen", other = "{n} odvojenih" }
-"{n} inserted" = { one = "{n} umetnut", other = "{n} umetnutih" }
+"{n} detached" = { one = "{n} odvojen", few = "{n} odvojena", other = "{n} odvojenih" }
+"{n} inserted" = { one = "{n} umetnut", few = "{n} umetnuta", other = "{n} umetnutih" }
 "{period}: {counts}" = "{period}: {counts}"
 "{used} · {detached}" = "{used} · {detached}"
 "{used} · {inserted}" = "{used} · {inserted}"
