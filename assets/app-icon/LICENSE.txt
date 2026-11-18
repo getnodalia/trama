@@ -1,9 +1,9 @@
 Trama app icon (trama.svg, trama-linux.svg and every file derived from them in this directory:
 trama-<size>.png, trama.ico, hicolor/).
 
-The source portrait of Joseph Marie Jacquard, a wood engraving signed Bocourt and Tourfaut from
-"Les bienfaiteurs de l'Humanité" (Paris, Librairie Paul Ducrocq, 1878), is in the public domain:
-https://commons.wikimedia.org/wiki/File:Joseph_Marie_Jacquard-portrait.jpg
+The source portrait of Charles Babbage, the photograph "Charles Babbage - 1860.jpg" (author
+unknown), is in the public domain:
+https://commons.wikimedia.org/wiki/File:Charles_Babbage_-_1860.jpg
 
 The icon made from it (the cut-out, black-and-white portrait on Trama's purple tile) is licensed
 like the rest of Trama, under either of

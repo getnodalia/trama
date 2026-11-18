@@ -418,7 +418,7 @@ pub fn paint_wordmark(painter: &egui::Painter, left_center: egui::Pos2, size: f3
     painter.text(left_center, egui::Align2::LEFT_CENTER, "Trama", brand(size), t.text);
 }
 
-/// Paint Trama's app icon (Jacquard's portrait) from its 64 px render.
+/// Paint Trama's app icon (Babbage's portrait) from its 64 px render.
 pub fn paint_app_icon(ui: &egui::Ui, rect: egui::Rect) {
     static ICON: OnceLock<Option<egui::ColorImage>> = OnceLock::new();
     let image = ICON.get_or_init(|| {

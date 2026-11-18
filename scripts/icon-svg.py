@@ -63,7 +63,7 @@ def linux(art, comment):
         '</svg>\n')
 
 
-COMMENT = ('<!-- Trama app icon: Joseph Marie Jacquard, from a wood engraving of 1878 '
+COMMENT = ('<!-- Trama app icon: Charles Babbage, from a photograph of 1860 '
            '(public domain), cut out in black and white on Trama\'s purple. '
            'MIT OR Apache-2.0 (assets/app-icon/README.md). -->')
 
