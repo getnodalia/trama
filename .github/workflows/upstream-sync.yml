@@ -23,8 +23,6 @@ concurrency:
 env:
   UPSTREAM_REPO: storytold/figcraft
   UPSTREAM_BRANCH: main
-  # Upstream's commits with this app's names, which is what gets merged (docs/upstream.md).
-  MIRROR_BRANCH: upstream-trama
 
 jobs:
   sync:
@@ -59,20 +57,15 @@ jobs:
           new="$(git rev-parse "$up")"
           ours="$(git rev-parse HEAD)"
 
-          # Upstream arrives through a mirror branch holding its tree with this app's names
-          # (scripts/rebrand.py, rules in .github/rebrand.toml). Each mirror commit has the previous
-          # mirror commit and the upstream commit it renames as parents, and names that commit in
-          # an "Upstream-Commit:" trailer.
-          prev=""
-          if git fetch --no-tags origin "refs/heads/${MIRROR_BRANCH}:refs/remotes/origin/${MIRROR_BRANCH}" 2>/dev/null; then
-            prev="$(git rev-parse "origin/${MIRROR_BRANCH}")"
-          fi
+          # Upstream arrives as one "mirror" commit per sync: upstream's tree renamed to this app's
+          # names (scripts/rebrand.py, rules in .github/rebrand.toml), with the previous mirror
+          # commit as its only parent and the upstream commit it renames named in an
+          # "Upstream-Commit:" trailer. Upstream's own commits are not pushed here, and the mirror
+          # keeps the previous mirror's .github/workflows, so the default token can push the branch
+          # (it may not create or change workflow files).
+          prev="$(git log -1 --format=%H --grep='^Upstream-Commit: ' HEAD)"
           if [ -z "$prev" ]; then
-            # The first sync: the mirror starts at the last mirror commit already merged here.
-            prev="$(git log -1 --format=%H --grep='^Upstream-Commit: ' HEAD)"
-          fi
-          if [ -z "$prev" ]; then
-            echo "::error::No ${MIRROR_BRANCH} branch: see docs/upstream.md for how it starts."
+            echo "::error::No mirror commit in this branch's history: see docs/upstream.md for how it starts."
             exit 1
           fi
           last="$(git log -1 --format=%B "$prev" | sed -n 's/^Upstream-Commit: //p' | tail -1)"
@@ -87,14 +80,16 @@ jobs:
           fi
           count="$(git rev-list --count "${last}..${up}")"
 
-          # Rename upstream's tree with this app's own rules, then record it on the mirror.
+          # Rename upstream's tree with this app's own rules, then record it as the next mirror commit.
           tree_dir="${RUNNER_TEMP}/upstream-tree"
           git worktree add -q --detach "$tree_dir" "$up"
           python3 scripts/rebrand.py apply --root "$tree_dir" --pin-from .
+          rm -rf "$tree_dir/.github/workflows"
+          git -C "$tree_dir" checkout -q "$prev" -- .github/workflows 2>/dev/null || true
           git -C "$tree_dir" add -A
           tree="$(git -C "$tree_dir" write-tree)"
           git worktree remove --force "$tree_dir"
-          mirror="$(printf 'Upstream %s with this app'"'"'s names\n\nUpstream-Commit: %s\n' "${new:0:8}" "$new" | git commit-tree "$tree" -p "$prev" -p "$new")"
+          mirror="$(printf 'Upstream %s with this app'"'"'s names\n\nUpstream-Commit: %s\n' "${new:0:8}" "$new" | git commit-tree "$tree" -p "$prev")"
           up="$mirror"
 
           # Files this project owns: on a conflict our version wins without a manual step.
@@ -148,7 +143,7 @@ jobs:
 
           ${kept_text}Review the CI result before merging. \`docs/upstream.md\` is updated in this pull request."
           else
-            # The merge needs a person. Offer upstream's commits (already renamed) as they are, so
+            # The merge needs a person. Offer upstream's tree (already renamed) as it is, so
             # the pull request shows the conflicts and they can be resolved on the branch.
             git checkout -q -B "$branch" "$up"
             # shellcheck disable=SC2016 # the backticks are Markdown, printed as they are
@@ -159,10 +154,10 @@ jobs:
 
           ${conflict_list}
 
-          This branch holds upstream's commits, renamed to this app's names but otherwise unchanged. Resolve the conflicts on it (keeping this project's changes) and merge."
+          This branch holds upstream's tree, renamed to this app's names but otherwise unchanged. Resolve the conflicts on it (keeping this project's changes) and merge."
           fi
 
-          if ! git push -q -f origin "$branch" "${mirror}:refs/heads/${MIRROR_BRANCH}" 2>/tmp/push.log; then
+          if ! git push -q -f origin "$branch" 2>/tmp/push.log; then
             cat /tmp/push.log
             note="The weekly sync found ${count} new commits in \`${UPSTREAM_REPO}\` (up to \`${new:0:8}\`, merge result: ${status}) but could not push the branch."
             if grep -qi 'workflow' /tmp/push.log; then
