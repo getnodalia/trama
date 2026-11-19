@@ -264,9 +264,9 @@ Issues and pull requests are welcome. New contributors and AI agents start with
 
 ## App icon
 
-Joseph Marie Jacquard, whose punched-card loom wove a picture from rows of threads, as an interface
-is laid out on a grid (*trama* is the weft, in Spanish). The portrait comes from a wood engraving
-of 1878, cut out in black and
+Charles Babbage, whose Analytical Engine read the punched cards of the Jacquard loom, which wove a
+picture from rows of threads, as an interface is laid out on a grid (*trama* is the weft, in
+Spanish). The portrait comes from a photograph of 1860, cut out in black and
 white on Trama's purple like every Nodalia app icon. Sources,
 sizes and licence are in [`assets/app-icon/`](assets/app-icon/).
 

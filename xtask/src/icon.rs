@@ -1,4 +1,4 @@
-//! The app icon: rasterises the master `assets/app-icon/trama.svg` (Jacquard's portrait, see
+//! The app icon: rasterises the master `assets/app-icon/trama.svg` (Babbage's portrait, see
 //! `assets/app-icon/README.md`) and its Colloid-grid Linux version `trama-linux.svg` with the
 //! `resvg` CLI (`cargo install resvg`). Writes trama-<size>.png (macOS grid), trama.ico and the
 //! hicolor theme. The outputs are committed, so building and packaging never need `resvg`.
