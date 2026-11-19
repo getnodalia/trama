@@ -14,6 +14,9 @@ mod icon_set;
 mod kit;
 mod landing;
 mod mobile;
+mod newsletter;
+mod onboarding;
+mod pricing;
 mod slides;
 mod social;
 mod wireframe;
@@ -125,6 +128,30 @@ pub static TEMPLATES: &[Template] = &[
         kind: Kind::Media,
         size: "1920 × 1080",
         make: slides::build,
+    },
+    Template {
+        id: "onboarding-flow",
+        name: "Onboarding flow",
+        description: "Three phone screens, from a welcome to a short choice to all set, linked into a prototype",
+        kind: Kind::App,
+        size: "390 × 844",
+        make: onboarding::build,
+    },
+    Template {
+        id: "pricing-page",
+        name: "Pricing page",
+        description: "Three plan cards with one raised, billing toggle, questions and a footer",
+        kind: Kind::Website,
+        size: "1440 wide",
+        make: pricing::build,
+    },
+    Template {
+        id: "newsletter",
+        name: "Newsletter",
+        description: "A monthly email with a picture, a lead story, three reads, a quote and a footer",
+        kind: Kind::Media,
+        size: "640 wide",
+        make: newsletter::build,
     },
     Template {
         id: "icon-set",
