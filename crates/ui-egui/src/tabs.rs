@@ -115,7 +115,7 @@ pub fn tab_bar(app: &mut FigApp, ui: &mut Ui) {
     egui::Panel::top("tab_bar").exact_size(HEIGHT).frame(egui::Frame::NONE.fill(t.tab_bar)).show(ui, |ui| {
         let rect = ui.max_rect();
         let buttons_w = if app.ui.title_bar == TitleBar::Custom { window_buttons(app, ui, rect) } else { 0.0 };
-        let mut x = rect.min.x + if app.ui.title_bar == TitleBar::Inset { 76.0 } else { 8.0 };
+        let mut x = rect.min.x + if app.ui.title_bar == TitleBar::Inset { nodalia_theme::titlebar::MAC_LIGHTS } else { 8.0 };
         x += main_menu_button(app, ui, &t, x, rect);
         x += home_tab(app, ui, &t, x, rect);
         ui.painter().line_segment([pos2(x, rect.min.y), pos2(x, rect.max.y)], Stroke::new(1.0, t.border));
