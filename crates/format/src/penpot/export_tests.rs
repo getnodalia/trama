@@ -1037,7 +1037,7 @@ fn shared_writer_keeps_manifest_first_and_deflated_members() {
     for index in 0..zip.len() {
         assert_eq!(zip.by_index(index).unwrap().compression(), zip::CompressionMethod::Deflated);
     }
-    let archive = craft_penpot::Archive::open(&bytes).unwrap();
+    let archive = nodalia_penpot::Archive::open(&bytes).unwrap();
     assert_eq!(archive.files.len(), 1);
     assert_eq!(archive.files[0].name.as_deref(), Some("Shared container"));
     assert_eq!(archive.manifest["generatedBy"], format!("trama/{}", env!("CARGO_PKG_VERSION")));

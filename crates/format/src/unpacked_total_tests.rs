@@ -108,7 +108,7 @@ fn a_read_that_fails_part_way_still_spends_the_total() {
     let mut bytes = buf.into_inner();
     let at = 30 + "snapshots/v1.json".len() + body.len() / 2;
     bytes[at] ^= 0xff;
-    let mut z = craft_figcraft_format::SeekArchive::open(std::io::Cursor::new(bytes), u64::MAX).unwrap();
+    let mut z = nodalia_trama_format::SeekArchive::open(std::io::Cursor::new(bytes), u64::MAX).unwrap();
     let size = z.declared_size("snapshots/v1.json").unwrap();
     assert_eq!(size, body.len() as u64);
     let mut total = crate::Unpacked::new(size + size / 2);

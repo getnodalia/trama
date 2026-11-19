@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use super::{CRAFT_FONTS, Face, FontBytes, FontDb, LocalFont, add_local_fonts, load_local_font, local_only, take_wanted_local_fonts};
+use super::{Face, FontBytes, FontDb, LocalFont, NODALIA_FONTS, add_local_fonts, load_local_font, local_only, take_wanted_local_fonts};
 
 fn local(id: usize, family: &str, style: &str) -> LocalFont {
     LocalFont { id, family: family.into(), style: style.into(), postscript: format!("{}-{}", family.replace(' ', ""), style) }
@@ -57,8 +57,8 @@ fn a_font_that_cant_be_read_is_dropped() {
 
 #[test]
 fn a_local_font_draws_under_the_name_it_was_offered_with() {
-    // An embedded font stands in for the one on the computer (CI builds have craft-fonts).
-    let Some(bytes) = CRAFT_FONTS.first().map(|f| f.bytes.to_vec()) else {
+    // An embedded font stands in for the one on the computer (CI builds have nodalia-fonts).
+    let Some(bytes) = NODALIA_FONTS.first().map(|f| f.bytes.to_vec()) else {
         eprintln!("skipping: no embedded font to stand in for an installed one");
         return;
     };

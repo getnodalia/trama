@@ -68,13 +68,13 @@ pub use export::export;
 
 use crate::FormatError;
 #[cfg(test)]
-use craft_fig::rest::MAX_FIG_NODES;
-pub(crate) use craft_fig::rest::layer_budget;
-use craft_fig::{Archive, Limits, decode_canvas, embedded_aliases, embedded_copies, kiwi};
-pub use craft_fig::{JAM_HEADER, is_fig};
+use nodalia_fig::rest::MAX_FIG_NODES;
+pub(crate) use nodalia_fig::rest::layer_budget;
+use nodalia_fig::{Archive, Limits, decode_canvas, embedded_aliases, embedded_copies, kiwi};
+pub use nodalia_fig::{JAM_HEADER, is_fig};
 #[cfg(test)]
-use craft_fig::{MAX_CANVAS, chunks, network};
-pub(crate) use craft_figma_rest::style_name;
+use nodalia_fig::{MAX_CANVAS, chunks, network};
+pub(crate) use nodalia_figma_rest::style_name;
 
 /// Largest image member read.
 const MAX_IMAGE: u64 = trama_doc::ImageData::MAX_BYTES;
@@ -108,7 +108,7 @@ fn import_with_image_limit(bytes: &[u8], name: &str, image_limit: u64) -> Result
     // of them takes gigabytes, and holding them all at once runs out of memory.
     let (schema, message) = decode_canvas(&std::mem::take(&mut archive.canvas)).map_err(fig_err)?;
     let root = schema.find("Message").ok_or_else(|| corrupt("the schema has no Message definition"))?;
-    let msg = schema.decode_message_within(root, &message, craft_fig::value_budget(packed)).map_err(|e| corrupt(e.to_string()))?;
+    let msg = schema.decode_message_within(root, &message, nodalia_fig::value_budget(packed)).map_err(|e| corrupt(e.to_string()))?;
     let max_nodes = layer_budget(packed);
     drop(message);
     let file_name = archive.file_name.as_deref().filter(|n| !n.trim().is_empty()).unwrap_or(name);
@@ -144,10 +144,10 @@ fn corrupt(msg: impl Into<String>) -> FormatError {
 }
 
 /// A `.fig` read or write failure as the app reports it (`Corrupt` already says `.fig file:`).
-pub(crate) fn fig_err(e: craft_fig::Error) -> FormatError {
+pub(crate) fn fig_err(e: nodalia_fig::Error) -> FormatError {
     match e {
-        craft_fig::Error::Corrupt(_) => FormatError::Corrupt(e.to_string()),
-        craft_fig::Error::TooLarge | craft_fig::Error::Io(_) => FormatError::Io(e.to_string()),
+        nodalia_fig::Error::Corrupt(_) => FormatError::Corrupt(e.to_string()),
+        nodalia_fig::Error::TooLarge | nodalia_fig::Error::Io(_) => FormatError::Io(e.to_string()),
     }
 }
 

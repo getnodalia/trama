@@ -8,7 +8,7 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use super::{CRAFT_FONTS, Face, FontBytes, FontDb, LocalFont, Pending, scan_dir, style_words, system_font_dirs};
+use super::{Face, FontBytes, FontDb, LocalFont, NODALIA_FONTS, Pending, scan_dir, style_words, system_font_dirs};
 
 fn entry(style: &str) -> Pending {
     Pending { path: format!("no-such-dir/{style}.ttf").into(), index: 0, style: style.into(), postscript: None, local: None }
@@ -90,7 +90,7 @@ fn style_words_are_weights_and_slopes() {
 #[test]
 fn faces_are_found_and_listed_under_either_name() {
     // An embedded face stands in for an installed one, filed under synthetic legacy names.
-    let Some(f) = CRAFT_FONTS.first() else { return };
+    let Some(f) = NODALIA_FONTS.first() else { return };
     let face = |family: &str, style: &str| Face::from_bytes(FontBytes::Static(f.bytes), 0, Some(family), Some(style)).unwrap();
     let mut db = FontDb::default();
     db.add(face("Synthetic Display", "Regular"));
@@ -122,7 +122,7 @@ fn a_family_per_weight_offers_its_italics_too() {
     assert_eq!(listed(&mut db), want(&[("Regular", 400), ("Italic", 400), ("Bold", 700), ("Bold Italic", 700)]));
     assert_eq!(resolved(&db, "Synthetic Slab", "Bold Italic"), pair("synthetic slab bold", "Italic"), "the style drawn by that face");
     // Faces read give their own weights: Synthetic Slab Semi Light's are 350, not the name's 300.
-    let stand_in = CRAFT_FONTS.first().map(|f| f.bytes.to_vec()).or_else(|| {
+    let stand_in = NODALIA_FONTS.first().map(|f| f.bytes.to_vec()).or_else(|| {
         let mut installed = BTreeMap::new();
         for dir in system_font_dirs() {
             scan_dir(&dir, 0, &mut installed);

@@ -21,7 +21,7 @@ trama-format = { workspace = true }
 trama-svg = { workspace = true }
 trama-pdf = { workspace = true }
 trama-vectordrawable = { workspace = true }
-craft-docpath = { workspace = true }
+nodalia-docpath = { workspace = true }
 trama-plugin = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -36,8 +36,8 @@ web-time = "1.1.0"
 # Downloading a missing font (desktop only; the web keeps its built-in fonts). The bundled index
 # (~620 KB) lets the Missing fonts window tell which fonts can be downloaded without a request.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-craft-font-store = { workspace = true, features = ["bundled-index"] }
-craft-font-catalog = { workspace = true }
+nodalia-font-store = { workspace = true, features = ["bundled-index"] }
+nodalia-font-catalog = { workspace = true }
 
 [dev-dependencies]
 zip = { workspace = true }

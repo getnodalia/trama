@@ -1,6 +1,6 @@
 # egui 0.37 local implementation — stage 1 notes and follow-ups
 
-Current candidate font pin: `37827adc41fd165f9a9234ac40f94dbad353aa69` restores the complete prior Latin catalog
+Current candidate font pin: `88274003be6d70de78d6858cbbd6843e1c178b50` restores the complete prior Latin catalog
 alongside the migration fallbacks. Central font tests and license checks passed;
 publication is pending approval. Managed run `egui037-trama-latin-ci-20261025-0711`
 passed with required fonts: five targeted build-input tests plus full CI, including
@@ -27,14 +27,14 @@ The migration preserves captured main `10702311f345393ee1d8868c3257679befcfa14d`
 (53 commits and 114 paths beyond the first integration). The final review commit records
 both the migration history and that upstream target as parents. The selected egui revision is
 `6d518fc799681571963842f95b55a6b68431b15a`, winit is
-`a517b3846ee8457d84ee4975110bfda6797c44dc`, and craft-window is
+`a517b3846ee8457d84ee4975110bfda6797c44dc`, and nodalia-window is
 `25da1314d443171b4adeaad2cd9454b273f35c6f`. Cargo.lock SHA-256 is
 `7ba8af4de70ba657a652266ddee2920bfc501c851520a49ac60c8044a5c23cc1`.
 The normal UI enables `default_fonts` and `monochrome_emoji_fonts`.
 
 Managed full CI `egui037-trama-final-ci-20261024-2312` passed with bundled fonts.
 Managed full CI `egui037-trama-system-font-ci-20261025-0402` also passed without
-bundled craft-fonts, using a licensed DejaVu Sans system-font fixture via XDG_DATA_HOME.
+bundled nodalia-fonts, using a licensed DejaVu Sans system-font fixture via XDG_DATA_HOME.
 The final qualification run `egui037-trama-final-qualification-ci-20261025-0453`
 repeated that configuration successfully after the documentation reconciliation.
 Both runs completed formatting, strict lint, workspace tests, doctests, translations,
@@ -75,7 +75,7 @@ Human review and human merge are required; no publication is authorized by this 
   `ui.dark`, language, fonts (including CJK faces for its own document) and the zoom plan.
 - A monotonic `FrameClock` (`web_time::Instant`) drives autosave, auto-save and capture deadlines.
   Tests inject it (`set_test_now`); UI-time (`ctx.input(i.time)`) is not used for deadlines.
-- Local capture-slot adapter in `crates/ui-egui/src/control.rs` (no `craft-ui` dependency):
+- Local capture-slot adapter in `crates/ui-egui/src/control.rs` (no `nodalia-ui` dependency):
   weak one-shot callback, per-request identity/serial, deadline/cancel, document + viewport
   generation, capture-time geometry epoch (size/DPI/zoom only, not window position), retry on
   geometry changes, fail-closed completion when current geometry is unrepresentable, error on
@@ -171,13 +171,13 @@ not a passing claim.
 ## Dependency and lock prerequisites
 
 - The committed root `[patch.crates-io]` table pins the egui family and winit to
-  immutable published fork revisions. `craft-window` is pinned to the reviewed
-  craft-libs revision targeting egui 0.37; its optional `egui` feature stays disabled
+  immutable published fork revisions. `nodalia-window` is pinned to the reviewed
+  nodalia-libs revision targeting egui 0.37; its optional `egui` feature stays disabled
   because Trama needs only the frame probe.
 - `Cargo.lock` is committed and resolves the canonical Git sources without local
   path overrides. Use `--locked`; the earlier parent integration config is not
   required to reproduce this graph.
-- Fonts remain an optional central `CRAFT_FONTS_DIR` input with native system-font
+- Fonts remain an optional central `NODALIA_FONTS_DIR` input with native system-font
   fallback; no font binaries are added here. Required release-font qualification
   is separate from optional-font host CI. Color emoji still needs a separate
   `epaint/color_fonts` feature check.
@@ -208,7 +208,7 @@ children. None of these were applied, removed or claimed as fixed.
 Native optional-font builds retain the system-font policy. A required web build must
 embed Inter Regular and SemiBold plus Noto Sans Georgian Regular after filtering;
 missing required face/style coverage fails the build, regardless of which manifest supplies it. Required mode
-also rejects an unset `CRAFT_FONTS_DIR`. The migration's original `b076417` catalog
+also rejects an unset `NODALIA_FONTS_DIR`. The migration's original `b076417` catalog
 lacks Inter and is not a qualified required-web input. A combined central font pin restores the prior Latin catalog while preserving the new
 core fallbacks. Source Sans 3 and Source Serif 4 are excluded on every target; no font binary belongs in this repository. Required-web, required-native
 and optional-font configurations remain separate validation gates.

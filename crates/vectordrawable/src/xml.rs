@@ -2,16 +2,16 @@
 //! Geometry, colour policy and compatibility decisions remain in the application.
 
 use crate::model::{Fill, GradKind, Item, ItemKind};
-use craft_vectordrawable::model as wire;
+use nodalia_vectordrawable::model as wire;
 use trama_color::Color;
 
 #[cfg(test)]
-pub(crate) use craft_vectordrawable::write::{esc, num, path_data};
+pub(crate) use nodalia_vectordrawable::write::{esc, num, path_data};
 
 // One document level can add a frame clip, a mask clip and a named group, plus the leaf gradient's
 // transform group. Keep every layer admitted by check_export_depth, not just 256 XML groups.
 const XML_DEPTH: usize = 3 * (trama_render::MAX_EXPORT_DEPTH + 1) + 2;
-const _: () = assert!(XML_DEPTH <= craft_vectordrawable::write::MAX_CONFIGURED_DEPTH);
+const _: () = assert!(XML_DEPTH <= nodalia_vectordrawable::write::MAX_CONFIGURED_DEPTH);
 
 fn wire_color(c: Color) -> wire::Color {
     // Trama clamps positive infinity to one (the neutral writer maps non-finite to zero).
@@ -22,7 +22,7 @@ fn wire_color(c: Color) -> wire::Color {
 
 #[cfg(test)]
 pub(crate) fn color(c: Color) -> String {
-    craft_vectordrawable::write::color(wire_color(c))
+    nodalia_vectordrawable::write::color(wire_color(c))
 }
 
 fn item(it: Item) -> wire::Item {
@@ -113,7 +113,7 @@ fn discard_items(items: Vec<Item>) {
 
 pub(crate) fn document(width: f64, height: f64, input: Vec<Item>) -> String {
     let items = items(input);
-    let output = craft_vectordrawable::write::document_with_depth_limit(width, height, &items, XML_DEPTH);
+    let output = nodalia_vectordrawable::write::document_with_depth_limit(width, height, &items, XML_DEPTH);
     // Recursive enum destruction also consumes stack, even with an iterative writer.
     let mut frames = vec![items.into_iter()];
     while let Some(frame) = frames.last_mut() {

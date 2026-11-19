@@ -323,7 +323,7 @@ fn sample_files() {
 }
 
 /// A tiny PNG whose header claims 30,000 × 30,000 RGBA (3.6 GB decoded) is refused when it is read,
-/// before anything is decoded: the PDF writer is craft-libs' patched krilla.
+/// before anything is decoded: the PDF writer is nodalia-libs' patched krilla.
 #[test]
 fn a_png_that_decodes_too_large_is_refused() {
     fn chunk(out: &mut Vec<u8>, kind: &[u8; 4], data: &[u8]) {
@@ -345,6 +345,6 @@ fn a_png_that_decodes_too_large_is_refused() {
     chunk(&mut png, b"IHDR", &ihdr);
     chunk(&mut png, b"IDAT", &z.finish().unwrap());
     chunk(&mut png, b"IEND", &[]);
-    const { assert!(krilla::CRAFT_UNWIND_SAFE_DROP) };
+    const { assert!(krilla::NODALIA_UNWIND_SAFE_DROP) };
     assert!(krilla::image::Image::from_png(krilla::Data::from(png), true).is_err());
 }

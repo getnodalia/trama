@@ -1,4 +1,4 @@
-//! The font database: embedded craft-fonts faces plus (on desktop) the system's fonts.
+//! The font database: embedded nodalia-fonts faces plus (on desktop) the system's fonts.
 
 use std::collections::{BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
@@ -13,14 +13,14 @@ use trama_geom::BezPath;
 
 use crate::color::{ColorLayer, Rasters};
 
-/// A font from the optional craft-fonts build input (empty unless built with `CRAFT_FONTS_DIR`).
-pub struct CraftFont {
+/// A font from the optional nodalia-fonts build input (empty unless built with `NODALIA_FONTS_DIR`).
+pub struct NodaliaFont {
     pub family: &'static str,
     pub style: &'static str,
     pub bytes: &'static [u8],
 }
 
-include!(concat!(env!("OUT_DIR"), "/craft_fonts.rs"));
+include!(concat!(env!("OUT_DIR"), "/nodalia_fonts.rs"));
 
 #[derive(Clone)]
 pub enum FontBytes {
@@ -549,7 +549,7 @@ fn names(f: &skrifa::FontRef) -> (Option<String>, Option<String>) {
     (family, style)
 }
 
-/// Families tried, in order, for characters a text's own font lacks. Every script face craft-fonts
+/// Families tried, in order, for characters a text's own font lacks. Every script face nodalia-fonts
 /// can embed (Noto Sans Arabic, Thai, Hebrew, Devanagari, Georgian) is here after the Latin faces,
 /// so a web build that embeds one (`TRAMA_EMBED_SCRIPTS`, #1902) draws that script in an Inter
 /// document: the browser has no other fonts. The symbol fonts come last: Apple Symbols (macOS),
@@ -703,7 +703,7 @@ pub fn db() -> &'static RwLock<FontDb> {
 fn raw_db() -> &'static RwLock<FontDb> {
     DB.get_or_init(|| {
         let mut db = FontDb::default();
-        for f in CRAFT_FONTS {
+        for f in NODALIA_FONTS {
             if let Some(face) = Face::from_bytes(FontBytes::Static(f.bytes), 0, Some(f.family), Some(f.style)) {
                 db.add(face);
             }
@@ -1328,12 +1328,12 @@ fn system_font_dirs() -> Vec<std::path::PathBuf> {
     {
         // The standard folders, the user's (`~/.fonts`, `$XDG_DATA_HOME/fonts`), `$XDG_DATA_DIRS`
         // and those fontconfig names (NixOS and Guix keep fonts only there).
-        v.extend(craft_font_catalog::font_dirs(&craft_font_catalog::FontEnv::from_process()));
+        v.extend(nodalia_font_catalog::font_dirs(&nodalia_font_catalog::FontEnv::from_process()));
     }
     // Fonts any Craft app downloaded into the suite's font store (a download being installed is a
     // `.part` file, which the walk skips).
     #[cfg(not(target_arch = "wasm32"))]
-    v.extend(craft_font_catalog::font_store_dir(&craft_font_catalog::FontEnv::from_process()));
+    v.extend(nodalia_font_catalog::font_store_dir(&nodalia_font_catalog::FontEnv::from_process()));
     // Fontconfig usually lists folders already here (`/usr/share/fonts`): walk each once.
     let mut seen = std::collections::HashSet::new();
     v.retain(|d| seen.insert(d.clone()));

@@ -19,7 +19,7 @@ use trama_doc::{
 
 use crate::{FormatError, MAX_MEMBER, Unpacked, from_json, image_data, io_err};
 
-use craft_figcraft_format::library as native;
+use nodalia_trama_format::library as native;
 
 // Test helpers use these names when constructing deliberately bounded archive entries.
 #[cfg(test)]
@@ -104,7 +104,7 @@ fn from_native_manifest(m: native::Manifest) -> LibraryManifest {
 }
 
 /// Write the published library's entries. `written` are the images already in `images/`.
-pub(crate) fn write(z: &mut craft_figcraft_format::ArchiveWriter, lib: &PublishedLibrary, written: &BTreeSet<&String>) -> Result<(), FormatError> {
+pub(crate) fn write(z: &mut nodalia_trama_format::ArchiveWriter, lib: &PublishedLibrary, written: &BTreeSet<&String>) -> Result<(), FormatError> {
     let already_written = written.iter().map(|hash| (*hash).clone()).collect();
     let images = lib.doc.images.iter().map(|(hash, image)| (hash.as_str(), image.bytes.as_slice()));
     native::write_members(
@@ -122,7 +122,7 @@ pub(crate) fn write(z: &mut craft_figcraft_format::ArchiveWriter, lib: &Publishe
 /// the images already read from `images/`; what it unpacks comes out of `unpacked` (beyond the
 /// per-part caps).
 pub(crate) fn read(
-    z: &mut impl craft_figcraft_format::NativeArchive,
+    z: &mut impl nodalia_trama_format::NativeArchive,
     own: &BTreeMap<String, ImageData>,
     unpacked: &mut Unpacked,
 ) -> Result<Option<PublishedLibrary>, FormatError> {
@@ -165,7 +165,7 @@ pub fn read_library<R: Read + Seek>(r: R) -> Result<Option<PublishedLibrary>, Fo
 /// archive that would unpack to more is refused, or loses the images past it), for libraries from
 /// people the reader doesn't trust (a server).
 pub fn read_library_within<R: Read + Seek>(r: R, max_bytes: u64) -> Result<Option<PublishedLibrary>, FormatError> {
-    let mut z = craft_figcraft_format::SeekArchive::open(r, u64::MAX).map_err(corrupt)?;
+    let mut z = nodalia_trama_format::SeekArchive::open(r, u64::MAX).map_err(corrupt)?;
     read(&mut z, &BTreeMap::new(), &mut Unpacked::new(max_bytes))
 }
 

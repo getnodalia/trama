@@ -10,7 +10,7 @@ workspace = true
 
 [dependencies]
 nodalia-theme = { workspace = true, features = ["creator"] }
-craft-ui = { workspace = true }
+nodalia-ui = { workspace = true }
 trama-geom = { workspace = true }
 trama-color = { workspace = true }
 trama-doc = { workspace = true }

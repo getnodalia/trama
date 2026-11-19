@@ -58,7 +58,7 @@ fn close(a: f64, b: f64) -> bool {
 
 /// A square (100,100)–(200,200), selected, and the text "Hello" at (400, 100), not selected.
 fn scene() -> (Session, NodeId, NodeId) {
-    // The text is measured with a font: without craft-fonts that is a system one, scanned here
+    // The text is measured with a font: without nodalia-fonts that is a system one, scanned here
     // rather than by whichever test happens to run first (#333).
     trama_text::scan_system_fonts();
     let mut s = Session::new();

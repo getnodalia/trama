@@ -873,7 +873,7 @@ fn component_menu<'a>(
     checked: impl Fn(NodeId) -> bool,
 ) -> Option<NodeId> {
     let opened = field.clicked();
-    craft_ui::combo::Menu::new(ui, field)
+    nodalia_ui::combo::Menu::new(ui, field)
         .height(COMP_MENU_HEIGHT)
         .close_behavior(egui::PopupCloseBehavior::CloseOnClickOutside)
         .style(crate::right::menu_style)

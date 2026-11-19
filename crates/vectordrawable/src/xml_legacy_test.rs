@@ -14,7 +14,7 @@ const ANDROID: &str = "http://schemas.android.com/apk/res/android";
 const AAPT: &str = "http://schemas.android.com/aapt";
 
 // Shared wire primitives; app-specific drawable projection and colour policy stay here.
-pub(crate) use craft_vectordrawable::write::{esc, num, path_data};
+pub(crate) use nodalia_vectordrawable::write::{esc, num, path_data};
 
 /// `#RRGGBB`, or `#AARRGGBB` when not opaque.
 pub(crate) fn color(c: Color) -> String {

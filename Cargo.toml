@@ -13,8 +13,8 @@ rust-version = "1.95"
 repository = "https://github.com/getnodalia/trama"
 
 [workspace.dependencies]
-craft-xml = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "d13ac58a15c45d618f25910772502e38c4ce1d4c" }
-craft-vectordrawable = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "5cd16f2b9ac2a84c4c0794e609914e2bbf848bd7" }
+nodalia-xml = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "0bc9b26d35a15861d39c744bf3ca77318772ea60" }
+nodalia-vectordrawable = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "c9416375c05c910cbc8e9285cb2755100f3e9742" }
 # internal
 trama-geom = { path = "crates/geom" }
 trama-color = { path = "crates/color" }
@@ -35,41 +35,41 @@ trama-mcp = { path = "crates/mcp" }
 trama-collab-net = { path = "crates/collab-net" }
 trama-plugin = { path = "crates/plugin" }
 
-# Keep coupled craft-libs crates (from getnodalia/foundation) on one rev.
-# Which paths stored in a document may be followed (craft-libs).
-craft-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
+# Keep coupled nodalia-libs crates (from getnodalia/foundation) on one rev.
+# Which paths stored in a document may be followed (nodalia-libs).
+nodalia-docpath = { version = "0.1.0", git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
 # Who draws the window frame on Linux — the compositor or the app — so every Nodalia app shows the
-# same native titlebar per desktop (craft-libs). Trama only reads the probe result and maps it
-# to its own `TitleBar`, so it does not enable craft-window's optional `egui` helpers (which would
+# same native titlebar per desktop (nodalia-libs). Trama only reads the probe result and maps it
+# to its own `TitleBar`, so it does not enable nodalia-window's optional `egui` helpers (which would
 # pull a second egui family version).
-craft-window = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
+nodalia-window = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
 # The Nodalia Design Language: tokens, Trama's accent and the creator suite's shared parts.
 nodalia-theme = { git = "https://github.com/getnodalia/nodalia-design", rev = "44bfd0a37e6bd2837c473b4e5607b70e8d169e61" }
 # In-app updates, shared by the Nodalia apps: check getnodalia/trama's releases, verify the
 # package, replace the AppImage or Trama.app, install the MSI.
 nodalia-update = { git = "https://github.com/getnodalia/nodalia-design", rev = "114848a2ff1a7c29c9a5432fb12e955fbe0aeef2", features = ["egui"] }
 # The suite's font store: exact lookup of a missing font in the pinned Google Fonts and Noto
-# indexes, and checksum-verified installs into the one folder every Nodalia app reads (craft-libs).
-craft-font-store = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
-craft-font-catalog = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
-# Shared dropdown menus: a combo box whose menu grows back after shrinking (craft-libs).
-craft-ui = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
+# indexes, and checksum-verified installs into the one folder every Nodalia app reads (nodalia-libs).
+nodalia-font-store = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
+nodalia-font-catalog = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
+# Shared dropdown menus: a combo box whose menu grows back after shrinking (nodalia-libs).
+nodalia-ui = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
 # The macOS app menu whose Quit (⌘Q) asks the app before quitting, like the window's close button
-# (craft-libs; the menu it replaces quits straight through `terminate:` and loses unsaved work).
-craft-menu = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
-# Where the settings live: the suite's folder rules, portable mode included (craft-libs).
-craft-settings = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
+# (nodalia-libs; the menu it replaces quits straight through `terminate:` and loses unsaved work).
+nodalia-menu = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
+# Where the settings live: the suite's folder rules, portable mode included (nodalia-libs).
+nodalia-settings = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }
 
 # Penpot export container only; JSON values cross this boundary, not shared model types.
-craft-penpot = { git = "https://github.com/getnodalia/foundation", rev = "064afccce82b01cbf85da5e265bcf897553bea2a" }
+nodalia-penpot = { git = "https://github.com/getnodalia/foundation", rev = "9edb99ff59b9bb98ff6c3952c44fc8948a0d4fe3" }
 
-# The design-file formats (craft-libs): the .fig container and its kiwi encoding, the mapping of
+# The design-file formats (nodalia-libs): the .fig container and its kiwi encoding, the mapping of
 # a .fig message onto the REST file JSON, and that JSON's shared helpers. These crates share
 # types, so they stay on one rev; they share none with the crates above.
-craft-sketch = { git = "https://github.com/getnodalia/foundation", rev = "ff142b3ad58aa7306676749428f4f2f9b277b5dd" }
-craft-fig = { git = "https://github.com/getnodalia/foundation", rev = "d13ac58a15c45d618f25910772502e38c4ce1d4c" }
-craft-figcraft-format = { git = "https://github.com/getnodalia/foundation", rev = "976eb51c59edb0a37f24105850f52d921c8518ee" }
-craft-figma-rest = { git = "https://github.com/getnodalia/foundation", rev = "d13ac58a15c45d618f25910772502e38c4ce1d4c" }
+nodalia-sketch = { git = "https://github.com/getnodalia/foundation", rev = "e95b73f30445ed91816f8c6dabdbd6a82574525f" }
+nodalia-fig = { git = "https://github.com/getnodalia/foundation", rev = "0bc9b26d35a15861d39c744bf3ca77318772ea60" }
+nodalia-trama-format = { git = "https://github.com/getnodalia/foundation", rev = "2d08be2e78b9806c9bb5bdc3d268a8ccb6d4cab9" }
+nodalia-figma-rest = { git = "https://github.com/getnodalia/foundation", rev = "0bc9b26d35a15861d39c744bf3ca77318772ea60" }
 
 # foundation
 kurbo = { version = "0.13", features = ["serde"] }
@@ -196,6 +196,6 @@ egui_demo_lib = { git = "https://github.com/getnodalia/foundation", rev = "6d518
 egui_inspection = { git = "https://github.com/getnodalia/foundation", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
 winit = { git = "https://github.com/getnodalia/foundation", rev = "a517b3846ee8457d84ee4975110bfda6797c44dc" }
 
-# craft-libs' vendored krilla 0.8.2: decoded PNGs are capped at 1 GiB and reserved fallibly, and a
+# nodalia-libs' vendored krilla 0.8.2: decoded PNGs are capped at 1 GiB and reserved fallibly, and a
 # panic while drawing unwinds without aborting.
-krilla = { git = "https://github.com/getnodalia/foundation", rev = "e11f9d9aebea5f6b8e74643c1ea1ed172ba5f545" }
+krilla = { git = "https://github.com/getnodalia/foundation", rev = "982fb243742abf00b428f49831962bbf2e08eb87" }

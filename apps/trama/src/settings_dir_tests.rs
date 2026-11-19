@@ -6,7 +6,7 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
-use craft_settings::Probe;
+use nodalia_settings::Probe;
 use trama_engine::Prefs;
 
 use crate::services::{Desktop, settings_dir, write_prefs};

@@ -182,7 +182,7 @@ fn table_edits_add_and_remove_rows_and_columns_keeping_text() {
 
 #[test]
 fn a_double_click_types_in_the_cell_and_its_row_grows_with_the_text() {
-    // Measure with system fonts when the optional craft-fonts checkout is absent,
+    // Measure with system fonts when the optional nodalia-fonts checkout is absent,
     // without depending on another test having scanned them first.
     trama_text::scan_system_fonts();
     let mut s = board();
@@ -377,7 +377,7 @@ fn a_table_never_shrinks_below_its_cells() {
 
 #[test]
 fn a_resized_table_still_grows_with_its_text_and_undoes_in_one_step() {
-    // Text measures only once system fonts are scanned (without craft-fonts), so scan them here
+    // Text measures only once system fonts are scanned (without nodalia-fonts), so scan them here
     // without depending on another test having scanned them first.
     trama_text::scan_system_fonts();
     let (mut s, t) = table_3x3(["", "", ""]);

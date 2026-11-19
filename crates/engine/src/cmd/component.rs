@@ -316,7 +316,7 @@ fn go_to_library_main(s: &mut Session, library: &str, name: &str, key: NodeId) -
     if crate::library_server::is_server_link(&path) {
         return Err(refuse(format!("the main component is in the team library \"{name}\": open its file from the server to edit it")));
     }
-    if !craft_docpath::is_local(&path) {
+    if !nodalia_docpath::is_local(&path) {
         return Err(refuse(format!("{path}: a library is opened only from this computer")));
     }
     if !crate::file_access::exists(&path) {

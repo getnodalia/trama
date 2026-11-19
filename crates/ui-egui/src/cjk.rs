@@ -2,7 +2,7 @@
 //! for them, so the UI adds a face per script it needs: the UI language's, the scripts in the open file's names
 //! and comments, the language picker's and typed text. Desktop finds them among the installed
 //! fonts (the system font scan), only once one is needed, so English users load none; the web
-//! build has only the CJK faces built in from craft-fonts (`TRAMA_EMBED_CJK`), else none (no
+//! build has only the CJK faces built in from nodalia-fonts (`TRAMA_EMBED_CJK`), else none (no
 //! Bengali or Thai face is built in, so the web leaves them out).
 
 use std::sync::Arc;
@@ -112,7 +112,7 @@ pub fn traditional(code: &str) -> bool {
 }
 
 /// Whether the UI can draw language `code`: always on desktop (a system face is found when it's
-/// needed; tofu at worst), on the web only with built-in faces for its scripts (Georgian: craft-fonts'
+/// needed; tofu at worst), on the web only with built-in faces for its scripts (Georgian: nodalia-fonts'
 /// Noto Sans Georgian). The language picker and the system language skip a language it can't.
 pub fn can_show(code: &str) -> bool {
     shows(code, cfg!(target_arch = "wasm32"))
@@ -132,7 +132,7 @@ fn shows(code: &str, web: bool) -> bool {
         return trama_text::face_with_char('ع', &["Noto Sans Arabic"]).is_some();
     }
     if code.split('-').next() == Some("ta") {
-        // Desktop draws Tamil with a system face (#2018); the web has none until craft-fonts
+        // Desktop draws Tamil with a system face (#2018); the web has none until nodalia-fonts
         // carries Noto Sans Tamil.
         return trama_text::face_with_char('த', &["Noto Sans Tamil"]).is_some();
     }

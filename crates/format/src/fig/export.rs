@@ -33,8 +33,8 @@ use trama_doc::{
 };
 
 use crate::FormatError;
-use craft_fig::kiwi::{Kv, Schema, encode};
-use craft_fig::{network, path};
+use nodalia_fig::kiwi::{Kv, Schema, encode};
+use nodalia_fig::{network, path};
 
 mod assets;
 mod common;
@@ -49,7 +49,7 @@ mod shape;
 const MAX_NODES: usize = crate::rest::MAX_NODES;
 const MAX_DEPTH: usize = 256;
 /// Largest `canvas.fig` and image written (what the import reads).
-const MAX_CANVAS: u64 = craft_fig::MAX_CANVAS;
+const MAX_CANVAS: u64 = nodalia_fig::MAX_CANVAS;
 const MAX_IMAGE: u64 = super::MAX_IMAGE;
 /// Most characters of one text layer, and vertices + segments + loop entries of one vector
 /// network (what the import reads).
@@ -201,11 +201,11 @@ message Message MessageType type=1, uint sessionID=2, NodeChange[] nodeChanges=4
 pub fn export(doc: &Document, thumbnail: Option<&[u8]>) -> Result<(Vec<u8>, Vec<String>), FormatError> {
     let mut x = Exporter::new(doc);
     let message = x.message();
-    let fail = |e: craft_fig::kiwi::KiwiError| FormatError::Io(format!(".fig export: {e}"));
+    let fail = |e: nodalia_fig::kiwi::KiwiError| FormatError::Io(format!(".fig export: {e}"));
     let schema = Schema::parse(SCHEMA).map_err(fail)?;
     let root = schema.find("Message").ok_or_else(|| FormatError::Io(".fig export: the schema has no Message".into()))?;
     let body = encode::message(&schema, root, &message).map_err(fail)?;
-    let canvas = craft_fig::encode_canvas(&encode::schema(&schema), &body).map_err(super::fig_err)?;
+    let canvas = nodalia_fig::encode_canvas(&encode::schema(&schema), &body).map_err(super::fig_err)?;
     let background = doc.pages.first().and_then(|p| doc.node(*p)).and_then(|p| match &p.kind {
         NodeKind::Page { background, .. } => Some(*background),
         _ => None,
@@ -224,7 +224,7 @@ fn archive(
 ) -> Result<Vec<u8>, FormatError> {
     let images: Vec<(&str, &[u8])> = images.iter().map(|(hash, bytes)| (hash.as_str(), bytes.as_slice())).collect();
     let background = [background.r, background.g, background.b, background.a].map(f64::from);
-    craft_fig::write_archive(&craft_fig::Package { file_name: name, background, canvas, images: &images, thumbnail }).map_err(super::fig_err)
+    nodalia_fig::write_archive(&nodalia_fig::Package { file_name: name, background, canvas, images: &images, thumbnail }).map_err(super::fig_err)
 }
 
 type Fields = Vec<(&'static str, Kv<'static>)>;
@@ -372,7 +372,7 @@ fn join_name(j: StrokeJoin) -> &'static str {
     }
 }
 
-/// A geometry blob (`craft_fig::path`), with every value finite.
+/// A geometry blob (`nodalia_fig::path`), with every value finite.
 fn path_blob(p: &BezPath) -> Vec<u8> {
     let pt = |q: trama_doc::geom::Point| [finite(q.x) as f32, finite(q.y) as f32];
     let commands: Vec<path::Command> = p

@@ -57,7 +57,7 @@ How to run a server is in [`server.md`](server.md). The release workflows leave 
 
 New text starts in Inter (`trama_doc::DEFAULT_FONT`). A distribution whose users mostly write a
 script Inter lacks (Thai, say) can name another family with `TRAMA_DEFAULT_FONT` when building;
-unset or empty means Inter. Pick a family the build embeds from craft-fonts (the web build has no
+unset or empty means Inter. Pick a family the build embeds from nodalia-fonts (the web build has no
 other fonts) or one its users have installed:
 
 ```sh
@@ -88,8 +88,8 @@ The collaboration server (`apps/trama-server`, [`server.md`](server.md)) and the
 (`apps/trama-web`) are not release artifacts yet; build them from source as described below.
 
 **Fonts.** Each release job checks out
-[craft-fonts](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main) at a pinned
-commit and builds with `CRAFT_FONTS_DIR` and `CRAFT_FONTS_REQUIRED=1`, so releases embed its
+[nodalia-fonts](https://github.com/getnodalia/foundation/tree/nodalia/fonts) at a pinned
+commit and builds with `NODALIA_FONTS_DIR` and `NODALIA_FONTS_REQUIRED=1`, so releases embed its
 fonts and fail rather than ship without them. Packages carry each embedded font's licence as
 `OFL-<family>.txt` (`copy_font_licences` in `packaging/env.sh`; `Contents/Resources/Licenses` in
 the macOS app). Source Sans 3 and Source Serif 4 are filtered out on every target under Trama's

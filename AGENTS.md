@@ -62,9 +62,9 @@ crates you touched (`cargo test -p trama-engine`).
   channel too. Then `{"id":1,"method":"ui.screenshot","params":{"path":"/tmp/shot.png"}}`.
 - **For UI work, look at the result** (screenshot, read the PNG) in light and dark.
 - Headless: `trama-cli` (`info`, `export`, `run`, `commands`, `mcp`; `docs/cli.md`, `docs/mcp.md`).
-- Fonts are an optional build input: `CRAFT_FONTS_DIR` pointing at a checkout of the
-  `vendor/craft-fonts/main` branch of getnodalia/foundation (`.cargo/config.toml` points it at
-  `../craft-fonts`). Code and tests work without it.
+- Fonts are an optional build input: `NODALIA_FONTS_DIR` pointing at a checkout of the
+  `nodalia/fonts` branch of getnodalia/foundation (`.cargo/config.toml` points it at
+  `../nodalia-fonts`). Code and tests work without it.
 - Parallel agents: separate `CARGO_TARGET_DIR`s, edit only the files you own, write manifests
   atomically, delete your target dir when done.
 
@@ -99,7 +99,7 @@ crates you touched (`cargo test -p trama-engine`).
   [`ATTRIBUTION.md`](ATTRIBUTION.md) in the same change (`cargo xtask assets` fails otherwise).
 - UI icons are drawn in code (`crates/ui-egui/src/icons.rs`). The app icon is Nodalia's own
   (`assets/app-icon/`, `cargo xtask icon` renders the PNGs and `.ico` from `trama.svg`).
-- Fonts live in getnodalia/foundation's `vendor/craft-fonts/main` branch, never in this repo.
+- Fonts live in getnodalia/foundation's `nodalia/fonts` branch, never in this repo.
 
 ### Compatibility
 

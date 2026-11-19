@@ -1,6 +1,6 @@
 # Trama egui 0.37 migration plan
 
-Status update (2026-10-25): The migration integrates main `92682728` and pins egui 0.37, winit and craft-window. Required-font CI run `egui037-fig-review-full-ci-20261025-0803` passed 3,306 test executions, zero failures and nine ignored across 71 summaries, including WASM and all three plugin bundles. Screenshot encoding now precedes a shared final-write/reply gate: timeout cancellation cannot overtake a committed file, and a fresh deadline check rejects a late write. A regression through the actual arrival path failed with the previous write behavior and passed with the gate. Native visible GUI/browser workflows, native IME, paired app performance and current-source platform/release installation remain open. Human review and human merge are required.
+Status update (2026-10-25): The migration integrates main `92682728` and pins egui 0.37, winit and nodalia-window. Required-font CI run `egui037-fig-review-full-ci-20261025-0803` passed 3,306 test executions, zero failures and nine ignored across 71 summaries, including WASM and all three plugin bundles. Screenshot encoding now precedes a shared final-write/reply gate: timeout cancellation cannot overtake a committed file, and a fresh deadline check rejects a late write. A regression through the actual arrival path failed with the previous write behavior and passed with the gate. Native visible GUI/browser workflows, native IME, paired app performance and current-source platform/release installation remain open. Human review and human merge are required.
 
 The original planning record below is historical.
 
@@ -11,7 +11,7 @@ No publication approval exists for this document or any derived branch/PR.
 
 Scope: the exact checkout
 `/home/codex/work/CraftApps/egui037-migration-20261022/trama-implementation`. This plan covers
-Trama only. Suite-wide fork work, shared `craft-libs` work and publication approval remain with
+Trama only. Suite-wide fork work, shared `nodalia-libs` work and publication approval remain with
 the parent workflow. This revision resolves the adversarial review of the previous draft in place;
 the review file is
 `/home/codex/work/ssd2/task-evidence/egui037-migration-20261022/plan-reviews/trama-v1.md`.
@@ -40,19 +40,19 @@ in-flight and completed images together.
 - Current lock: `egui`, `eframe`, `egui-wgpu`, `egui-winit`, `egui_extras`, `ecolor`, `emath`,
   `epaint` all `0.36.2`; `winit` `0.30.13`; `wgpu` `30.0.1`; `accesskit` `0.24.1`;
   `wasm-bindgen` `0.2.129`.
-- Git dependencies: `craft-docpath` rev `82a24b006eefa036b43c09a67fb9a3fbd17ffe63`;
-  `craft-window` rev `1f805378d454dac48b5c214029d254055fdf961b` (that revision's workspace
+- Git dependencies: `nodalia-docpath` rev `82a24b006eefa036b43c09a67fb9a3fbd17ffe63`;
+  `nodalia-window` rev `1f805378d454dac48b5c214029d254055fdf961b` (that revision's workspace
   declares egui 0.36 and cannot be used unchanged with 0.37).
-- Build input: tracked `.cargo/config.toml` sets `CRAFT_FONTS_DIR=../craft-fonts` (relative,
+- Build input: tracked `.cargo/config.toml` sets `NODALIA_FONTS_DIR=../nodalia-fonts` (relative,
   optional). It is locally skip-worktree, so it did not appear in `git status`; it is not a
-  path patch and does not change dependency resolution. CI intentionally builds without craft-fonts.
+  path patch and does not change dependency resolution. CI intentionally builds without nodalia-fonts.
 - There are no `vendor/` directories, source patches or `[patch]` sections in this repository.
   `plugins/` is a separate workspace and does not use egui.
 
 ### 1.2 Target revisions and publication boundary
 
 The production pins are **not** the candidate fork SHAs. They are the final reviewed
-`storytold/egui`, `storytold/winit` and `storytold/craft-libs` immutable revisions produced by the
+`storytold/egui`, `storytold/winit` and `getnodalia/foundation (nodalia/libs)` immutable revisions produced by the
 suite's reviewed patch series, published with fresh human approval. Those SHAs do not exist yet at
 this planning revision. Do not publish or implement a manifest that names a candidate or a branch.
 
@@ -66,19 +66,19 @@ this planning revision. Do not publish or implement a manifest that names a cand
 | aiongg winit candidate | `aiongg/winit` `craft/0.30.13-lang` `8b35388bd719e8cc86a95971ba0bc026c9a8f058` — comparison input only |
 | Final storytold egui | `STORYTOLD_EGUI_FINAL_REV` — unknown until the reviewed E1–E21 + E21b/P7b series is approved and published |
 | Final storytold winit | `STORYTOLD_WINIT_FINAL_REV` — unknown until W1–W27 + W15P are approved and published |
-| craft-libs merged baseline | `3832c47ef68a0e6214f2c1e85f3526b6adcb686e` (PR #199 merged: “craft-ui: update egui to 0.37”) |
-| craft-libs PR #199 head / audit merge | `b68de8c5f4f1c060904d211a7b1320aa0f7bce78` / `ec8840af8c5fda695cf195cdd05e5ae078415c07` — **unsafe stale history**; do not merge or reuse either tree |
-| Local craft-libs integration | `3832c47` plus the reviewed capture-completion and text-alignment helpers in the local `craft-libs-implementation` worktree; no published commit yet |
-| Final craft-libs | `STORYTOLD_CRAFT_LIBS_FINAL_REV` — unknown until the reviewed helper stage is approved and published atop `3832c47` |
+| nodalia-libs merged baseline | `3832c47ef68a0e6214f2c1e85f3526b6adcb686e` (PR #199 merged: “nodalia-ui: update egui to 0.37”) |
+| nodalia-libs PR #199 head / audit merge | `b68de8c5f4f1c060904d211a7b1320aa0f7bce78` / `ec8840af8c5fda695cf195cdd05e5ae078415c07` — **unsafe stale history**; do not merge or reuse either tree |
+| Local nodalia-libs integration | `3832c47` plus the reviewed capture-completion and text-alignment helpers in the local `nodalia-libs-implementation` worktree; no published commit yet |
+| Final nodalia-libs | `STORYTOLD_CRAFT_LIBS_FINAL_REV` — unknown until the reviewed helper stage is approved and published atop `3832c47` |
 
-Verified source facts for the craft-libs anchor: the historical port source `8614e4a` contains no
+Verified source facts for the nodalia-libs anchor: the historical port source `8614e4a` contains no
 `crates/window/Cargo.toml` and no `crates/platform`; `b68de8c` is a stale tree that omits current
-`craft-platform` and reverts security, settings, docking and printer fixes. The merged
+`nodalia-platform` and reverts security, settings, docking and printer fixes. The merged
 `3832c47` tree contains `crates/window`, `crates/platform` and the 0.37 workspace. The local
 implementation must stay on that merged base and must not reuse either PR head as its tree.
 
 Language work: `storytold/craft-libs#198` is an issue/proposal, not a PR or a merged dependency.
-Trama consumes the final fork revisions; it does not copy language helpers from `craft-ui`.
+Trama consumes the final fork revisions; it does not copy language helpers from `nodalia-ui`.
 
 ### 1.3 Evidence consulted (historical, not fresh validation)
 
@@ -126,10 +126,10 @@ No build, test, benchmark, browser run or GUI check was performed for this plan.
    index adapter for Trama's custom editor. Never pass `None` placeholders as the completed port.
 8. Keep logical text at shaping, clipboard, accessibility, save and IME boundaries. Do not feed
    display-bidi (visually reordered) strings into egui shaping, clipboard or IME. Trama does not
-   use `craft-ui`'s `DockArea`; if it later adopts it, use the explicit opt-in direction policy with
+   use `nodalia-ui`'s `DockArea`; if it later adopts it, use the explicit opt-in direction policy with
    unchanged saved physical splits and logical tab order.
 9. Use pinned licensed font fixtures from the egui plan's section 10.6. Keep Trama's central
-   craft-fonts policy, do not copy font binaries into the repository, and do not claim color-emoji
+   nodalia-fonts policy, do not copy font binaries into the repository, and do not claim color-emoji
    coverage while `epaint/color_fonts` is disabled.
 10. Stage reviewable PRs with a dependency DAG and rollback. Every build/test uses
     `maintenance/task.py run/status/finish`; no direct cargo test/build is acceptance.
@@ -140,7 +140,7 @@ No build, test, benchmark, browser run or GUI check was performed for this plan.
 
 | Target | Manifest / source | Current features / role | 0.37 action |
 |---|---|---|---|
-| Desktop app | `apps/trama/Cargo.toml`, `apps/trama/src/main.rs` | eframe `default_fonts`, `wgpu`, `accesskit`, `wayland`, `x11`; wgpu renderer; Windows `windows 0.62`; macOS `fmv-macos-events`; Linux `winit` `wayland-csd-adwaita-notitle` | Keep feature shape; add final eframe/egui revisions; enable `clipboard` explicitly; keep `system_fonts` off initially; repoint `craft-window` to the final craft-libs revision |
+| Desktop app | `apps/trama/Cargo.toml`, `apps/trama/src/main.rs` | eframe `default_fonts`, `wgpu`, `accesskit`, `wayland`, `x11`; wgpu renderer; Windows `windows 0.62`; macOS `fmv-macos-events`; Linux `winit` `wayland-csd-adwaita-notitle` | Keep feature shape; add final eframe/egui revisions; enable `clipboard` explicitly; keep `system_fonts` off initially; repoint `nodalia-window` to the final nodalia-libs revision |
 | Browser app | `apps/trama-web/Cargo.toml`, `src/main.rs`, `src/web.rs` | wasm32 eframe `default_fonts`, `wgpu`, `accesskit`; `WebRunner`; WebGPU/WebGL2 | Update eframe/egui; keep `web_screen_reader` disabled as at baseline; `web_file` is an egui feature used by eframe for wasm, not a Trama feature to “verify” independently |
 | UI crate | `crates/ui-egui/Cargo.toml`, `src/lib.rs` | egui/egui_extras 0.36, no eframe; about 1,478 egui references; no kittest dev-dependency | Update egui/egui_extras; add `default_fonts` and `egui_kittest` 0.37 for strict a11y tests; add the local capture adapter; mechanical API migration |
 | Text/render | `crates/text`, `crates/render` | no egui dependency; own harfrust/skrifa/tiny-skia | No code change expected; verify duplicate harfrust/skrifa versions and UI/document metrics |
@@ -257,13 +257,13 @@ remove its patch row and record the `cargo tree` evidence.
 `egui_extras` must be patched because `crates/ui-egui/src/dialogs/credits.rs` uses
 `TableBuilder`/`TableRow`/`TableBody`; a 0.36 `egui_extras` would pull a second egui 0.36.
 
-`craft-window` is a git dependency, not a path patch. Pin it to the final craft-libs revision whose
+`nodalia-window` is a git dependency, not a path patch. Pin it to the final nodalia-libs revision whose
 workspace requires egui 0.37. Do not keep `1f805378` (egui 0.36) with a 0.37 egui patch: Cargo
-cannot apply a 0.37 patch to a `^0.36` requirement. `craft-docpath` is independent of egui; prefer
-the same final craft-libs revision for both crates after confirming its source hash, or keep its
+cannot apply a 0.37 patch to a `^0.36` requirement. `nodalia-docpath` is independent of egui; prefer
+the same final nodalia-libs revision for both crates after confirming its source hash, or keep its
 existing rev if the final commit changes unrelated behavior this task has not reviewed.
 
-Trama currently has no `craft-ui` dependency. Keep its capture adapter local in
+Trama currently has no `nodalia-ui` dependency. Keep its capture adapter local in
 `crates/ui-egui/src/control.rs`, following the CL-2/CL-2F ownership, cancellation, byte-limit
 and viewport-wakeup contract. Eleven existing creative consumers adopt the shared helper;
 Lámina, Trama and Nodalia Native use local adapters. Reuse the reviewed conformance cases
@@ -298,9 +298,9 @@ Acceptance:
 
 - Exactly one source/version for `egui`, `epaint`, `emath`, `ecolor`, `eframe`, `egui-wgpu`,
   `egui-winit`, `egui_extras` and `winit` (and `egui_glow` if a glow build is enabled).
-- `Cargo.lock` records the final storytold egui/winit/craft-libs revisions; no aiongg candidate SHA
+- `Cargo.lock` records the final storytold egui/winit/nodalia-libs revisions; no aiongg candidate SHA
   and no moving branch remains.
-- No registry 0.36 egui-family package remains; no duplicate `craft-window`.
+- No registry 0.36 egui-family package remains; no duplicate `nodalia-window`.
 - `wgpu` resolves to one version. Current Trama lock is `30.0.1` while the candidate lock says
   `30.0.0`; both satisfy `30.0`, but the final lock must be inspected for wasm-bindgen and backend
   compatibility. Do not “fix” this by allowing two wgpu versions.
@@ -448,7 +448,7 @@ are gone. The callback receives `Arc<ColorImage>` and does not request a repaint
 
 1. Implement the suite capture contract locally in `crates/ui-egui/src/control.rs`, using the
    reviewed CL-2/CL-2F semantics and conformance cases. Trama, Lámina and Nodalia Native
-   have local adapters; eleven existing craft-ui consumers share its helper. The local slot owns one result per admitted request and
+   have local adapters; eleven existing nodalia-ui consumers share its helper. The local slot owns one result per admitted request and
    exposes a weak handle to the callback; the callback holds only a `Weak` reference, never a strong
    `Context`/app/queue, so a late capture cannot retain the app through shutdown.
 2. On request, Trama records its own `ShotRequest { id, path: Option<String>, reply, deadline, serial, viewport,
@@ -697,7 +697,7 @@ first-pass guard is used only for `ui_setup`; it is not a command or queue guard
   This is optional only if the final pinned fork lacks E17; do not use a nonexistent upstream API.
 - `Ui::label_inputs_by` / `Response::accessible_name` are available in 0.37; use them only where
   Trama currently has unnamed native widgets. Custom `a11y` node builders remain.
-- Shared `DockArea` direction: Trama keeps its own panels and does not adopt `craft-ui`'s
+- Shared `DockArea` direction: Trama keeps its own panels and does not adopt `nodalia-ui`'s
   `DockArea`. If a future PR does, it must pass an explicit opt-in `DockDirection`, preserve the
   serialized physical splits/rectangles and logical tab order, and use the same rectangles for
   painting/hit/drag/keyboard with bottom-trailing resize grips. Trama must not reverse saved
@@ -711,8 +711,8 @@ first-pass guard is used only for `ui_setup`; it is not a command or queue guard
   dev dependency does not transitively enable fonts: only kittest's own dev-dependencies do.
   Explicitly enable `default_fonts` and `monochrome_emoji_fonts` on Trama's egui test
   dependency for these fixtures. Audit UI-library/test/native/web graphs independently.
-- Keep the optional `CRAFT_FONTS_DIR` build input. Record whether each baseline/candidate run had
-  craft-fonts and its exact ref; a no-craft-fonts run is valid for CI but not for a font-metrics
+- Keep the optional `NODALIA_FONTS_DIR` build input. Record whether each baseline/candidate run had
+  nodalia-fonts and its exact ref; a no-craft-fonts run is valid for CI but not for a font-metrics
   comparison.
 - Keep `script_fonts`, `cjk_needed`, `bidi::script_fallbacks`, `key_symbol_fallbacks` and the
   “English users load none” behavior. Tests: an English first frame installs no extra script face;
@@ -728,7 +728,7 @@ first-pass guard is used only for `ui_setup`; it is not a command or queue guard
   each difference; do not auto-update expected widths. The document renderer still uses Trama's
   own harfrust/skrifa stack, so UI and canvas text may legitimately differ.
 - **Pinned licensed fixtures (egui plan section 10.6):** fetch
-  `craft-fonts` at `2481a8a324b986a45954e90045ed1f8f2efaaf3c` as a test resource and keep the
+  `nodalia-fonts` at `2481a8a324b986a45954e90045ed1f8f2efaaf3c` as a test resource and keep the
   repository's central-font policy (no font binaries committed here). Required fixture files,
   hashes and licences:
   - Arabic `fonts/noto-sans-arabic/NotoSansArabic.ttf`, SHA256
@@ -763,14 +763,14 @@ first-pass guard is used only for `ui_setup`; it is not a command or queue guard
   remove the use rather than expecting a compile error, and test that panel content does not paint
   over the canvas, popups/menus and drag ghosts stay in their intended layers, and hit rects match
   what is visible.
-- Docking: Trama does not use `craft-ui` docking; do not add it as part of this migration. The
+- Docking: Trama does not use `nodalia-ui` docking; do not add it as part of this migration. The
   capture completion slot stays local. If a future PR adopts `DockArea`,
   follow the explicit direction policy in 6.5.
 - Child windows: keep `windows.rs` deferred viewports and pane swapping. 0.37 adds
   `RequestPaintWhileHidden`; use only for reconciliation when a child must appear/update/disappear
   while the root is hidden. Keep `embed_viewports` and the screen-reader tab fallback until
   per-viewport AccessKit is proven.
-- Title bars: `craft-window` decides `TitleBar::Native/Inset/Custom`; `window_chrome` maps to
+- Title bars: `nodalia-window` decides `TitleBar::Native/Inset/Custom`; `window_chrome` maps to
   `ViewportBuilder`. 0.37 keeps these builder methods. macOS traffic-light positioning is not
   changed without a Mac; `Frame::set_traffic_lights_position` is available if later measured.
 - GPU: `apps/trama/src/graphics.rs::backends/configure` still mutates
@@ -816,7 +816,7 @@ After review and evidence preservation, inspect `task.py finish JOB_ID`, then ap
 `--` may be `cargo fmt --all -- --check`, clippy, workspace tests, `xtask layers/assets/wasm`, or a
 targeted suite, but never a direct host command or a nested build driver. `cargo xtask ci` is
 equivalent for the repository; run individual payloads when evidence must identify a failing gate.
-`cargo test --workspace` builds without craft-fonts in CI; a with-craft-fonts configuration is a
+`cargo test --workspace` builds without nodalia-fonts in CI; a with-craft-fonts configuration is a
 separate job and records the exact font ref/hash.
 
 Targeted suites, each its own job: `trama-ui-egui`, `trama-engine`, `trama --bin trama`,
@@ -893,7 +893,7 @@ capture queue must each fail the targeted test; remove the deliberate defect aft
 
 Before modifying production code, from clean baseline `80f9163` with the old manifest/lock, record:
 
-- exact `Cargo.lock` hash, `rustc -Vv`, `cargo -V`, target triple, features, `CRAFT_FONTS_DIR`
+- exact `Cargo.lock` hash, `rustc -Vv`, `cargo -V`, target triple, features, `NODALIA_FONTS_DIR`
   presence/ref, `TRAMA_EMBED_CJK`;
 - OS version, CPU, RAM, GPU/adapter/backend/driver, DPI/scale, window size, renderer (software vs
   real GPU), release profile, `WGPU_BACKEND`;
@@ -923,7 +923,7 @@ Candidate runs use paired A/B/A/B ordering; do not compare compile duration with
    x64, 20 fresh processes, with `WGPU_BACKEND=dx12`; compare 0.36, stock 0.37 and final fork.
    Keep a software/renderer control row and identify the actual adapter/driver.
 5. **#8512 font startup:** measure system-font discovery and first missing-glyph lookup separately,
-   20 fresh processes, with and without `CRAFT_FONTS_DIR`/`system_fonts`; record coverage and
+   20 fresh processes, with and without `NODALIA_FONTS_DIR`/`system_fonts`; record coverage and
    provider settings. Do not enable fontique by default as a performance shortcut.
 6. Native startup: process spawn to first successful `ui.inspect`/first painted frame; 20 fresh
    processes; separate shader/renderer creation logs.
@@ -985,9 +985,9 @@ changes and one paste/undo per action on supported compositors. Preserve the exi
 read-timeout behavior as a separately measured baseline; P2b's nonblocking guarantee is for the
 egui integration path, not an unimplemented rewrite of all Services clipboard calls.
 
-The existing craft-window pin 1f805378 is branch-derived; verify and retain exact fetchability
+The existing nodalia-window pin 1f805378 is branch-derived; verify and retain exact fetchability
 and source/executable evidence for baseline/rollback. Unmerged provenance alone does not prove
-the commit is unreachable. F2 still switches to the final reviewed craft-libs revision.
+the commit is unreachable. F2 still switches to the final reviewed nodalia-libs revision.
 
 ## 9. Reviewable PR stages and dependency DAG
 
@@ -995,8 +995,8 @@ the commit is unreachable. F2 still switches to the final reviewed craft-libs re
 External prerequisites (not Trama PRs)
   X0: reviewed + approved storytold/egui final revision (complete P8: E1-E21 + P2b/P7/P7b/P7c)
   X1: reviewed + approved storytold/winit final revision (W1-W27 + W15P)
-  X2: reviewed + approved storytold/craft-libs final revision
-      (merged PR #199 base 3832c47; reviewed capture/text helpers; craft-window/platform/quit;
+  X2: reviewed + approved getnodalia/foundation (nodalia/libs) final revision
+      (merged PR #199 base 3832c47; reviewed capture/text helpers; nodalia-window/platform/quit;
        reviewed CL-2/CL-2F capture contract for the local adapter; no b68de8c/ec8840a tree)
   X3: optional E22-E25 only after measurements, with provenance and fresh review
 
@@ -1043,7 +1043,7 @@ agent/model/tool signature; contributor credit remains username-only (`@skylarta
   keep a 0.36/0.37 feature flag for these APIs.
 - Optional F3 patches roll back by restoring the previous final fork revision and re-locking; do not
   rewrite history or force-push.
-- If only `craft-window`/`craft-libs` is at fault, repoint to the last merged public revision and
+- If only `nodalia-window`/`nodalia-libs` is at fault, repoint to the last merged public revision and
   relock; do not copy the crate into the repository or use a machine-local path.
 - Keep the old coherent dependency set available in git history; do not delete retained evidence or
   unreviewed source work. Rehearse restoring the previous executable/lock and reopening a saved
@@ -1055,7 +1055,7 @@ agent/model/tool signature; contributor credit remains username-only (`@skylarta
    `STORYTOLD_CRAFT_LIBS_FINAL_REV` do not exist until the reviewed series is approved and published.
    F2 is implemented locally against the review worktrees, but it cannot be published or presented as
    an immutable-pin change before those revisions exist. Candidate aiongg SHAs are comparison inputs.
-2. **craft-libs #199:** PR #199 merged as `3832c47ef68a0e6214f2c1e85f3526b6adcb686e`. That merged
+2. **nodalia-libs #199:** PR #199 merged as `3832c47ef68a0e6214f2c1e85f3526b6adcb686e`. That merged
    base is the anchor; the earlier `b68de8c` head and `ec8840a` audit merge are stale history and
    neither tree is usable. The local worktree adds only the reviewed capture/text helpers on top of
    `3832c47`; no published revision exists yet.
@@ -1079,14 +1079,14 @@ agent/model/tool signature; contributor credit remains username-only (`@skylarta
    custom selection actions; if affected, fix/test before merge.
 9. **Hidden deferred children (#8748):** closed and unmerged. Verify with
    `RequestPaintWhileHidden`; otherwise adopt a reviewed fork fix or record the unresolved behavior.
-10. **Font input:** baseline and candidate must use the same `CRAFT_FONTS_DIR` ref. A
+10. **Font input:** baseline and candidate must use the same `NODALIA_FONTS_DIR` ref. A
     no-craft-fonts run is valid for CI but not for a font-metrics comparison. Color-emoji claims
     require the `epaint/color_fonts` feature job.
 11. **macOS/FreeBSD/real GPU:** no routine UI test evidence. The parent-visible i915 render node is
     unqualified, and this worker sandbox may hide `/dev/dri`; there is no inherited compositor or
     ambient display. Compile/packaging results are not runtime passes. Mark them unresolved until
     real evidence exists.
-12. **Lockfile resolution:** one egui family, one winit, one wgpu, one craft-window. If
+12. **Lockfile resolution:** one egui family, one winit, one wgpu, one nodalia-window. If
     Cargo chooses two versions, stop and fix the pins rather than accepting a duplicate.
 13. **AccessKit per-viewport:** the pinned 0.37 fork initializes the native AccessKit adapter only
     for the root viewport; creating a secondary viewport does not initialize an adapter. The
@@ -1125,7 +1125,7 @@ agent/model/tool signature; contributor credit remains username-only (`@skylarta
   interaction was performed. Historical compiler errors are not current acceptance.
 - Line numbers and symbol locations come from baseline `80f9163` and can move during implementation;
   anchors are given by file and symbol.
-- The final fork/craft-libs merge state is unknown until approved publication. Re-check the exact
+- The final fork/nodalia-libs merge state is unknown until approved publication. Re-check the exact
   immutable revisions and public reachability immediately before implementation and before every
   publication.
 - Upstream issue measurements (#8731, #8736, #8512) are reported by others, not reproduced here;
@@ -1154,9 +1154,9 @@ Primary sources consulted:
   gap identification.
 - `storytold/winit` final reviewed revision; candidate `8b35388b` W17-W27; published
   `ffae5198` W1-W15; W15P PRIMARY design.
-- `craft-libs` merged base `3832c47` (PR #199), historical API-port source `8614e4a`/`1764bca`,
-  and the reviewed `craft-ui` capture/CL-2F contract as the local adapter reference.
-- `craft-libs/docs/egui-037-suite-rollout.md`, `craft-libs/docs/egui-037-migration-plan.md`,
+- `nodalia-libs` merged base `3832c47` (PR #199), historical API-port source `8614e4a`/`1764bca`,
+  and the reviewed `nodalia-ui` capture/CL-2F contract as the local adapter reference.
+- `nodalia-libs/docs/egui-037-suite-rollout.md`, `nodalia-libs/docs/egui-037-migration-plan.md`,
   `egui/docs/egui-037-migration-plan.md` (including section 10.6 font fixtures).
 - `/home/codex/work/ssd2/task-evidence/egui037-migration-20261022/lifecycle-source-audit.md`,
   `ime-surrounding-gap.md`, `upstream-discussions.json`.
@@ -1197,14 +1197,14 @@ The migration preserves captured main `10702311f345393ee1d8868c3257679befcfa14d`
 (53 commits and 114 paths beyond the first integration). The final review commit records
 both the migration history and that upstream target as parents. The selected egui revision is
 `6d518fc799681571963842f95b55a6b68431b15a`, winit is
-`a517b3846ee8457d84ee4975110bfda6797c44dc`, and craft-window is
+`a517b3846ee8457d84ee4975110bfda6797c44dc`, and nodalia-window is
 `25da1314d443171b4adeaad2cd9454b273f35c6f`. Cargo.lock SHA-256 is
 `7ba8af4de70ba657a652266ddee2920bfc501c851520a49ac60c8044a5c23cc1`.
 The normal UI enables `default_fonts` and `monochrome_emoji_fonts`.
 
 Managed full CI `egui037-trama-final-ci-20261024-2312` passed with bundled fonts.
 Managed full CI `egui037-trama-system-font-ci-20261025-0402` also passed without
-bundled craft-fonts, using a licensed DejaVu Sans system-font fixture via XDG_DATA_HOME.
+bundled nodalia-fonts, using a licensed DejaVu Sans system-font fixture via XDG_DATA_HOME.
 The final qualification run `egui037-trama-final-qualification-ci-20261025-0453`
 repeated that configuration successfully after the documentation reconciliation.
 Both runs completed formatting, strict lint, workspace tests, doctests, translations,

@@ -328,7 +328,7 @@ fn vertical_alignment_in_fixed_box() {
     assert_eq!(layout_node(&n).unwrap().1, 0.0);
 }
 
-/// A variable font with a usable weight axis, if one is installed (craft-fonts or the system).
+/// A variable font with a usable weight axis, if one is installed (nodalia-fonts or the system).
 fn variable_face() -> Option<std::sync::Arc<Face>> {
     if !have_fonts() {
         return None;

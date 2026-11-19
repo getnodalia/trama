@@ -28,12 +28,12 @@ pub struct Desktop {
 }
 
 /// The settings folder's name in the platform folder, as it always was (the suite keeps existing
-/// folder names), and craft-settings' app id: `TRAMA_CONFIG_DIR` names another folder.
+/// folder names), and nodalia-settings' app id: `TRAMA_CONFIG_DIR` names another folder.
 const APP_ID: &str = "Trama";
 
 /// Where the preferences, recovery copies and installed plugins live ([`settings_dir`]).
 pub fn config_dir() -> Option<PathBuf> {
-    settings_dir(&craft_settings::Probe { platform_config_dir: platform_dir(), ..Default::default() })
+    settings_dir(&nodalia_settings::Probe { platform_config_dir: platform_dir(), ..Default::default() })
 }
 
 /// The platform's config folder, read from the environment as before: `%APPDATA%` on Windows,
@@ -48,15 +48,15 @@ fn platform_dir() -> Option<PathBuf> {
     base
 }
 
-/// The settings folder by the suite's rules (craft-settings), from what `probe` sees:
+/// The settings folder by the suite's rules (nodalia-settings), from what `probe` sees:
 /// `TRAMA_CONFIG_DIR` (set but empty: none, nothing read or written); a `portable` file next
 /// to the executable (next to the `.app` on macOS), which puts them in `config/` beside it; else
 /// `Trama` in the platform folder, where they always were. A portable folder without
 /// preferences yet starts with a copy of the platform folder's, so an existing copy that becomes
 /// portable keeps its settings; the original stays for an installed app. No platform folder: none.
-pub(crate) fn settings_dir(probe: &craft_settings::Probe) -> Option<PathBuf> {
-    use craft_settings::{Location, Portable, Rule};
-    let resolved = craft_settings::paths::resolve(APP_ID, &Portable::DEFAULT, &Location::Auto, probe);
+pub(crate) fn settings_dir(probe: &nodalia_settings::Probe) -> Option<PathBuf> {
+    use nodalia_settings::{Location, Portable, Rule};
+    let resolved = nodalia_settings::paths::resolve(APP_ID, &Portable::DEFAULT, &Location::Auto, probe);
     match (&resolved.rule, &resolved.dir, &probe.platform_config_dir) {
         (Rule::Portable, Some(dir), Some(platform)) => seed(dir, &platform.join(APP_ID)),
         // The current directory instead: settings would follow wherever the app was started.

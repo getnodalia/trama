@@ -41,7 +41,7 @@ use serde_json::json;
 use sha2::Digest;
 use trama_doc::{Document, ImageData};
 
-pub use craft_figcraft_format::{
+pub use nodalia_trama_format::{
     BRANCH_INDEX, BranchEntry as NativeBranchEntry, BranchIndex as NativeBranchIndex, BranchState as NativeBranchState, DOCUMENT_RATIO, FORMAT,
     FormatError, IMAGE_BUDGET, ImageBudget, MAX_BRANCHES, MAX_DOCUMENT, MAX_MEMBER, MAX_UNPACKED, MAX_VERSION_BYTES, MAX_VERSION_DESCRIPTION,
     MAX_VERSION_INDEX, MAX_VERSION_NAME, MAX_VERSIONS, ReadBudget, VERSION, VersionEntry as NativeVersionEntry, VersionIndex as NativeVersionIndex,
@@ -199,10 +199,10 @@ pub(crate) fn image_data(data: Vec<u8>) -> ImageData {
 /// The image hashes a `document.json` lists in its `imageIndex` (`None` without one).
 type ImageIndex = Option<BTreeSet<String>>;
 
-fn native_image_index(doc: &Document) -> Vec<craft_figcraft_format::ImageIndexEntry> {
+fn native_image_index(doc: &Document) -> Vec<nodalia_trama_format::ImageIndexEntry> {
     doc.images
         .iter()
-        .map(|(hash, image)| craft_figcraft_format::ImageIndexEntry { hash: hash.clone(), width: image.width, height: image.height })
+        .map(|(hash, image)| nodalia_trama_format::ImageIndexEntry { hash: hash.clone(), width: image.width, height: image.height })
         .collect()
 }
 
@@ -388,7 +388,7 @@ impl<S: serde::ser::SerializeStructVariant> serde::ser::SerializeStructVariant f
 pub fn to_json(doc: &Document) -> Result<Value, FormatError> {
     {
         let mut bytes = Vec::new();
-        craft_figcraft_format::write_document_json(&FiniteValue(doc), &native_image_index(doc), &mut bytes).map_err(io_err)?;
+        nodalia_trama_format::write_document_json(&FiniteValue(doc), &native_image_index(doc), &mut bytes).map_err(io_err)?;
         serde_json::from_slice(&bytes).map_err(io_err)
     }
 }
@@ -396,7 +396,7 @@ pub fn to_json(doc: &Document) -> Result<Value, FormatError> {
 /// Write the document (without images) as `document.json` content to `w`.
 /// NaN and infinite numbers are written as `0`.
 pub fn write_json(doc: &Document, w: impl Write) -> Result<(), FormatError> {
-    craft_figcraft_format::write_document_json(&FiniteValue(doc), &native_image_index(doc), w).map_err(io_err)
+    nodalia_trama_format::write_document_json(&FiniteValue(doc), &native_image_index(doc), w).map_err(io_err)
 }
 
 /// Parse `document.json` content.
@@ -408,9 +408,9 @@ pub fn from_json(text: &str) -> Result<(Document, Vec<String>), FormatError> {
 /// (a newer file is refused before its document is read), then the document is deserialized
 /// straight from the text.
 fn parse_json(text: &str) -> Result<(Document, Vec<String>, ImageIndex), FormatError> {
-    let (mut doc, header) = craft_figcraft_format::read_document_json::<Document>(text).map_err(|e| match e {
-        craft_figcraft_format::ReadDocumentError::Json(error) => FormatError::Corrupt(error.to_string()),
-        craft_figcraft_format::ReadDocumentError::NewerVersion(error) => FormatError::Newer(error.0),
+    let (mut doc, header) = nodalia_trama_format::read_document_json::<Document>(text).map_err(|e| match e {
+        nodalia_trama_format::ReadDocumentError::Json(error) => FormatError::Corrupt(error.to_string()),
+        nodalia_trama_format::ReadDocumentError::NewerVersion(error) => FormatError::Newer(error.0),
     })?;
     let images = header.images.map(|hashes| hashes.into_iter().collect());
     let issues = doc.validate();
@@ -432,9 +432,9 @@ pub(crate) fn json_options() -> zip::write::SimpleFileOptions {
 
 /// Add one member to the native archive.
 pub(crate) fn put(
-    z: &mut craft_figcraft_format::ArchiveWriter,
+    z: &mut nodalia_trama_format::ArchiveWriter,
     name: &str,
-    compression: craft_figcraft_format::Compression,
+    compression: nodalia_trama_format::Compression,
     bytes: &[u8],
 ) -> Result<(), FormatError> {
     z.add(name, bytes, compression).map_err(io_err)
@@ -443,16 +443,16 @@ pub(crate) fn put(
 /// `files` (name, bytes; a `/` in a name makes a folder) as one zip archive: several exports
 /// delivered as a single download (#969).
 pub fn zip_files<'a>(files: impl IntoIterator<Item = (&'a str, &'a [u8])>) -> Result<Vec<u8>, FormatError> {
-    craft_figcraft_format::write_archive(files.into_iter().map(|(name, bytes)| craft_figcraft_format::Member {
+    nodalia_trama_format::write_archive(files.into_iter().map(|(name, bytes)| nodalia_trama_format::Member {
         name,
         bytes,
-        compression: craft_figcraft_format::Compression::Deflated,
+        compression: nodalia_trama_format::Compression::Deflated,
     }))
     .map_err(io_err)
 }
 
 /// Add `doc` as a `document.json`-style member, serialized straight into the compressor.
-fn put_json(z: &mut craft_figcraft_format::ArchiveWriter, name: &str, doc: &Document) -> Result<(), FormatError> {
+fn put_json(z: &mut nodalia_trama_format::ArchiveWriter, name: &str, doc: &Document) -> Result<(), FormatError> {
     z.add_document_json(name, &FiniteValue(doc), &native_image_index(doc)).map_err(io_err)
 }
 
@@ -473,8 +473,8 @@ pub fn save_bytes_with_history(
     versions: &[Version],
     branches: &[Branch],
 ) -> Result<Vec<u8>, FormatError> {
-    let mut z = craft_figcraft_format::ArchiveWriter::new();
-    let stored = craft_figcraft_format::Compression::Stored;
+    let mut z = nodalia_trama_format::ArchiveWriter::new();
+    let stored = nodalia_trama_format::Compression::Stored;
     put_json(&mut z, "document.json", doc)?;
     // Every image once, whether the document, a version or a branch uses it.
     let mut written = BTreeSet::new();
@@ -516,8 +516,8 @@ pub fn save_bytes_with_history(
         put(
             &mut z,
             BRANCH_INDEX,
-            craft_figcraft_format::Compression::Level(3),
-            &craft_figcraft_format::write_branch_index(&NativeBranchIndex { branches: index }).map_err(io_err)?,
+            nodalia_trama_format::Compression::Level(3),
+            &nodalia_trama_format::write_branch_index(&NativeBranchIndex { branches: index }).map_err(io_err)?,
         )?;
     }
     if let Some(lib) = &doc.published {
@@ -528,7 +528,7 @@ pub fn save_bytes_with_history(
 
 /// Write version history `versions` (oldest first) under `dir`: `<dir>/index.json` and one
 /// `<dir>/<id>.json` snapshot per version. Nothing when there are none.
-fn put_versions(z: &mut craft_figcraft_format::ArchiveWriter, dir: &str, versions: &[Version]) -> Result<(), FormatError> {
+fn put_versions(z: &mut nodalia_trama_format::ArchiveWriter, dir: &str, versions: &[Version]) -> Result<(), FormatError> {
     if versions.is_empty() {
         return Ok(());
     }
@@ -541,7 +541,7 @@ fn put_versions(z: &mut craft_figcraft_format::ArchiveWriter, dir: &str, version
         let name = format!("{dir}/{}.json", v.id);
         match &v.snapshot {
             Snapshot::Doc(d) => put_json(z, &name, d)?,
-            Snapshot::Stored { json, .. } => put(z, &name, craft_figcraft_format::Compression::Level(3), json)?,
+            Snapshot::Stored { json, .. } => put(z, &name, nodalia_trama_format::Compression::Level(3), json)?,
         }
         index.push(NativeVersionEntry {
             id: v.id.clone(),
@@ -555,8 +555,8 @@ fn put_versions(z: &mut craft_figcraft_format::ArchiveWriter, dir: &str, version
     put(
         z,
         &format!("{dir}/index.json"),
-        craft_figcraft_format::Compression::Level(3),
-        &craft_figcraft_format::write_version_index(&NativeVersionIndex { versions: index }).map_err(io_err)?,
+        nodalia_trama_format::Compression::Level(3),
+        &nodalia_trama_format::write_version_index(&NativeVersionIndex { versions: index }).map_err(io_err)?,
     )?;
     Ok(())
 }
@@ -601,13 +601,12 @@ pub(crate) fn load_limited(bytes: &[u8], budget: ImageBudget, total: u64) -> Res
         let (doc, issues) = from_json(text)?;
         return Ok(Loaded { issues, ..Loaded::from(doc) });
     }
-    let mut z =
-        craft_figcraft_format::Archive::open(bytes, craft_figcraft_format::ArchiveLimits { max_entries: u64::MAX, max_total_bytes: u64::MAX })
-            .map_err(|e| FormatError::Corrupt(e.to_string()))?;
+    let mut z = nodalia_trama_format::Archive::open(bytes, nodalia_trama_format::ArchiveLimits { max_entries: u64::MAX, max_total_bytes: u64::MAX })
+        .map_err(|e| FormatError::Corrupt(e.to_string()))?;
     load_archive(&mut z, budget, total, bytes.len() as u64)
 }
 
-fn load_archive(z: &mut impl craft_figcraft_format::NativeArchive, budget: ImageBudget, total: u64, archive_len: u64) -> Result<Loaded, FormatError> {
+fn load_archive(z: &mut impl nodalia_trama_format::NativeArchive, budget: ImageBudget, total: u64, archive_len: u64) -> Result<Loaded, FormatError> {
     let packed = z.compressed_size("document.json").unwrap_or(0);
     let limit = document_limit(packed, archive_len);
     let mut unpacked = Unpacked::new(total);
@@ -640,7 +639,7 @@ fn load_archive(z: &mut impl craft_figcraft_format::NativeArchive, budget: Image
 /// with why. The document's own images (`own`) are read first, so a file past the budget loses
 /// the images only its history uses before its own.
 fn read_images(
-    z: &mut impl craft_figcraft_format::NativeArchive,
+    z: &mut impl nodalia_trama_format::NativeArchive,
     own: Option<&BTreeSet<String>>,
     budget: ImageBudget,
     unpacked: &mut Unpacked,
@@ -739,7 +738,7 @@ fn report_lost_images(
 /// most `budget` bytes of snapshots. Damaged entries are skipped and reported in `issues`; nothing
 /// here fails the load.
 fn read_versions(
-    z: &mut impl craft_figcraft_format::NativeArchive,
+    z: &mut impl nodalia_trama_format::NativeArchive,
     dir: &str,
     images: &BTreeMap<String, ImageData>,
     issues: &mut Vec<String>,
@@ -752,7 +751,7 @@ fn read_versions(
     }
     let index = match unpacked
         .read(z, &index_name, MAX_VERSION_INDEX)
-        .and_then(|b| craft_figcraft_format::read_version_index(&b).map_err(|e| FormatError::Corrupt(e.to_string())))
+        .and_then(|b| nodalia_trama_format::read_version_index(&b).map_err(|e| FormatError::Corrupt(e.to_string())))
     {
         Ok(v) => v,
         Err(e) => {
@@ -795,7 +794,7 @@ fn read_versions(
 /// The branches of an archive (none when it has no index), parsed. Damaged entries are skipped and
 /// reported in `issues`; nothing here fails the load.
 fn read_branches(
-    z: &mut impl craft_figcraft_format::NativeArchive,
+    z: &mut impl nodalia_trama_format::NativeArchive,
     images: &BTreeMap<String, ImageData>,
     issues: &mut Vec<String>,
     unpacked: &mut Unpacked,
@@ -805,7 +804,7 @@ fn read_branches(
     }
     let index = match unpacked
         .read(z, BRANCH_INDEX, MAX_VERSION_INDEX)
-        .and_then(|b| craft_figcraft_format::read_branch_index(&b).map_err(|e| FormatError::Corrupt(e.to_string())))
+        .and_then(|b| nodalia_trama_format::read_branch_index(&b).map_err(|e| FormatError::Corrupt(e.to_string())))
     {
         Ok(v) => v,
         Err(e) => {
@@ -933,7 +932,7 @@ pub fn load_file(path: &std::path::Path) -> Result<(Document, Vec<String>), Form
         file.read_to_end(&mut bytes).map_err(|e| FormatError::Io(format!("{}: {e}", path.display())))?;
         return load_bytes(&bytes);
     }
-    let mut archive = craft_figcraft_format::SeekArchive::open(file, u64::MAX).map_err(|e| FormatError::Corrupt(e.to_string()))?;
+    let mut archive = nodalia_trama_format::SeekArchive::open(file, u64::MAX).map_err(|e| FormatError::Corrupt(e.to_string()))?;
     let loaded = load_archive(&mut archive, IMAGE_BUDGET, MAX_UNPACKED, archive_len)?;
     Ok((loaded.doc, loaded.issues))
 }
