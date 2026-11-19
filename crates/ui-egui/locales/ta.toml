@@ -2032,7 +2032,7 @@ status = "draft — needs native review"
 "Small" = "சிறியது"
 "Source code and issues on GitHub" = "GitHub-இல் மூலக் குறியீடும் சிக்கல்களும்"
 "The canvas previews colors in sRGB; PNG, JPG and WebP exports that use the file's profile are tagged Display P3." = "கேன்வாஸ் வண்ணங்களை sRGB-இல் முன்னோட்டமிடுகிறது; கோப்பின் சுயவிவரத்தைப் பயன்படுத்தும் PNG, JPG, WebP ஏற்றுமதிகள் Display P3 எனக் குறியிடப்படும்."
-"Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama ஆரம்பத்தில் FigCraft ஆக இருந்தது; ArtCraft Team மற்றும் FigCraft பங்களிப்பாளர்கள் அதே உரிமங்களின் கீழ் உருவாக்கினர்."
+"Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama ஆரம்பத்தில் FigCraft ஆக இருந்தது; ArtCraft Team மற்றும் FigCraft பங்களிப்பாளர்கள் அதே உரிமங்களின் கீழ் உருவாக்கினர்." # rebrand: keep
 "shape with text layers import as frames with their text" = "உரை அடுக்குகளைக் கொண்ட வடிவங்கள் அவற்றின் உரையுடன் சட்டங்களாக இறக்குமதியாகும்"
 "sticky layers import as frames with their text" = "ஒட்டுக்குறிப்பு அடுக்குகள் அவற்றின் உரையுடன் சட்டங்களாக இறக்குமதியாகும்"
 
