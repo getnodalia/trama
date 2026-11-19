@@ -7,7 +7,7 @@ use std::io::{Read, Seek};
 use std::path::Path;
 
 /// Largest `thumbnail.png` read from an archive.
-pub const MAX_THUMBNAIL_BYTES: u64 = craft_figcraft_format::MAX_PREVIEW_THUMBNAIL_BYTES;
+pub const MAX_THUMBNAIL_BYTES: u64 = nodalia_trama_format::MAX_PREVIEW_THUMBNAIL_BYTES;
 /// Largest image file read as its own picture.
 pub const MAX_IMAGE_FILE_BYTES: u64 = 32 * 1024 * 1024;
 /// Widest or tallest picture decoded (pixels); a larger one gives none.
@@ -28,7 +28,7 @@ pub struct Thumbnail {
 /// The bytes of `thumbnail.png` in a zip archive (`.trama`, `.fig`); `None` when it isn't a zip,
 /// has no thumbnail, or the thumbnail is larger than [`MAX_THUMBNAIL_BYTES`].
 pub fn thumbnail_png<R: Read + Seek>(archive: R) -> Option<Vec<u8>> {
-    craft_figcraft_format::read_preview_thumbnail(archive).ok().flatten()
+    nodalia_trama_format::read_preview_thumbnail(archive).ok().flatten()
 }
 
 /// The bytes of `previews/preview.png` in a `.sketch` zip; `None` as [`thumbnail_png`] gives it.
@@ -146,8 +146,8 @@ pub fn file_preview(path: &Path, fit: u32) -> Preview {
 /// The [`Preview`] of a `.trama` or `.fig` archive: `thumbnail.png`, and the first page's colour
 /// from `document.json` (`.trama`) or `meta.json` (`.fig`).
 pub fn archive_preview<R: Read + Seek>(archive: R, fit: u32) -> Preview {
-    let Ok(mut z) = craft_figcraft_format::SeekArchive::open(archive, u64::MAX) else { return Preview::default() };
-    let native = craft_figcraft_format::read_preview_archive_from(&mut z);
+    let Ok(mut z) = nodalia_trama_format::SeekArchive::open(archive, u64::MAX) else { return Preview::default() };
+    let native = nodalia_trama_format::read_preview_archive_from(&mut z);
     let picture = native.thumbnail_png.and_then(|png| decode_thumbnail(&png, fit));
     let (page, kind) = if native.has_document {
         native.document.as_ref().map(trama_page).unwrap_or_default()
@@ -159,11 +159,11 @@ pub fn archive_preview<R: Read + Seek>(archive: R, fit: u32) -> Preview {
 }
 
 /// The first page's background in a `.trama` `document.json`, and the file's kind.
-fn trama_page(head: &craft_figcraft_format::PreviewDocument) -> (Option<[f32; 4]>, trama_doc::FileKind) {
+fn trama_page(head: &nodalia_trama_format::PreviewDocument) -> (Option<[f32; 4]>, trama_doc::FileKind) {
     let page = head.pages.first().and_then(|first| head.nodes.get(&first.to_string())).and_then(|n| n.background.as_ref()).and_then(rgba);
     let kind = match head.kind {
-        craft_figcraft_format::PreviewKind::Design => trama_doc::FileKind::Design,
-        craft_figcraft_format::PreviewKind::Board => trama_doc::FileKind::Board,
+        nodalia_trama_format::PreviewKind::Design => trama_doc::FileKind::Design,
+        nodalia_trama_format::PreviewKind::Board => trama_doc::FileKind::Board,
     };
     (page, kind)
 }

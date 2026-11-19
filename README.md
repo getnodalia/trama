@@ -92,7 +92,7 @@ the window colour, bold icons, a hamburger menu, and the suite's own window cont
   <tr>
     <td width="50%" valign="top">
       <h3>Type that sets beautifully</h3>
-      Text edited in place on the canvas (with inline IME composition), mixed styles within a paragraph, auto width and auto height, line height, letter and paragraph spacing, decoration, case, lists, OpenType features, variable font axes and text styles, right-to-left and mixed-direction text (Arabic, Hebrew) with the Unicode bidi algorithm, shaped with HarfRust and the open fonts from craft-fonts plus your system fonts.
+      Text edited in place on the canvas (with inline IME composition), mixed styles within a paragraph, auto width and auto height, line height, letter and paragraph spacing, decoration, case, lists, OpenType features, variable font axes and text styles, right-to-left and mixed-direction text (Arabic, Hebrew) with the Unicode bidi algorithm, shaped with HarfRust and the open fonts from nodalia-fonts plus your system fonts.
     </td>
     <td width="50%" valign="top">
       <h3>Prototype and hand off</h3>
@@ -212,12 +212,12 @@ cargo xtask ci                                                 # fmt, clippy, te
 ```
 
 Fonts for the UI and the Text tool are an optional build input from
-[getnodalia/foundation](https://github.com/getnodalia/foundation/tree/vendor/craft-fonts/main),
-cloned next to this repository (`../craft-fonts`, which `.cargo/config.toml` points at); without
+[getnodalia/foundation](https://github.com/getnodalia/foundation/tree/nodalia/fonts),
+cloned next to this repository (`../nodalia-fonts`, which `.cargo/config.toml` points at); without
 it Trama falls back to your system fonts.
 
 ```sh
-git clone --branch vendor/craft-fonts/main --single-branch https://github.com/getnodalia/foundation ../craft-fonts
+git clone --branch nodalia/fonts --single-branch https://github.com/getnodalia/foundation ../nodalia-fonts
 ```
 
 If you clone it after a first build, run `cargo clean -p trama-text` once so the next build

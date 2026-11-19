@@ -1,4 +1,4 @@
-//! `window.trama`: the page command API (`craft-web-api`, storytold/craft-libs#413) plus Trama's
+//! `window.trama`: the page command API (`nodalia-web-api`, storytold/craft-libs#413) plus Trama's
 //! own file functions.
 //!
 //! The crate installs `request`, `execute`, `commands`, `docInspect`, `uiInspect` and `screenshot`
@@ -31,8 +31,8 @@ use std::rc::Rc;
 use std::sync::mpsc::{Receiver, TryRecvError};
 
 use base64::Engine as _;
-use craft_web_api::methods::Methods;
-use craft_web_api::page::{PageApi, Request};
+use nodalia_web_api::methods::Methods;
+use nodalia_web_api::page::{PageApi, Request};
 use serde_json::{Value, json};
 use trama_ui_egui::{ControlReply, ControlRequest, RequestGate};
 use wasm_bindgen::JsCast;

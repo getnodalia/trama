@@ -62,17 +62,17 @@ pub const MAX_NODES: usize = 200_000;
 /// Deepest layer nesting followed.
 const MAX_DEPTH: usize = 256;
 /// The `.fig` mapping's private handoffs, read only by the `.fig` import ([`import_with_networks`]).
-pub(crate) use craft_fig::rest::{FIG_CAPPED_MAINS_FIELD, FIG_LIBRARY_CONTEXTS_FIELD, FIG_SOURCE_FIELD};
+pub(crate) use nodalia_fig::rest::{FIG_CAPPED_MAINS_FIELD, FIG_LIBRARY_CONTEXTS_FIELD, FIG_SOURCE_FIELD};
 /// Longest SVG path string read from one geometry entry.
 const MAX_PATH_BYTES: usize = 4 << 20;
 /// Most path elements in one vector.
 const MAX_PATH_ELEMENTS: usize = 200_000;
 #[cfg(test)]
-pub(crate) use craft_figma_rest::MAX_WARNINGS;
+pub(crate) use nodalia_figma_rest::MAX_WARNINGS;
 /// Distinct warnings in first-seen order, with repeat counts (at most 200). The
 /// import report reads the `(×n)` suffix off before it looks the note up in the catalogue, so a
 /// counted note is still translated (`ui-egui`'s `note_text`).
-pub(crate) use craft_figma_rest::Warnings;
+pub(crate) use nodalia_figma_rest::Warnings;
 /// Most shared style definitions read.
 const MAX_STYLES: usize = 10_000;
 /// Image key used for image fills without an `imageRef`.

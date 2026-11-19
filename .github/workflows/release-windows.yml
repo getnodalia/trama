@@ -44,8 +44,8 @@ jobs:
     outputs:
       version: ${{ steps.ver.outputs.version }}
     env:
-      CRAFT_FONTS_DIR: ${{ github.workspace }}\craft-fonts
-      CRAFT_FONTS_REQUIRED: "1"
+      NODALIA_FONTS_DIR: ${{ github.workspace }}\nodalia-fonts
+      NODALIA_FONTS_REQUIRED: "1"
       DIST: ${{ github.workspace }}\dist
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -75,12 +75,12 @@ jobs:
         run: |
           test -s "docs/release-notes/$TAG.md" || { echo "::error::docs/release-notes/$TAG.md is missing or empty"; exit 1; }
 
-      - name: Check out craft-fonts
+      - name: Check out nodalia-fonts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: getnodalia/foundation # craft-fonts, kept at vendor/craft-fonts/main
-          ref: 37827adc41fd165f9a9234ac40f94dbad353aa69
-          path: craft-fonts
+          repository: getnodalia/foundation # nodalia-fonts, kept at nodalia/fonts
+          ref: 88274003be6d70de78d6858cbbd6843e1c178b50
+          path: nodalia-fonts
           persist-credentials: false
 
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable

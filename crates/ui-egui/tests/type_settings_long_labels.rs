@@ -1,6 +1,6 @@
 //! #1029, through the whole app: in a language whose labels run past Type settings' label column,
 //! the popover keeps its width while it stays open. French does with Inter (release builds, the
-//! report); Georgian does with egui's own fonts too (CI, which builds without craft-fonts). Its own
+//! report); Georgian does with egui's own fonts too (CI, which builds without nodalia-fonts). Its own
 //! test binary, since the UI language is one setting for the whole process.
 #![allow(clippy::unwrap_used)]
 

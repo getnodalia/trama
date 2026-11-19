@@ -136,7 +136,7 @@ impl eframe::App for App {
             services::shutdown(fig, services::config_dir().as_deref(), copies);
         });
         // Everything is kept: end before the windows' teardown, where AppKit's Touch Bar support
-        // throws on the content view AccessKit restores (craft-libs#3, #781).
+        // throws on the content view AccessKit restores (nodalia-libs#3, #781).
         #[cfg(target_os = "macos")]
         std::process::exit(0);
     }
@@ -257,7 +257,7 @@ fn main() -> eframe::Result {
         .with_min_inner_size([800.0, 500.0])
         .with_drag_and_drop(true);
     // Who draws the window frame is decided once, before the viewport is built, by the shared
-    // craft-window crate (the rest of the Craft suite uses it too). On macOS the system frame is
+    // nodalia-window crate (the rest of the Craft suite uses it too). On macOS the system frame is
     // kept with Trama's inset traffic lights; on Windows it is the system frame; on Linux the
     // decision follows the desktop: a Wayland compositor with server-side decorations (KDE, Sway,
     // Hyprland, COSMIC) or an X11 window manager keeps the native frame, while GNOME's Mutter —
@@ -296,7 +296,7 @@ fn main() -> eframe::Result {
             // asks just as it does for the close button. Failure keeps winit's menu: the app
             // runs, but ⌘Q ends it without asking.
             #[cfg(target_os = "macos")]
-            if let Err(e) = craft_menu::mac::install_app_menu(&cc.egui_ctx, "Trama") {
+            if let Err(e) = nodalia_menu::mac::install_app_menu(&cc.egui_ctx, "Trama") {
                 log::warn!("app menu: kept winit's Quit, which ends the app without asking: {e}");
             }
             Ok(Box::new(App {
@@ -326,18 +326,18 @@ fn opens_new_file(first_run: bool, start_on_home: bool, control: bool) -> bool {
     !first_run && (!start_on_home || control)
 }
 
-/// The title bar Trama starts with, decided by the shared craft-window crate so every Craft app
+/// The title bar Trama starts with, decided by the shared nodalia-window crate so every Craft app
 /// agrees on who draws the frame per desktop. The override variable is `TRAMA_TITLEBAR`
-/// (`app` / `system`). macOS keeps its inset traffic lights unchanged (craft-window returns the
+/// (`app` / `system`). macOS keeps its inset traffic lights unchanged (nodalia-window returns the
 /// desktop frame there); Windows keeps the system frame; on Linux the compositor/window manager
 /// decides (KDE/Sway/Hyprland/COSMIC and X11 keep the native frame, GNOME gets the custom one).
 fn desktop_title_bar() -> trama_ui_egui::TitleBar {
-    let choice = craft_window::Choice::probe(craft_window::Prefix::new("TRAMA"));
+    let choice = nodalia_window::Choice::probe(nodalia_window::Prefix::new("TRAMA"));
     let forced_desktop = choice.overridden() == Some(false);
     title_bar_for(choice.into_frame(), forced_desktop)
 }
 
-/// Map craft-window's [`craft_window::Frame`] onto Trama's own [`trama_ui_egui::TitleBar`],
+/// Map nodalia-window's [`nodalia_window::Frame`] onto Trama's own [`trama_ui_egui::TitleBar`],
 /// following the Nodalia Design Language: NDL's round window controls on Linux and the BSDs only,
 /// each platform's own controls on macOS and Windows.
 ///
@@ -345,13 +345,13 @@ fn desktop_title_bar() -> trama_ui_egui::TitleBar {
 /// - Windows: Trama's custom title bar with Windows' own caption buttons (`TitleBar::Custom`).
 /// - Linux and the BSDs: Trama draws the frame with NDL's controls (`TitleBar::Custom`), unless
 ///   `TRAMA_TITLEBAR=desktop` (or `system`) forced the desktop's own (`forced_desktop`).
-fn title_bar_for(frame: craft_window::Frame, forced_desktop: bool) -> trama_ui_egui::TitleBar {
+fn title_bar_for(frame: nodalia_window::Frame, forced_desktop: bool) -> trama_ui_egui::TitleBar {
     use trama_ui_egui::TitleBar;
     match frame {
-        craft_window::Frame::Desktop if cfg!(target_os = "macos") => TitleBar::Inset,
-        craft_window::Frame::Desktop if cfg!(target_os = "windows") => TitleBar::Custom,
-        craft_window::Frame::Desktop if forced_desktop => TitleBar::Native,
-        craft_window::Frame::Desktop | craft_window::Frame::App(_) => TitleBar::Custom,
+        nodalia_window::Frame::Desktop if cfg!(target_os = "macos") => TitleBar::Inset,
+        nodalia_window::Frame::Desktop if cfg!(target_os = "windows") => TitleBar::Custom,
+        nodalia_window::Frame::Desktop if forced_desktop => TitleBar::Native,
+        nodalia_window::Frame::Desktop | nodalia_window::Frame::App(_) => TitleBar::Custom,
     }
 }
 
@@ -368,13 +368,13 @@ fn window_chrome(viewport: egui::ViewportBuilder, title_bar: trama_ui_egui::Titl
 mod title_bar_tests {
     use trama_ui_egui::TitleBar;
 
-    /// craft-window's app frame (GNOME's Wayland session, or a `TRAMA_TITLEBAR=app` override)
+    /// nodalia-window's app frame (GNOME's Wayland session, or a `TRAMA_TITLEBAR=app` override)
     /// becomes Trama's custom title bar on every platform, and `window_chrome` then drops the
     /// decorations so Trama draws its own.
     #[test]
     fn the_app_frame_maps_to_the_custom_title_bar() {
-        let layout = craft_window::Layout::default();
-        let bar = super::title_bar_for(craft_window::Frame::App(layout), false);
+        let layout = nodalia_window::Layout::default();
+        let bar = super::title_bar_for(nodalia_window::Frame::App(layout), false);
         assert_eq!(bar, TitleBar::Custom);
         let viewport = super::window_chrome(egui::ViewportBuilder::default(), bar);
         assert_eq!(viewport.decorations, Some(false));
@@ -384,8 +384,8 @@ mod title_bar_tests {
     /// Linux and the BSDs Trama draws NDL's controls unless the desktop's were asked for.
     #[test]
     fn the_desktop_frame_is_mapped_per_platform() {
-        let bar = super::title_bar_for(craft_window::Frame::Desktop, false);
-        let forced = super::title_bar_for(craft_window::Frame::Desktop, true);
+        let bar = super::title_bar_for(nodalia_window::Frame::Desktop, false);
+        let forced = super::title_bar_for(nodalia_window::Frame::Desktop, true);
         if cfg!(target_os = "macos") {
             assert_eq!((bar, forced), (TitleBar::Inset, TitleBar::Inset));
         } else if cfg!(target_os = "windows") {

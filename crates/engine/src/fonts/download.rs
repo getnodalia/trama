@@ -1,4 +1,4 @@
-//! Downloading a missing font (#754) through the suite's font store, `craft-font-store`: its
+//! Downloading a missing font (#754) through the suite's font store, `nodalia-font-store`: its
 //! pinned Google Fonts and Noto indexes (compiled in) tell which families can be had, and it
 //! downloads their files, checks each one's size and sha256 and installs them into the one folder
 //! every Craft app's font scan reads. Desktop only.
@@ -12,8 +12,8 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Mutex, OnceLock, PoisonError};
 
-use craft_font_catalog::{FontEnv, font_store_dir};
-use craft_font_store::{Caller, Cancel, FontStore, Index, Network};
+use nodalia_font_catalog::{FontEnv, font_store_dir};
+use nodalia_font_store::{Caller, Cancel, FontStore, Index, Network};
 use serde_json::{Value, json};
 
 use super::Download;

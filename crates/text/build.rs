@@ -1,7 +1,7 @@
-//! Embeds the optional craft-fonts build input (`CRAFT_FONTS_DIR`): both `fonts/manifest.txt` and the
+//! Embeds the optional nodalia-fonts build input (`NODALIA_FONTS_DIR`): both `fonts/manifest.txt` and the
 //! opt-in Latin presentation fonts in `fonts/latin-manifest.txt` (Inter, Roboto, …). Unset or missing,
-//! `CRAFT_FONTS` is empty and native apps use system fonts. Required web releases enforce Inter
-//! Regular/SemiBold and Noto Sans Georgian Regular after filtering. Recipe: craft-fonts `docs/integration.md`.
+//! `NODALIA_FONTS` is empty and native apps use system fonts. Required web releases enforce Inter
+//! Regular/SemiBold and Noto Sans Georgian Regular after filtering. Recipe: nodalia-fonts `docs/integration.md`.
 //! Noto Sans CJK only with `TRAMA_EMBED_CJK` set (the web build's only way to show CJK UI text).
 //! The other scripts' faces (Noto Sans Arabic, Hebrew, Thai, Devanagari…) stay out of web builds unless
 //! `TRAMA_EMBED_SCRIPTS` names their script tags (`Arab,Hebr,Thai,Deva`: one tag per script wanted,
@@ -10,19 +10,19 @@
 use std::fmt::Write as _;
 use std::path::PathBuf;
 
-/// Font build script: emit `craft_fonts.rs` from `input_fonts`, passing the
-/// `CRAFT_FONTS_DIR`, `CRAFT_FONTS_REQUIRED`, wasm target, `TRAMA_EMBED_CJK`, `TRAMA_EMBED_SCRIPTS` and
+/// Font build script: emit `nodalia_fonts.rs` from `input_fonts`, passing the
+/// `NODALIA_FONTS_DIR`, `NODALIA_FONTS_REQUIRED`, wasm target, `TRAMA_EMBED_CJK`, `TRAMA_EMBED_SCRIPTS` and
 /// `TRAMA_WEB_FONTS` inputs;
 /// report generation and write failures with `cargo::error`.
 fn main() {
-    println!("cargo::rerun-if-env-changed=CRAFT_FONTS_DIR");
-    println!("cargo::rerun-if-env-changed=CRAFT_FONTS_REQUIRED");
+    println!("cargo::rerun-if-env-changed=NODALIA_FONTS_DIR");
+    println!("cargo::rerun-if-env-changed=NODALIA_FONTS_REQUIRED");
     println!("cargo::rerun-if-env-changed=TRAMA_EMBED_CJK");
     println!("cargo::rerun-if-env-changed=TRAMA_EMBED_SCRIPTS");
     println!("cargo::rerun-if-env-changed=TRAMA_WEB_FONTS");
-    let mut src = String::from("pub static CRAFT_FONTS: &[CraftFont] = &[\n");
-    let dir = std::env::var_os("CRAFT_FONTS_DIR").map(PathBuf::from);
-    let required = std::env::var_os("CRAFT_FONTS_REQUIRED").is_some();
+    let mut src = String::from("pub static NODALIA_FONTS: &[NodaliaFont] = &[\n");
+    let dir = std::env::var_os("NODALIA_FONTS_DIR").map(PathBuf::from);
+    let required = std::env::var_os("NODALIA_FONTS_REQUIRED").is_some();
     let wasm = std::env::var("CARGO_CFG_TARGET_ARCH").is_ok_and(|a| a == "wasm32");
     let embed_cjk = std::env::var_os("TRAMA_EMBED_CJK").is_some();
     let embed_scripts = scripts_from(std::env::var("TRAMA_EMBED_SCRIPTS").ok().as_deref());
@@ -32,7 +32,7 @@ fn main() {
         Err(e) => println!("cargo::error={e}"),
     }
     src.push_str("];\n");
-    let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap_or_default()).join("craft_fonts.rs");
+    let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap_or_default()).join("nodalia_fonts.rs");
     if let Err(e) = std::fs::write(&out, src) {
         println!("cargo::error=writing {}: {e}", out.display());
     }
@@ -67,9 +67,9 @@ fn input_fonts(
 ) -> Result<String, String> {
     let Some(dir) = dir else {
         for family in web_fonts {
-            println!("cargo::warning=TRAMA_WEB_FONTS: {family:?} isn't embedded: this build has no craft-fonts");
+            println!("cargo::warning=TRAMA_WEB_FONTS: {family:?} isn't embedded: this build has no nodalia-fonts");
         }
-        return if required { Err("CRAFT_FONTS_REQUIRED is set but CRAFT_FONTS_DIR is missing".into()) } else { Ok(String::new()) };
+        return if required { Err("NODALIA_FONTS_REQUIRED is set but NODALIA_FONTS_DIR is missing".into()) } else { Ok(String::new()) };
     };
     let mut out = String::new();
     let mut faces = Vec::new();
@@ -80,24 +80,25 @@ fn input_fonts(
             watch(&path);
             continue;
         }
-        match craft_fonts(dir, manifest, wasm, embed_cjk, embed_scripts, web_fonts) {
+        match nodalia_fonts(dir, manifest, wasm, embed_cjk, embed_scripts, web_fonts) {
             Ok(catalog) => {
                 loaded = true;
                 out.push_str(&catalog.entries);
                 faces.extend(catalog.faces);
             }
-            Err(e) if required => return Err(format!("CRAFT_FONTS_DIR={}: {e}", dir.display())),
-            Err(e) => println!("cargo::warning=craft-fonts {manifest} skipped: CRAFT_FONTS_DIR={}: {e}", dir.display()),
+            Err(e) if required => return Err(format!("NODALIA_FONTS_DIR={}: {e}", dir.display())),
+            Err(e) => println!("cargo::warning=nodalia-fonts {manifest} skipped: NODALIA_FONTS_DIR={}: {e}", dir.display()),
         }
     }
-    let why = if loaded { "no manifest row was kept for it (misspelt? CJK also needs TRAMA_EMBED_CJK)" } else { "no craft-fonts manifest was read" };
+    let why =
+        if loaded { "no manifest row was kept for it (misspelt? CJK also needs TRAMA_EMBED_CJK)" } else { "no nodalia-fonts manifest was read" };
     for family in not_embedded(web_fonts, &faces) {
         println!("cargo::warning=TRAMA_WEB_FONTS: {family:?} isn't embedded: {why}");
     }
     if required && wasm {
         for (family, style) in [("Inter", "Regular"), ("Inter", "SemiBold"), ("Noto Sans Georgian", "Regular")] {
             if !faces.iter().any(|(f, s)| f == family && s == style) {
-                return Err(format!("required web font missing: {family} {style}; CRAFT_FONTS_DIR must include both Latin and core release faces"));
+                return Err(format!("required web font missing: {family} {style}; NODALIA_FONTS_DIR must include both Latin and core release faces"));
             }
         }
     }
@@ -108,8 +109,8 @@ fn input_fonts(
 ///
 /// Cargo takes a watched path that doesn't exist as changed on every build, and then rebuilds this
 /// crate and every crate that depends on it each time. So a missing manifest is never watched
-/// itself: its folder is, when there is one (a craft-fonts checkout without the Latin manifest).
-/// With no craft-fonts at all there is nothing to watch, so the build can't notice it arriving:
+/// itself: its folder is, when there is one (a nodalia-fonts checkout without the Latin manifest).
+/// With no nodalia-fonts at all there is nothing to watch, so the build can't notice it arriving:
 /// rebuild this crate after adding a previously absent checkout.
 fn watch(manifest: &std::path::Path) {
     let watched = if manifest.exists() { Some(manifest) } else { manifest.parent().filter(|folder| folder.is_dir()) };
@@ -123,11 +124,11 @@ struct Catalog {
     faces: Vec<(String, String)>,
 }
 
-/// Parse a font manifest of `family | style | file | scripts` rows into `CraftFont`
+/// Parse a font manifest of `family | style | file | scripts` rows into `NodaliaFont`
 /// entries: skip Adobe-authored families, skip CJK unless requested, keep the web catalog
 /// to its budgeted families (plus the faces of the scripts in `embed_scripts` and the families `web_fonts`
 /// adds), canonicalize and watch each face, and emit `include_bytes!` items.
-fn craft_fonts(
+fn nodalia_fonts(
     dir: &std::path::Path,
     manifest_rel: &str,
     wasm: bool,
@@ -168,7 +169,7 @@ fn craft_fonts(
         let path = dir.join(file).canonicalize().map_err(|e| format!("{file}: {e}"))?;
         println!("cargo::rerun-if-changed={}", path.display());
         faces.push(((*family).to_owned(), (*style).to_owned()));
-        let _ = writeln!(out, "    CraftFont {{ family: {family:?}, style: {style:?}, bytes: include_bytes!({:?}) }},", path.display().to_string());
+        let _ = writeln!(out, "    NodaliaFont {{ family: {family:?}, style: {style:?}, bytes: include_bytes!({:?}) }},", path.display().to_string());
     }
     Ok(Catalog { entries: out, faces })
 }
@@ -216,9 +217,9 @@ mod tests {
     fn restored_latin_catalog_preserves_permitted_native_faces_and_web_budget() {
         let f = Fixture::new();
         std::fs::write(f.0.join("fonts/latin-manifest.txt"), include_str!("tests/fixtures/latin-families.txt")).unwrap();
-        let native = craft_fonts(&f.0, "fonts/latin-manifest.txt", false, false, &[], &[]).unwrap();
+        let native = nodalia_fonts(&f.0, "fonts/latin-manifest.txt", false, false, &[], &[]).unwrap();
         assert_eq!(native.faces.len(), 43, "all prior permitted presentation faces remain available");
-        let web = craft_fonts(&f.0, "fonts/latin-manifest.txt", true, false, &[], &[]).unwrap();
+        let web = nodalia_fonts(&f.0, "fonts/latin-manifest.txt", true, false, &[], &[]).unwrap();
         assert_eq!(web.faces.len(), 4, "the web catalog keeps only the four Inter faces");
         for catalog in [&native, &web] {
             assert!(!catalog.entries.contains("Source Sans 3"));
@@ -245,7 +246,7 @@ mod tests {
         let f = Fixture::new();
         f.manifest("latin-manifest.txt", &[("Inter", "Regular"), ("Inter", "SemiBold")]);
         let entries = input_fonts(Some(&f.0), true, true, false, &[], &[]).unwrap();
-        assert_eq!(entries.matches("CraftFont {").count(), 3);
+        assert_eq!(entries.matches("NodaliaFont {").count(), 3);
         assert!(entries.contains("family: \"Inter\""));
         assert!(entries.contains("family: \"Noto Sans Georgian\""));
         f.manifest("manifest.txt", &[("Other", "Regular")]);
@@ -258,7 +259,7 @@ mod tests {
     fn optional_and_native_inputs_keep_their_existing_policy() {
         let f = Fixture::new();
         assert!(input_fonts(None, true, false, false, &[], &[]).unwrap().is_empty());
-        assert!(input_fonts(None, true, true, false, &[], &[]).unwrap_err().contains("CRAFT_FONTS_DIR is missing"));
+        assert!(input_fonts(None, true, true, false, &[], &[]).unwrap_err().contains("NODALIA_FONTS_DIR is missing"));
         assert!(input_fonts(Some(&f.0), true, false, false, &[], &[]).unwrap().contains("Noto Sans Georgian"));
         assert!(input_fonts(Some(&f.0), false, true, false, &[], &[]).unwrap().contains("Noto Sans Georgian"));
     }
@@ -285,15 +286,15 @@ mod tests {
         )
         .unwrap();
         let families = |c: &Catalog| c.faces.iter().map(|(f, _)| f.clone()).collect::<Vec<String>>();
-        let web = craft_fonts(&f.0, "fonts/manifest.txt", true, false, &[], &[]).unwrap();
+        let web = nodalia_fonts(&f.0, "fonts/manifest.txt", true, false, &[], &[]).unwrap();
         assert_eq!(families(&web), ["Noto Sans Georgian"], "the web budget: Georgian only");
-        let arabic = craft_fonts(&f.0, "fonts/manifest.txt", true, false, &["Arab".to_string()], &[]).unwrap();
+        let arabic = nodalia_fonts(&f.0, "fonts/manifest.txt", true, false, &["Arab".to_string()], &[]).unwrap();
         assert_eq!(families(&arabic), ["Noto Sans Georgian", "Noto Sans Arabic"]);
         // Several tags, any case, spaces, and a tag among a face's several scripts.
-        let more = craft_fonts(&f.0, "fonts/manifest.txt", true, false, &scripts_from(Some(" hebr, LATN ")), &[]).unwrap();
+        let more = nodalia_fonts(&f.0, "fonts/manifest.txt", true, false, &scripts_from(Some(" hebr, LATN ")), &[]).unwrap();
         assert_eq!(families(&more), ["Noto Sans Georgian", "Noto Sans Hebrew", "Noto Sans Symbols"]);
         // Native builds keep every face whatever the variable says.
-        assert_eq!(craft_fonts(&f.0, "fonts/manifest.txt", false, false, &[], &[]).unwrap().faces.len(), 4);
+        assert_eq!(nodalia_fonts(&f.0, "fonts/manifest.txt", false, false, &[], &[]).unwrap().faces.len(), 4);
         // The variable reaches the catalog through `input_fonts`.
         assert!(input_fonts(Some(&f.0), true, false, false, &["Arab".into()], &[]).unwrap().contains("Noto Sans Arabic"));
         assert!(!input_fonts(Some(&f.0), true, false, false, &[], &[]).unwrap().contains("Noto Sans Arabic"));
@@ -310,10 +311,10 @@ mod tests {
         let named = web_fonts(" Noto Sans Thai, ,Noto Sans Thia ");
         assert_eq!(named, ["Noto Sans Thai", "Noto Sans Thia"]);
         let families = |c: &Catalog| c.faces.iter().map(|(family, _)| family.clone()).collect::<Vec<_>>();
-        let web = craft_fonts(&f.0, "fonts/manifest.txt", true, false, &[], &named).unwrap();
+        let web = nodalia_fonts(&f.0, "fonts/manifest.txt", true, false, &[], &named).unwrap();
         assert_eq!(families(&web), ["Noto Sans Georgian", "Noto Sans Thai"], "the named family joins; the others stay out");
-        assert_eq!(families(&craft_fonts(&f.0, "fonts/manifest.txt", true, false, &[], &[]).unwrap()), ["Noto Sans Georgian"], "unset: as before");
-        assert_eq!(craft_fonts(&f.0, "fonts/manifest.txt", false, false, &[], &[]).unwrap().faces.len(), 3, "native builds embed every family");
+        assert_eq!(families(&nodalia_fonts(&f.0, "fonts/manifest.txt", true, false, &[], &[]).unwrap()), ["Noto Sans Georgian"], "unset: as before");
+        assert_eq!(nodalia_fonts(&f.0, "fonts/manifest.txt", false, false, &[], &[]).unwrap().faces.len(), 3, "native builds embed every family");
         assert_eq!(not_embedded(&named, &web.faces), ["Noto Sans Thia"], "a misspelt family is reported");
         assert!(input_fonts(Some(&f.0), true, false, false, &[], &named).unwrap().contains("family: \"Noto Sans Thai\""));
     }

@@ -504,7 +504,7 @@ fn enter_answers_save() {
 }
 
 /// macOS's Quit (⌘Q, the app menu's Quit item, the Dock) reaches the app as a close request on
-/// the main window (#857: the craft-menu app menu replaces winit's, whose Quit ended the process
+/// the main window (#857: the nodalia-menu app menu replaces winit's, whose Quit ended the process
 /// at once). With unsaved changes the window cancels the close, so the process stays, and asks;
 /// Don't Save then closes it.
 #[test]

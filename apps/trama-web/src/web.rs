@@ -32,7 +32,7 @@ pub fn start() {
             log::error!("missing <canvas id=\"{CANVAS_ID}\">");
             return;
         };
-        // Host modes (`craft-web-host`): `?host=parent`, a same-origin page framing Trama, opens
+        // Host modes (`nodalia-web-host`): `?host=parent`, a same-origin page framing Trama, opens
         // documents in it and stores what it saves (`host`); unframed there is no parent, so that URL
         // on its own stays the normal app with downloads. `data-host="page"` on the canvas opts a
         // page in instead: it runs Trama in its own document and talks over DOM `CustomEvent`s on

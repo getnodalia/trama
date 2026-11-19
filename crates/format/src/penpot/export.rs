@@ -565,7 +565,7 @@ impl<'a> Exporter<'a> {
             "files": [{"id": self.file_id, "name": name, "features": file.get("features").cloned().unwrap_or(Value::Null)}],
             "relations": [],
         });
-        let mut writer = craft_penpot::Writer::new();
+        let mut writer = nodalia_penpot::Writer::new();
         writer.add("manifest.json", &serde_json::to_vec_pretty(&manifest).map_err(io_err)?).map_err(io_err)?;
         writer.add(&format!("{base}.json"), &serde_json::to_vec_pretty(&file).map_err(io_err)?).map_err(io_err)?;
         if let Some(tokens) = tokens {

@@ -204,8 +204,8 @@ fn importer_notes() -> BTreeSet<String> {
             keys.extend(literals(&std::fs::read_to_string(&path).unwrap(), &["warn("]));
         }
     }
-    // The `.fig` mapping itself is craft-fig's (`craft_fig::rest`); its notes are ours to translate.
-    let rest = craft_fig_src().join("rest");
+    // The `.fig` mapping itself is nodalia-fig's (`nodalia_fig::rest`); its notes are ours to translate.
+    let rest = nodalia_fig_src().join("rest");
     for path in sources(&rest).into_iter().chain([rest.with_extension("rs")]) {
         if !path.file_name().unwrap().to_string_lossy().contains("tests") {
             keys.extend(literals(&std::fs::read_to_string(&path).unwrap(), &["warn("]));
@@ -214,8 +214,8 @@ fn importer_notes() -> BTreeSet<String> {
     keys
 }
 
-/// The `src` directory of the craft-fig sources this build uses, as Cargo resolved them.
-fn craft_fig_src() -> std::path::PathBuf {
+/// The `src` directory of the nodalia-fig sources this build uses, as Cargo resolved them.
+fn nodalia_fig_src() -> std::path::PathBuf {
     let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".into());
     // Unfiltered, `cargo metadata` needs every target's packages (accesskit_ios, ...) in Cargo's
     // cache, and `--offline` cannot fetch them; a build fetches only the host's. Filter to the host.
@@ -229,7 +229,7 @@ fn craft_fig_src() -> std::path::PathBuf {
         .unwrap();
     assert!(out.status.success(), "cargo metadata: {}", String::from_utf8_lossy(&out.stderr));
     let meta: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
-    let package = meta["packages"].as_array().unwrap().iter().find(|p| p["name"] == "craft-fig").expect("craft-fig is a dependency");
+    let package = meta["packages"].as_array().unwrap().iter().find(|p| p["name"] == "nodalia-fig").expect("nodalia-fig is a dependency");
     std::path::Path::new(package["manifest_path"].as_str().unwrap()).parent().unwrap().join("src")
 }
 
@@ -587,8 +587,8 @@ fn right_to_left_languages_mirror_the_window() {
 
 #[test]
 fn the_built_in_arabic_face_draws_the_arabic_catalog() {
-    if !trama_text::CRAFT_FONTS.iter().any(|f| f.family == "Noto Sans Arabic" && f.style == "Regular") {
-        eprintln!("built without craft-fonts' Noto Sans Arabic; skipping");
+    if !trama_text::NODALIA_FONTS.iter().any(|f| f.family == "Noto Sans Arabic" && f.style == "Regular") {
+        eprintln!("built without nodalia-fonts' Noto Sans Arabic; skipping");
         return;
     }
     let Some(face) = trama_text::face_with_char('ع', &["Noto Sans Arabic"]) else {
@@ -609,12 +609,12 @@ fn the_built_in_arabic_face_draws_the_arabic_catalog() {
     assert!(missing.is_empty(), "Arabic catalog glyphs missing from the embedded face: {missing:?}");
 }
 
-/// Release builds embed craft-fonts' Noto Sans Georgian (`theme::install_fonts`' built-in faces),
+/// Release builds embed nodalia-fonts' Noto Sans Georgian (`theme::install_fonts`' built-in faces),
 /// since Inter and egui's fonts have no Georgian: it draws every Georgian letter the catalog uses.
 #[test]
 fn the_built_in_georgian_face_draws_the_georgian_catalog() {
     let Some(face) = trama_text::find_face("Noto Sans Georgian", "Regular").filter(|f| f.family == "Noto Sans Georgian") else {
-        eprintln!("built without craft-fonts' Noto Sans Georgian; skipping");
+        eprintln!("built without nodalia-fonts' Noto Sans Georgian; skipping");
         return;
     };
     let ka = &LANGS[LANGS.iter().position(|l| l.code == "ka").unwrap()];

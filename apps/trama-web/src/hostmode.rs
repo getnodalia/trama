@@ -1,6 +1,6 @@
 //! Pure host-mode rules, shared by the bridge ([`crate::host`]) and testable without a browser
 //! (like [`crate::query`]): the name the bridge fills in when an open request has none, and whether
-//! a handed-over file becomes the document's file. Which pages host the app is `craft-web-host`'s.
+//! a handed-over file becomes the document's file. Which pages host the app is `nodalia-web-host`'s.
 
 /// The file name used when an open request carries no usable one.
 pub const DEFAULT_OPEN_NAME: &str = "Untitled.trama";
@@ -15,7 +15,7 @@ const DOC_EXTS: &[&str] = &["trama", "figcraft", "json"]; // rebrand: keep (file
 /// document, so its extension alone can't tell the `saveAs` decision.
 const VARIABLES_SIDECAR: &str = ".variables.json";
 
-/// The name `craft-web-host` gives an open request that carries no usable one (it cleans a host's
+/// The name `nodalia-web-host` gives an open request that carries no usable one (it cleans a host's
 /// name and falls back to this).
 const NAMELESS: &str = "document";
 

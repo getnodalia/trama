@@ -93,7 +93,7 @@ foreach ($check in $checks) {
 $Stage = Join-Path $TargetDir "windows-package\$Arch"
 Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Stage | Out-Null
-# Dependency font notices are required even without optional craft-fonts.
+# Dependency font notices are required even without optional nodalia-fonts.
 Copy-Item -LiteralPath (Join-Path $Root 'NOTICE') -Destination $Stage
 $Exes = $Bins | ForEach-Object { "$_.exe" }
 foreach ($exe in $Exes) { Copy-Item (Join-Path $Bin $exe) $Stage }
@@ -106,8 +106,8 @@ $SignFiles = @($Exes | ForEach-Object { Join-Path $Stage $_ })
 $Docs = Join-Path $Stage 'font-licences'
 New-Item -ItemType Directory -Force -Path $Docs | Out-Null
 $HasCraftFontLicences = 0
-if ($env:CRAFT_FONTS_DIR) {
-  foreach ($ofl in Get-ChildItem -Path (Join-Path $env:CRAFT_FONTS_DIR 'fonts\*\OFL.txt') -File -ErrorAction SilentlyContinue) {
+if ($env:NODALIA_FONTS_DIR) {
+  foreach ($ofl in Get-ChildItem -Path (Join-Path $env:NODALIA_FONTS_DIR 'fonts\*\OFL.txt') -File -ErrorAction SilentlyContinue) {
     Copy-Item -LiteralPath $ofl.FullName -Destination (Join-Path $Docs "OFL-$($ofl.Directory.Name).txt")
     $HasCraftFontLicences = 1
   }
@@ -181,10 +181,10 @@ foreach ($f in 'README.md', 'LICENSE', 'LICENSE-MIT', 'LICENSE-APACHE', 'NOTICE'
   $p = Join-Path $Root $f
   if (Test-Path $p) { Copy-Item $p $Portable }
 }
-# Builds made with craft-fonts (CRAFT_FONTS_DIR, all official releases) embed its OFL-1.1 fonts:
+# Builds made with nodalia-fonts (NODALIA_FONTS_DIR, all official releases) embed its OFL-1.1 fonts:
 # ship each font's licence as OFL-<family-dir>.txt.
-if ($env:CRAFT_FONTS_DIR) {
-  Get-ChildItem -Path (Join-Path $env:CRAFT_FONTS_DIR 'fonts') -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+if ($env:NODALIA_FONTS_DIR) {
+  Get-ChildItem -Path (Join-Path $env:NODALIA_FONTS_DIR 'fonts') -Directory -ErrorAction SilentlyContinue | ForEach-Object {
     $lic = Join-Path $_.FullName 'OFL.txt'
     if (Test-Path $lic) { Copy-Item $lic (Join-Path $Portable "OFL-$($_.Name).txt") }
   }

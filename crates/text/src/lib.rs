@@ -1,6 +1,6 @@
 //! Trama text: fonts, shaping and layout.
 //!
-//! Fonts come from the optional craft-fonts build input (Inter and friends, embedded at build time)
+//! Fonts come from the optional nodalia-fonts build input (Inter and friends, embedded at build time)
 //! and, on desktop, from the system's font folders. [`layout`] turns a text node's
 //! [`TextData`](trama_doc::TextData) into positioned glyphs, lines and decorations; the renderer
 //! fills [`Glyph::path`]s and the editor uses [`TextLayout::caret`] / [`TextLayout::hit`].
@@ -16,7 +16,7 @@ mod onpath;
 pub use breaks::{backspace_step, grapheme_step};
 pub use color::{ColorBitmap, ColorInk, ColorLayer};
 pub use fontdb::{
-    Axis, CRAFT_FONTS, Coords, Face, FontDb, LocalFont, NamedInstance, Rescan, add_local_fonts, axis_label, db, face_with_char, family_names,
+    Axis, Coords, Face, FontDb, LocalFont, NODALIA_FONTS, NamedInstance, Rescan, add_local_fonts, axis_label, db, face_with_char, family_names,
     family_style_weights, family_styles, find_face, has_family, installed_fonts_known, load_font_bytes, load_local_font, local_only, no_coords,
     opt_out_of_system_fonts, rescan_system_fonts, scan_system_fonts, scan_system_fonts_on_demand, system_fonts_scanned, take_wanted_local_fonts,
 };

@@ -299,7 +299,7 @@ fn the_scan_reads_font_files_without_an_extension() {
 /// Fonts downloaded into the suite's font store (by any Craft app) are scanned with the system's.
 #[test]
 fn the_suite_font_store_is_scanned() {
-    let store = craft_font_catalog::font_store_dir(&craft_font_catalog::FontEnv::from_process());
+    let store = nodalia_font_catalog::font_store_dir(&nodalia_font_catalog::FontEnv::from_process());
     assert!(store.is_none_or(|dir| system_font_dirs().contains(&dir)));
 }
 
@@ -336,8 +336,8 @@ fn a_rescan_offers_fonts_installed_since() {
 /// Poppins Regular, Italic and Bold; an installed SemiBold and Medium went unseen). Embedded styles win.
 #[test]
 fn the_scan_offers_installed_styles_an_embedded_family_lacks() {
-    // Any embedded or installed font stands in for the embedded face (none without craft-fonts on CI).
-    let stand_in = CRAFT_FONTS.first().map(|f| f.bytes.to_vec()).or_else(|| {
+    // Any embedded or installed font stands in for the embedded face (none without nodalia-fonts on CI).
+    let stand_in = NODALIA_FONTS.first().map(|f| f.bytes.to_vec()).or_else(|| {
         let mut installed = BTreeMap::new();
         for dir in system_font_dirs() {
             scan_dir(&dir, 0, &mut installed);
@@ -370,9 +370,9 @@ fn the_scan_offers_installed_styles_an_embedded_family_lacks() {
 fn font_bytes_load_into_the_db() {
     assert!(load_font_bytes(b"not a font".to_vec()).is_empty());
     assert!(load_font_bytes(Vec::new()).is_empty());
-    // With the embedded fonts (absent on CI builds without craft-fonts): a file's family is added,
+    // With the embedded fonts (absent on CI builds without nodalia-fonts): a file's family is added,
     // and loading the same file again returns it without adding its faces twice.
-    if let Some(f) = CRAFT_FONTS.first() {
+    if let Some(f) = NODALIA_FONTS.first() {
         let families = load_font_bytes(f.bytes.to_vec());
         assert_eq!(families.len(), 1);
         assert!(families.iter().all(|f| has_family(f)));
@@ -396,8 +396,8 @@ fn font_bytes_load_into_the_db() {
 /// and style, the latest load over earlier ones; other styles resolve as before.
 #[test]
 fn a_loaded_face_wins_over_the_built_in_one_of_its_family_and_style() {
-    // Any embedded or installed font stands in for the faces (none without craft-fonts on CI).
-    let stand_in = CRAFT_FONTS.first().map(|f| f.bytes.to_vec()).or_else(|| {
+    // Any embedded or installed font stands in for the faces (none without nodalia-fonts on CI).
+    let stand_in = NODALIA_FONTS.first().map(|f| f.bytes.to_vec()).or_else(|| {
         let mut installed = BTreeMap::new();
         for dir in system_font_dirs() {
             scan_dir(&dir, 0, &mut installed);
@@ -568,7 +568,7 @@ fn faces_by_postscript_name() {
     );
     assert_eq!(db.postscript_face("brandsans-bold"), Some(("Brand Sans".to_string(), "Bold".to_string())));
     assert_eq!(db.postscript_face("BrandSans-Light"), None);
-    if let Some(f) = CRAFT_FONTS.first()
+    if let Some(f) = NODALIA_FONTS.first()
         && let Some(face) = Face::from_bytes(FontBytes::Static(f.bytes), 0, Some(f.family), Some(f.style))
         && let Some(ps) = face.postscript.clone()
     {
@@ -581,7 +581,7 @@ fn faces_by_postscript_name() {
 #[test]
 fn every_platform_has_a_thai_font_in_the_fallbacks() {
     // Thai typed into a Latin layer (new text starts in Inter) is drawn by the first fallback that
-    // has it: Noto Sans Thai (craft-fonts, Linux), Leelawadee UI or Tahoma (Windows), Thonburi
+    // has it: Noto Sans Thai (nodalia-fonts, Linux), Leelawadee UI or Tahoma (Windows), Thonburi
     // (macOS). They come after the Latin faces, which go on drawing Latin text.
     let at = |family: &str| FALLBACK_FAMILIES.iter().position(|f| *f == family);
     let latin = at("Segoe UI").unwrap();
@@ -591,7 +591,7 @@ fn every_platform_has_a_thai_font_in_the_fallbacks() {
 }
 
 /// #1902: a web build has no system fonts, so a document's missing characters can only come from
-/// the embedded faces. Every script face craft-fonts can embed (`TRAMA_EMBED_SCRIPTS`) is a
+/// the embedded faces. Every script face nodalia-fonts can embed (`TRAMA_EMBED_SCRIPTS`) is a
 /// document fallback after the Latin faces; else Hebrew or Devanagari typed into an Inter layer
 /// would stay missing glyphs with its face embedded.
 #[test]
@@ -610,8 +610,8 @@ fn every_embeddable_script_face_is_a_document_fallback() {
     ] {
         assert!(at(face).is_some_and(|i| i > latin), "{face} is a fallback after the Latin faces");
     }
-    // And whatever script face this build embeds (CI builds have craft-fonts; CJK by request).
-    for f in CRAFT_FONTS.iter().filter(|f| f.family.starts_with("Noto Sans") && !f.family.contains("CJK")) {
+    // And whatever script face this build embeds (CI builds have nodalia-fonts; CJK by request).
+    for f in NODALIA_FONTS.iter().filter(|f| f.family.starts_with("Noto Sans") && !f.family.contains("CJK")) {
         assert!(FALLBACK_FAMILIES.contains(&f.family), "embedded {} is a document fallback", f.family);
     }
 }

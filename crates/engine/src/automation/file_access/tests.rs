@@ -217,7 +217,7 @@ fn windows_case_devices_and_streams() {
 #[test]
 fn spellings_of_other_computers_and_devices_are_refused() {
     use super::refused_spelling;
-    use craft_docpath::Refused::{Device, Network};
+    use nodalia_docpath::Refused::{Device, Network};
     let local = [PathBuf::from(r"C:\work")];
     // On `\\192.0.2.1\share`.
     let on_the_share = [
@@ -252,7 +252,7 @@ fn spellings_of_other_computers_and_devices_are_refused() {
         r"C:\work\aux:stream",
         // A volume name that is not a GUID could be an alias of anything.
         r"\\?\Volume{remote}\x.png",
-        // After a name `craft_docpath` refuses for another reason.
+        // After a name `nodalia_docpath` refuses for another reason.
         r"C:\work\a:b\prn.png",
     ];
     let fine = [
@@ -387,7 +387,7 @@ fn what_cannot_be_looked_at_is_refused() {
 #[test]
 fn paths_are_classified_as_windows_opens_them() {
     use super::{Unresolved, refused_unresolved};
-    use craft_docpath::Refused::{Device, Network};
+    use nodalia_docpath::Refused::{Device, Network};
     use std::ffi::OsString;
     use std::os::windows::ffi::OsStringExt;
     assert_eq!(std::path::absolute(r"C:\work\remote\..\x.png").unwrap(), PathBuf::from(r"C:\work\x.png"));
@@ -569,7 +569,7 @@ fn native_names_and_names_windows_trims_are_refused_as_written() {
     let p = f.p("root/remote /x.png");
     let e = r.check(Path::new(&p), Access::Write).expect_err(&p);
     assert!(e.starts_with(&standard(&p)), "{p}: {e}");
-    assert_eq!(super::refused_spelling(r"\??\UNC\192.0.2.1\share\x", &[]), Some(craft_docpath::Refused::Device));
+    assert_eq!(super::refused_spelling(r"\??\UNC\192.0.2.1\share\x", &[]), Some(nodalia_docpath::Refused::Device));
 }
 
 #[test]

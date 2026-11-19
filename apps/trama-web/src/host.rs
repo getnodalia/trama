@@ -1,6 +1,6 @@
 //! Host modes: a page that runs Trama (as an `<iframe>`, or in its own document) opens
 //! documents in it and stores what it saves instead of the browser downloading. The messages
-//! and the two transports are `craft-web-host`'s (storytold/craft-libs): the same contract as
+//! and the two transports are `nodalia-web-host`'s (getnodalia/foundation (nodalia/libs)): the same contract as
 //! the other Craft apps' bridges. This module is Trama's part of it.
 //!
 //! - `?host=parent` (an `<iframe>`, such as a Nextcloud app) talks to the same-origin parent over
@@ -33,7 +33,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use craft_web_host::web::{FileData, Host, Message};
+use nodalia_web_host::web::{FileData, Host, Message};
 use trama_ui_egui::FigApp;
 
 /// The app id in the host messages (`trama:ready`).

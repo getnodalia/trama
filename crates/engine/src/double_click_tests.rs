@@ -15,7 +15,7 @@ fn ex(s: &mut Session, cmd: &str, p: Value) -> Value {
 
 /// A frame holding a group of a rectangle and a text layer at (60, 60); returns (group, text).
 fn scene(s: &mut Session) -> (NodeId, NodeId) {
-    // The text is measured with a font: without craft-fonts that is a system one, scanned here
+    // The text is measured with a font: without nodalia-fonts that is a system one, scanned here
     // rather than by whichever test happens to run first (#333).
     trama_text::scan_system_fonts();
     let f = id_of(&ex(s, "frame.create", json!({"x": 0, "y": 0, "width": 400, "height": 300}))["id"]).unwrap();

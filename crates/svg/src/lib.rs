@@ -197,7 +197,7 @@ fn blend_style(b: trama_color::BlendMode) -> String {
 
 // Shared XML wire escaping and character validity; layer-name policy stays below.
 // Attribute escaping also preserves tabs/LF/CR through XML readers' whitespace normalization.
-use craft_xml::{esc_attr as esc, is_xml_char as xml_char};
+use nodalia_xml::{esc_attr as esc, is_xml_char as xml_char};
 
 fn hex(c: Color) -> String {
     format!("#{}", c.to_hex())

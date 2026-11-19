@@ -18,7 +18,7 @@ replaced.
 | L0 | `trama-color` | ~1.3k | Colours (HSB/HSL, LCH/OKLCH, hex/CSS, Display P3), paints (solid, gradients, image), blend modes |
 | L1 | `trama-doc` | ~8.5k | Document model: pages, node tree in a persistent map (`imbl`, stable ids), properties, components, styles, variables, prototype data, comments, versions. Serde everywhere |
 | L2 | `trama-layout` | ~1.8k | Auto layout (horizontal, vertical, wrap, grid; hug/fill/fixed; min/max), constraints, layout grid geometry |
-| L2 | `trama-text` | ~3.1k | Font database (optional embedded craft-fonts + system scan), shaping (harfrust), bidi, line layout, glyph outlines (skrifa), variable fonts |
+| L2 | `trama-text` | ~3.1k | Font database (optional embedded nodalia-fonts + system scan), shaping (harfrust), bidi, line layout, glyph outlines (skrifa), variable fonts |
 | L2 | `trama-collab` | ~3.4k | Real-time collaboration core (no networking): synced object/property model, change sets, fractional positions, server ordering and validation, client reconciliation, wire messages |
 | L2 | `trama-plugin` | ~1.0k | Plugin manifest and the WebAssembly sandbox (wasmi, metered, memory cap, no file system, network or clock) |
 | L2 | `trama-pathops` | ~1.1k | Booleans (linesweeper), outline stroke with alignment, arrowheads |

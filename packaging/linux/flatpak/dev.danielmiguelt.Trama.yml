@@ -11,8 +11,8 @@
 # The single-file .flatpak attached to each release comes from dev.danielmiguelt.Trama.bundle.yml,
 # which repackages the prebuilt release binaries. Keep runtime-version and finish-args identical.
 #
-# Official release binaries embed craft-fonts (getnodalia/foundation (vendor/craft-fonts/main), OFL fonts); this from-source
-# build doesn't (add it as a git source and set CRAFT_FONTS_DIR to include it), so it uses the
+# Official release binaries embed nodalia-fonts (getnodalia/foundation (nodalia/fonts), OFL fonts); this from-source
+# build doesn't (add it as a git source and set NODALIA_FONTS_DIR to include it), so it uses the
 # runtime's system fonts.
 id: dev.danielmiguelt.Trama
 runtime: org.freedesktop.Platform
@@ -50,9 +50,9 @@ modules:
       env:
         CARGO_HOME: /run/build/trama/cargo
         CARGO_NET_OFFLINE: 'true'
-        # .cargo/config.toml points CRAFT_FONTS_DIR at ../craft-fonts for local builds; there is
+        # .cargo/config.toml points NODALIA_FONTS_DIR at ../nodalia-fonts for local builds; there is
         # none here, so build without it (a warning, not an error).
-        CRAFT_FONTS_DIR: /nonexistent
+        NODALIA_FONTS_DIR: /nonexistent
     build-commands:
       - cargo --offline build --release --locked -p trama
       - install -Dm755 target/release/trama /app/bin/trama

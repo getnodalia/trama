@@ -63,7 +63,7 @@ fn text_layer(s: &mut Session, text: &str) -> NodeId {
 
 #[test]
 fn pinyin_composes_inline_and_commits_once_with_the_ime_on_every_frame() {
-    // The text is measured with a font: without craft-fonts a system one, scanned here rather than
+    // The text is measured with a font: without nodalia-fonts a system one, scanned here rather than
     // by whichever test happens to run first (#333).
     trama_text::scan_system_fonts();
     let mut s = Session::new();

@@ -24,7 +24,7 @@ use std::ffi::{OsStr, OsString};
 use std::path::{Component, Path, PathBuf};
 use std::sync::Arc;
 
-use craft_docpath::Refused;
+use nodalia_docpath::Refused;
 
 use crate::{EngineError, Result};
 
@@ -174,7 +174,7 @@ fn nothing_there(e: &std::io::Error) -> bool {
     matches!(e.kind(), NotFound | NotADirectory | InvalidFilename)
 }
 
-/// Why path `p` is refused by its spelling alone, if it is (see [`craft_docpath::resolve`], which
+/// Why path `p` is refused by its spelling alone, if it is (see [`nodalia_docpath::resolve`], which
 /// reads both `/` and `\` as separators and compares names ignoring case):
 /// - on another computer (`\\server\share`, `//server/share`, `\\?\UNC\…`, `\\.\UNC\…`, or a
 ///   server without a share) and on no root's share;
@@ -184,20 +184,20 @@ fn nothing_there(e: &std::io::Error) -> bool {
 ///   the way is opened in turn while the path is resolved, and the device behind a name such as
 ///   `LPT1` can be a printer on another computer.
 fn refused_spelling(p: &str, roots: &[PathBuf]) -> Option<Refused> {
-    // A native NT name (`\Device\Mup\server\share`) has no prefix for `std` or `craft_docpath`, yet the system follows it to wherever it names.
+    // A native NT name (`\Device\Mup\server\share`) has no prefix for `std` or `nodalia_docpath`, yet the system follows it to wherever it names.
     if is_native_name(Path::new(p)) {
         return Some(Refused::Device);
     }
-    match craft_docpath::resolve(p, None) {
+    match nodalia_docpath::resolve(p, None) {
         // With a root passed as the document path (what a link would be relative to), a path on
         // that root's share is allowed.
-        Err(Refused::Network) if !roots.iter().any(|r| craft_docpath::resolve(p, Some(r)) != Err(Refused::Network)) => {
+        Err(Refused::Network) if !roots.iter().any(|r| nodalia_docpath::resolve(p, Some(r)) != Err(Refused::Network)) => {
             return Some(Refused::Network);
         }
         Err(Refused::Device) if !is_volume(p) => return Some(Refused::Device),
         _ => {}
     }
-    // `craft_docpath` stops at the first name it refuses, which may not be the device's.
+    // `nodalia_docpath` stops at the first name it refuses, which may not be the device's.
     p.split(['\\', '/']).any(device_name).then_some(Refused::Device)
 }
 

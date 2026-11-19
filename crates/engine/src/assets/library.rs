@@ -532,7 +532,7 @@ impl Cache {
         }
         // The path comes from a document: a network share would be contacted (and on Windows get
         // the opener's credentials) by the stat below.
-        if !craft_docpath::is_local(path) {
+        if !nodalia_docpath::is_local(path) {
             return Err(EngineError::Other(format!("{path}: a library is opened only from this computer")));
         }
         let stamp = stat(path);
@@ -698,12 +698,12 @@ pub fn resolve_links(doc: &mut Document, doc_path: &str) {
         let moved = Some(l.relative.as_str()).filter(|r| !r.is_empty()).map(|r| lexical(&folder.join(r)));
         // Only a place on this computer is looked at (see `Session::fetch_library`).
         if let Some(p) =
-            moved.filter(|p| p.to_str().is_some_and(craft_docpath::is_local) && crate::file_access::metadata(p).is_ok_and(|m| m.is_file()))
+            moved.filter(|p| p.to_str().is_some_and(nodalia_docpath::is_local) && crate::file_access::metadata(p).is_ok_and(|m| m.is_file()))
         {
             l.path = p.to_string_lossy().into_owned();
         } else if !l.path.is_empty()
             && std::path::Path::new(&l.path).is_relative()
-            && let Some(p) = lexical(&folder.join(&l.path)).to_str().filter(|p| craft_docpath::is_local(p))
+            && let Some(p) = lexical(&folder.join(&l.path)).to_str().filter(|p| nodalia_docpath::is_local(p))
         {
             l.path = p.to_string();
         }

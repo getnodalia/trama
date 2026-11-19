@@ -197,7 +197,7 @@ await init({ module_or_path: "./trama-web-<hash>_bg.wasm" });
   present it takes precedence, so a same-origin framed page uses the parent bridge, while an
   unframed or cross-origin page gets no bridge and keeps normal downloads.
 
-The messages and both transports are the shared contract of [`craft-web-host`](https://github.com/getnodalia/foundation/tree/main/crates/web-host) (storytold/craft-libs#420), the same for every Craft app: its README lists every message, including `saved`, with the compatibility notes. In `trama:ready`, `version` is the contract's (`"1"`) and `appVersion` is this app's release. Trama reads bytes, so a host sends `bytes`, not a `File`.
+The messages and both transports are the shared contract of [`nodalia-web-host`](https://github.com/getnodalia/foundation/tree/main/crates/web-host) (storytold/craft-libs#420), the same for every Craft app: its README lists every message, including `saved`, with the compatibility notes. In `trama:ready`, `version` is the contract's (`"1"`) and `appVersion` is this app's release. Trama reads bytes, so a host sends `bytes`, not a `File`.
 
 ### Trust and limits
 

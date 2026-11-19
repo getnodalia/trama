@@ -971,7 +971,7 @@ mod image_budget {
         let limit = members[0].1.len() as u64;
         let archive = Archive::open_with(&zip, Limits { max_image: MAX_IMAGE, max_image_total: limit }).unwrap();
         assert!(archive.image(&"01".repeat(20)).is_none());
-        // The failed read keeps its charge (craft-fig charges the declared size).
+        // The failed read keeps its charge (nodalia-fig charges the declared size).
         let remaining = archive.image_bytes_left();
         assert!(remaining < limit, "partial read left {remaining} of {limit} bytes");
         assert!(archive.image(&"02".repeat(20)).is_none());
@@ -1147,23 +1147,23 @@ fn mangled_kiwi_never_panics() {
 #[test]
 fn large_files_get_a_larger_value_budget() {
     // Small files keep the fixed floor: a few bytes can't expand into a huge tree.
-    assert_eq!(craft_fig::value_budget(0), 20_000_000);
-    assert_eq!(craft_fig::value_budget(1 << 20), 20_000_000);
+    assert_eq!(nodalia_fig::value_budget(0), 20_000_000);
+    assert_eq!(nodalia_fig::value_budget(1 << 20), 20_000_000);
     // A real 400 000-layer file: an 83.5 MB canvas whose message unpacks to 334 MB and holds
     // 30.5 million values was refused as "too many values".
-    assert!(craft_fig::value_budget(83_491_232) > 30_514_899);
+    assert!(nodalia_fig::value_budget(83_491_232) > 30_514_899);
     // A real 194 MB design-system file (UX4G): a 39.5 MB canvas holding 29.7 million values.
-    assert!(craft_fig::value_budget(39_528_420) > 29_703_730);
+    assert!(nodalia_fig::value_budget(39_528_420) > 29_703_730);
     // Still bounded by the largest canvas read.
-    assert!(craft_fig::value_budget(MAX_CANVAS as usize) <= 128 << 20);
+    assert!(nodalia_fig::value_budget(MAX_CANVAS as usize) <= 128 << 20);
     // Counting every scalar field, a dense file may reach about 2.4 values per compressed byte (the
     // 15 MB text-heavy fixture in `value_budget_tests` measures 1.8): below the ceiling the budget must
     // cover that, the floor still holds up to 5 MB of canvas, and 32 MiB is enough for the ceiling.
-    assert!(craft_fig::value_budget(8 << 20) >= (8 << 20) * 12 / 5);
+    assert!(nodalia_fig::value_budget(8 << 20) >= (8 << 20) * 12 / 5);
     #[cfg(not(target_pointer_width = "32"))]
-    assert!(craft_fig::value_budget(30_000_000) >= 30_000_000 * 12 / 5);
-    assert_eq!(craft_fig::value_budget(5_000_000), 20_000_000);
-    assert_eq!(craft_fig::value_budget(32 << 20), craft_fig::value_budget(MAX_CANVAS as usize));
+    assert!(nodalia_fig::value_budget(30_000_000) >= 30_000_000 * 12 / 5);
+    assert_eq!(nodalia_fig::value_budget(5_000_000), 20_000_000);
+    assert_eq!(nodalia_fig::value_budget(32 << 20), nodalia_fig::value_budget(MAX_CANVAS as usize));
 }
 
 #[test]

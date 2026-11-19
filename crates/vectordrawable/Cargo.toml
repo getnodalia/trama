@@ -9,7 +9,7 @@ description = "Trama Android Vector Drawable export (shapes, strokes, gradients,
 workspace = true
 
 [dependencies]
-craft-vectordrawable.workspace = true
+nodalia-vectordrawable.workspace = true
 trama-geom = { workspace = true }
 trama-color = { workspace = true }
 trama-doc = { workspace = true }

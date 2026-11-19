@@ -75,7 +75,7 @@ fn installed_families_are_not_listed() {
 #[test]
 fn a_family_found_only_by_the_system_scan_is_not_missing() {
     trama_text::scan_system_fonts();
-    let embedded: Vec<String> = trama_text::CRAFT_FONTS.iter().map(|f| f.family.to_lowercase()).collect();
+    let embedded: Vec<String> = trama_text::NODALIA_FONTS.iter().map(|f| f.family.to_lowercase()).collect();
     let Some(family) = trama_text::family_names().into_iter().find(|f| !embedded.contains(&f.to_lowercase())) else {
         eprintln!("skipped: no system fonts on this machine");
         return;
@@ -223,7 +223,7 @@ fn fonts_load_from_files_and_rescans_report_new_families() {
     assert!(s.execute("text.loadFont", &json!({"data": "bm90IGEgZm9udA=="})).is_err(), "not a font file");
     assert!(s.execute("text.loadFont", &json!({"data": "%%%"})).is_err());
     assert!(s.execute("text.loadFont", &json!({"path": "no-such-dir/x.ttf"})).is_err());
-    if let Some(f) = trama_text::CRAFT_FONTS.first() {
+    if let Some(f) = trama_text::NODALIA_FONTS.first() {
         use base64::Engine as _;
         let data = base64::engine::general_purpose::STANDARD.encode(f.bytes);
         let r = s.execute("text.loadFont", &json!({"data": data})).unwrap();

@@ -164,7 +164,7 @@ fn a_huge_sticky_grows_taller_and_shrinks_back() {
 
 #[test]
 fn a_sticky_keeps_its_text_size_as_text_is_added() {
-    // The note's growth needs text measured: without craft-fonts that is with a system font,
+    // The note's growth needs text measured: without nodalia-fonts that is with a system font,
     // scanned here rather than by whichever test happens to run first (#333).
     trama_text::scan_system_fonts();
     let mut s = board();

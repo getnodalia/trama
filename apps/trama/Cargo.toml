@@ -18,10 +18,10 @@ trama-format = { workspace = true }
 trama-text = { workspace = true }
 # Shared decision of who draws the window frame on Linux (compositor vs. app), replacing the
 # bespoke Wayland xdg-decoration probe. See `[workspace.dependencies]`: pinned to the unmerged
-# craft-libs#217 branch and must be repointed to a merged `rev` before this PR is mergeable.
-craft-window = { workspace = true }
+# nodalia-libs#217 branch and must be repointed to a merged `rev` before this PR is mergeable.
+nodalia-window = { workspace = true }
 # The suite's settings folder: `TRAMA_CONFIG_DIR`, a portable marker, then the platform folder.
-craft-settings = { workspace = true }
+nodalia-settings = { workspace = true }
 egui = { workspace = true }
 # `links`: without it eframe drops every `ctx.open_url` and hyperlink click (the update prompt's
 # What's new and Download, About, Credits) with only a log warning.
@@ -60,7 +60,7 @@ objc2-foundation = { version = "0.3", default-features = false, features = ["std
 # A macOS app menu whose Quit (⌘Q) asks the app first (sends the root window a close request, the
 # same guarded path as the close button); winit's default Quit ends the process through
 # `terminate:`, losing unsaved changes without a word (issue #857).
-craft-menu = { workspace = true }
+nodalia-menu = { workspace = true }
 
 [dev-dependencies]
 wat = { workspace = true }
@@ -70,5 +70,5 @@ winresource = "0.1"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 # Use vector window controls without a title-font renderer or embedded Cantarell. The compositor
-# probe that used to need raw-window-handle and wayland-client here now lives in craft-window.
+# probe that used to need raw-window-handle and wayland-client here now lives in nodalia-window.
 winit = { version = "0.30", default-features = false, features = ["wayland-csd-adwaita-notitle"] }

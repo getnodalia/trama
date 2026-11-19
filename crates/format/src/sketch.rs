@@ -46,12 +46,12 @@ use serde_json::Value;
 use trama_doc::Document;
 
 // Container parsing is shared; Trama document projection remains in this module.
-pub(crate) use craft_sketch::Archive;
+pub(crate) use nodalia_sketch::Archive;
 
 use crate::FormatError;
 
-pub use craft_sketch::{MIN_SKETCH, NEWEST_TESTED_VERSION, TOO_OLD, is_sketch};
-const MAX_JSON_MEMBER: u64 = craft_sketch::MAX_JSON_MEMBER;
+pub use nodalia_sketch::{MIN_SKETCH, NEWEST_TESTED_VERSION, TOO_OLD, is_sketch};
+const MAX_JSON_MEMBER: u64 = nodalia_sketch::MAX_JSON_MEMBER;
 
 /// Finds the installed face a PostScript name belongs to: its family and style.
 pub type FontLookup = Box<dyn Fn(&str) -> Option<(String, String)>>;
@@ -101,10 +101,10 @@ fn import_parts(
         return Err(FormatError::Io(TOO_OLD.into()));
     }
     let archive =
-        Archive::open_with(bytes, craft_sketch::Limits { max_page: max_member, max_image: trama_doc::ImageData::MAX_BYTES, ..Default::default() })
+        Archive::open_with(bytes, nodalia_sketch::Limits { max_page: max_member, max_image: trama_doc::ImageData::MAX_BYTES, ..Default::default() })
             .map_err(|error| match error {
-                craft_sketch::Error::TooOld => FormatError::Io(TOO_OLD.into()),
-                craft_sketch::Error::Corrupt(message) => FormatError::Corrupt(format!("Sketch file: {message}")),
+                nodalia_sketch::Error::TooOld => FormatError::Io(TOO_OLD.into()),
+                nodalia_sketch::Error::Corrupt(message) => FormatError::Corrupt(format!("Sketch file: {message}")),
             })?;
     let map = tree::to_rest(&archive, name, max_nodes, fonts);
     if map.too_old {

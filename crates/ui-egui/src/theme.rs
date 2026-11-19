@@ -284,17 +284,17 @@ pub fn on_dark<R>(ui: &mut egui::Ui, f: impl FnOnce(&mut egui::Ui) -> R) -> R {
     r
 }
 
-/// UI fonts: Inter and the Archivo wordmark (from the craft-fonts build input) when present;
+/// UI fonts: Inter and the Archivo wordmark (from the nodalia-fonts build input) when present;
 /// otherwise egui's defaults. With
 /// `system`, also system faces for scripts those lack (Hebrew, joined Arabic, Ethiopic, the Indic
 /// scripts and the others [`crate::bidi::script_fallbacks`] names) so names in them show,
 /// and faces for the CJK scripts in `cjk` ([`crate::cjk`]).
 ///
-/// The craft-fonts set embeds Noto Sans Arabic and Noto Sans Hebrew; with `system` off those
+/// The nodalia-fonts set embeds Noto Sans Arabic and Noto Sans Hebrew; with `system` off those
 /// built-in faces are the whole RTL fallback, so tests and releases do not depend on installed fonts.
 pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     let mut fonts = FontDefinitions::default();
-    let find = |family: &str, style: &str| trama_text::CRAFT_FONTS.iter().find(|f| f.family == family && f.style == style).map(|f| f.bytes);
+    let find = |family: &str, style: &str| trama_text::NODALIA_FONTS.iter().find(|f| f.family == family && f.style == style).map(|f| f.bytes);
     let regular = find("Inter", "Regular");
     let semibold = find("Inter", "SemiBold").or_else(|| find("Inter", "Bold"));
     if let Some(r) = regular {
@@ -316,7 +316,7 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     semi.extend(fonts.families.get(&FontFamily::Proportional).cloned().unwrap_or_default());
     fonts.families.insert(FontFamily::Name("semibold".into()), semi);
     // Keep the logo's typeface independent of UI text. System Archivo is used when available;
-    // releases with craft-fonts embed it so the wordmark does not depend on installation.
+    // releases with nodalia-fonts embed it so the wordmark does not depend on installation.
     let archivo = find("Archivo", "SemiBold").map(FontData::from_static).or_else(|| {
         system.then(|| trama_text::find_face("Archivo", "SemiBold")).flatten().filter(|face| face.family == "Archivo").map(|face| font_data(&face))
     });
@@ -327,14 +327,14 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     }
     brand.extend(fonts.families.get(&FontFamily::Name("semibold".into())).cloned().unwrap_or_default());
     fonts.families.insert(FontFamily::Name("brand".into()), brand);
-    // CJK and other scripts from craft-fonts as fallbacks (Noto Sans CJK only with TRAMA_EMBED_CJK).
+    // CJK and other scripts from nodalia-fonts as fallbacks (Noto Sans CJK only with TRAMA_EMBED_CJK).
     const BUILT_IN: [&str; 7] =
         ["Inter", "BIZ UDPGothic", "Noto Sans CJK SC", "Noto Sans Arabic", "Noto Sans Hebrew", "Noto Sans Georgian", "Noto Sans Thai"];
     let lang = crate::i18n::current().map_or("en", |l| l.code);
     // A Chinese UI draws Han in a Chinese face: the built-in Japanese one goes after the system faces.
     let late = |family: &str| family == "BIZ UDPGothic" && crate::cjk::language(lang) == crate::cjk::HAN;
     let craft = |last: bool| {
-        trama_text::CRAFT_FONTS
+        trama_text::NODALIA_FONTS
             .iter()
             .filter(move |f| f.family != "Inter" && f.style == "Regular" && BUILT_IN.contains(&f.family) && late(f.family) == last)
             .map(|f| (format!("craft-{}", f.family), FontData::from_static(f.bytes)))
@@ -345,7 +345,7 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
         let embedded = |c: char| {
             BUILT_IN
                 .into_iter()
-                .filter(|f| !late(f) && trama_text::CRAFT_FONTS.iter().any(|cf| cf.family == *f))
+                .filter(|f| !late(f) && trama_text::NODALIA_FONTS.iter().any(|cf| cf.family == *f))
                 .filter_map(|f| trama_text::find_face(f, "Regular"))
                 .any(|x| x.has_char(c))
         };
@@ -556,9 +556,9 @@ mod tests {
     #[test]
     fn ui_font_draws_thai_with_the_built_in_thai_face() {
         // The web build has no system fonts: Thai layer names, frame labels and field text are drawn
-        // by craft-fonts' Noto Sans Thai, a built-in fallback, when the build embeds it.
-        if !trama_text::CRAFT_FONTS.iter().any(|f| f.family == "Noto Sans Thai") {
-            eprintln!("built without craft-fonts' Noto Sans Thai; skipping");
+        // by nodalia-fonts' Noto Sans Thai, a built-in fallback, when the build embeds it.
+        if !trama_text::NODALIA_FONTS.iter().any(|f| f.family == "Noto Sans Thai") {
+            eprintln!("built without nodalia-fonts' Noto Sans Thai; skipping");
             return;
         }
         let ctx = Context::default();

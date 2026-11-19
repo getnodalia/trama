@@ -3,7 +3,7 @@
 //! case gives the rule, the numbers it implies and a one-line derivation. Where the documentation
 //! is silent the case says so and pins today's behaviour.
 //!
-//! Metrics cases read the face actually used (any default face: craft-fonts or the system) and
+//! Metrics cases read the face actually used (any default face: nodalia-fonts or the system) and
 //! derive the expected numbers from its own ascent, descent, line gap and cap height, so they hold
 //! on every machine that has a font; with none they skip. Break and caret rules are font-free.
 
@@ -335,7 +335,7 @@ fn hangul_comes_from_a_korean_font_when_one_is_installed() {
 
 #[test]
 fn thai_comes_from_a_thai_font_when_one_is_installed() {
-    // The default (Latin) face has no Thai. With a Thai face (Noto Sans Thai from craft-fonts or
+    // The default (Latin) face has no Thai. With a Thai face (Noto Sans Thai from nodalia-fonts or
     // Linux, Leelawadee UI or Tahoma on Windows, Thonburi on macOS) the fallback draws every Thai
     // cluster, marks included, instead of the missing-glyph box. Skips on a machine without one.
     // "ภาษาไทย" (the Thai language) and "น้ำ" (water: a tone mark over SARA AM).

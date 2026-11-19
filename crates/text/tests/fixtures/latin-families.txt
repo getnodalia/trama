@@ -1,4 +1,4 @@
-# Synthetic paths; family/style inventory from craft-fonts 76ba5a0496503c0e2841abd626295038cbe07cde.
+# Synthetic paths; family/style inventory from nodalia-fonts 76ba5a0496503c0e2841abd626295038cbe07cde.
 Inter | Regular | fonts/face.ttf | Latn
 Inter | Italic | fonts/face.ttf | Latn
 Inter | SemiBold | fonts/face.ttf | Latn

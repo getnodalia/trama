@@ -53,16 +53,16 @@ fn bitmap(image: &egui::ColorImage, glyph: &egui::epaint::text::Glyph) -> (usize
 }
 
 /// A context with the bundled (or explicitly tested) Hebrew and Arabic faces. The required
-/// craft-fonts build must carry both; an optional no-font build skips instead of borrowing a
+/// nodalia-fonts build must carry both; an optional no-font build skips instead of borrowing a
 /// system face or treating tofu as evidence.
 fn fonts() -> Option<egui::Context> {
-    let has = |family: &str| trama_text::CRAFT_FONTS.iter().any(|f| f.family == family && f.style == "Regular");
+    let has = |family: &str| trama_text::NODALIA_FONTS.iter().any(|f| f.family == family && f.style == "Regular");
     if !has("Noto Sans Hebrew") || !has("Noto Sans Arabic") {
         assert!(
-            option_env!("CRAFT_FONTS_REQUIRED").is_none(),
-            "the required craft-fonts input must include Noto Sans Hebrew and Noto Sans Arabic Regular"
+            option_env!("NODALIA_FONTS_REQUIRED").is_none(),
+            "the required nodalia-fonts input must include Noto Sans Hebrew and Noto Sans Arabic Regular"
         );
-        eprintln!("optional craft-fonts input absent: right-to-left names were not qualified");
+        eprintln!("optional nodalia-fonts input absent: right-to-left names were not qualified");
         return None;
     }
     let ctx = egui::Context::default();
