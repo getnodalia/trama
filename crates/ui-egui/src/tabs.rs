@@ -115,7 +115,10 @@ pub fn tab_bar(app: &mut FigApp, ui: &mut Ui) {
     egui::Panel::top("tab_bar").exact_size(HEIGHT).frame(egui::Frame::NONE.fill(t.tab_bar)).show(ui, |ui| {
         let rect = ui.max_rect();
         let buttons_w = if app.ui.title_bar == TitleBar::Custom { window_buttons(app, ui, rect) } else { 0.0 };
-        let mut x = rect.min.x + if app.ui.title_bar == TitleBar::Inset { nodalia_theme::titlebar::MAC_LIGHTS } else { 8.0 };
+        // Nodalia's controls lead the bar when the desktop keeps its buttons at the left, end it
+        // otherwise (Windows' own caption buttons always end it).
+        let (lead_w, buttons_w) = if nodalia_controls_left() { (buttons_w, 0.0) } else { (0.0, buttons_w) };
+        let mut x = rect.min.x + lead_w + if app.ui.title_bar == TitleBar::Inset { nodalia_theme::titlebar::MAC_LIGHTS } else { 8.0 };
         x += main_menu_button(app, ui, &t, x, rect);
         x += home_tab(app, ui, &t, x, rect);
         ui.painter().line_segment([pos2(x, rect.min.y), pos2(x, rect.max.y)], Stroke::new(1.0, t.border));
@@ -731,17 +734,24 @@ fn window_buttons(app: &mut FigApp, ui: &mut Ui, bar: Rect) -> f32 {
     if cfg!(target_os = "windows") { windows_caption_buttons(app, ui, bar) } else { nodalia_window_buttons(app, ui, bar) }
 }
 
-/// NDL's round window controls (`nodalia_theme::window_controls`), kept a little from the edge.
+/// Whether NDL's round controls sit at the bar's left end: the desktop's button layout says so.
+fn nodalia_controls_left() -> bool {
+    !cfg!(target_os = "windows") && nodalia_theme::titlebar::system_side() == nodalia_theme::titlebar::Side::Left
+}
+
+/// NDL's round window controls (`nodalia_theme::window_controls`), kept a little from the edge, at
+/// the side the desktop keeps its own.
 fn nodalia_window_buttons(app: &mut FigApp, ui: &mut Ui, bar: Rect) -> f32 {
-    use nodalia_theme::window_controls::{Action, Labels, WIDTH, show};
+    use nodalia_theme::window_controls::{Action, Labels, WIDTH, show_on};
     let t = Tokens::get(ui.ctx());
     let mode = if t.dark { nodalia_theme::Mode::Dark } else { nodalia_theme::Mode::Light };
     let palette = mode.palette_with(crate::theme::TRAMA);
     let (max, focused) = ui.input(|i| (i.viewport().maximized.unwrap_or(false), i.viewport().focused.unwrap_or(true)));
     let margin = 8.0;
-    let rect = Rect::from_min_max(pos2(bar.max.x - WIDTH - margin, bar.min.y), pos2(bar.max.x - margin, bar.max.y));
+    let side = nodalia_theme::titlebar::system_side();
+    let rect = nodalia_theme::titlebar::Placement::nodalia(side).controls_rect(bar);
     let labels = Labels { minimize: tr("Minimize"), maximize: tr("Maximize"), restore: tr("Restore"), close: tr("Close") };
-    match show(ui, rect, &palette, mode, focused, max, labels) {
+    match show_on(ui, rect, side, &palette, mode, focused, max, labels) {
         Some(Action::Minimize) => ui.ctx().send_viewport_cmd(egui::ViewportCommand::Minimized(true)),
         Some(Action::Maximize) => ui.ctx().send_viewport_cmd(egui::ViewportCommand::Maximized(true)),
         Some(Action::Restore) => ui.ctx().send_viewport_cmd(egui::ViewportCommand::Maximized(false)),
