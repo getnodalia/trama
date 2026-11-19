@@ -1808,7 +1808,7 @@ status = "draft — needs native review"
 "duplicate grid track sizing entries use equal tracks" = "நகல் கட்ட டிராக் அளவு உள்ளீடுகள் சம டிராக்குகளைப் பயன்படுத்தும்"
 "e.g. count + 1" = "எ.கா. count + 1"
 "e.g. count >= 3 and not done" = "எ.கா. count >= 3 and not done"
-"elbowed and curved connectors without a saved path follow Trama's own routing" = "சேமித்த பாதை இல்லாத வளைந்த மற்றும் மடிந்த கனெக்டர்கள் Trama-இன் சொந்த வழித்தடத்தைப் பின்பற்றும்"
+"elbowed and curved connectors without a saved path are routed afresh" = "சேமித்த பாதை இல்லாத வளைந்த மற்றும் மடிந்த கனெக்டர்கள் Trama-இன் சொந்த வழித்தடத்தைப் பின்பற்றும்"
 "entries without a node type were skipped" = "நோட் வகை இல்லாத உள்ளீடுகள் தவிர்க்கப்பட்டன"
 "trama:// links from a browser, chat or email open this app and join the session." = "உலாவி, அரட்டை அல்லது மின்னஞ்சலில் உள்ள trama:// இணைப்புகள் இந்த ஆப்ஸைத் திறந்து அமர்வில் சேர்க்கும்."
 "from {server}" = "{server} இலிருந்து"
@@ -2033,7 +2033,6 @@ status = "draft — needs native review"
 "Source code and issues on GitHub" = "GitHub-இல் மூலக் குறியீடும் சிக்கல்களும்"
 "The canvas previews colors in sRGB; PNG, JPG and WebP exports that use the file's profile are tagged Display P3." = "கேன்வாஸ் வண்ணங்களை sRGB-இல் முன்னோட்டமிடுகிறது; கோப்பின் சுயவிவரத்தைப் பயன்படுத்தும் PNG, JPG, WebP ஏற்றுமதிகள் Display P3 எனக் குறியிடப்படும்."
 "Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama ஆரம்பத்தில் FigCraft ஆக இருந்தது; ArtCraft Team மற்றும் FigCraft பங்களிப்பாளர்கள் அதே உரிமங்களின் கீழ் உருவாக்கினர்." # rebrand: keep
-"shape with text layers import as frames with their text" = "உரை அடுக்குகளைக் கொண்ட வடிவங்கள் அவற்றின் உரையுடன் சட்டங்களாக இறக்குமதியாகும்"
 "sticky layers import as frames with their text" = "ஒட்டுக்குறிப்பு அடுக்குகள் அவற்றின் உரையுடன் சட்டங்களாக இறக்குமதியாகும்"
 
 [commands]

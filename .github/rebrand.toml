@@ -12,7 +12,7 @@ keep = [
     "(https?://)?github\\.com/storytold/[\\w.-]+/(issues|pull|commit|discussions)/[^\\s)\\]\"'<>`]*",
     # Links to other people's repositories. Upstream's own repository and the shared crates that
     # getnodalia/foundation vendors (craft-libs, egui, winit, craft-fonts) are renamed below.
-    "https?://(github\\.com|raw\\.githubusercontent\\.com)/(?!storytold/(figcraft|craft-libs|egui|winit|craft-fonts)\\b|getnodalia|danielmigueltejedor)[^\\s)\\]\"'<>`]*",
+    "https?://(?!github\\.com/storytold/(craft-libs|egui|winit|winprint\\.rs|indd-utils)(\\.git)?\")(github\\.com|raw\\.githubusercontent\\.com)/(?!storytold/(figcraft|craft-libs|egui|winit|craft-fonts)\\b|getnodalia|danielmigueltejedor)[^\\s)\\]\"'<>`]*",
     # Upstream's issues named without a link (`storytold/figcraft#123`).
     "storytold/[\\w.-]+#\\d+",
     # The shared test corpus keeps its name.
@@ -43,6 +43,8 @@ keep = [
     '(?<=, "figcraft", ")FigCraft(?="\])',
     '(?<="TRAMA", ")figcraft(?=")',
     '(?<=eq_ignore_ascii_case\(")figcraft(?=")',
+    # The shared native-format crate in getnodalia/foundation keeps its published name.
+    "craft[-_]figcraft[-_]format",
     # Credit for work done upstream.
     "FigCraft contributors",
     "colaboradores de FigCraft",
@@ -74,6 +76,52 @@ file = "Cargo.toml"
 pattern = '^version = "[^"]*"'
 
 # Identity: app id, publisher, installer identities (a product of its own, never FigCraft's).
+# Cargo sources: the shared libraries come from getnodalia/foundation, which vendors them at the
+# same commits (standards/shared-libraries.md there). Before the broader link rules below.
+[[replace]]
+from = 'git = "https://github.com/storytold/craft-libs.git"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/craft-libs"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/egui.git"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/egui"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/winit.git"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/winit"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/winprint.rs.git"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/winprint.rs"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/indd-utils.git"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = 'git = "https://github.com/storytold/indd-utils"'
+to = 'git = "https://github.com/getnodalia/foundation"'
+
+[[replace]]
+from = '"https://github.com/storytold/craft-libs"'
+to = '"https://github.com/getnodalia/foundation"'
+
 [[replace]]
 from = "ai.storyteller.figcraft"
 to = "dev.danielmiguelt.Trama"

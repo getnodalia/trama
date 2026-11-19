@@ -1780,7 +1780,7 @@ status = "draft — reviewed by a native speaker, awaiting a maintainer's approv
 "duplicate grid track sizing entries use equal tracks" = "ბადის ტრეკის ზომის დუბლირებული ჩანაწერებისას ტრეკები თანაბარია"
 "e.g. count + 1" = "მაგ. count + 1"
 "e.g. count >= 3 and not done" = "მაგ. count >= 3 and not done"
-"elbowed and curved connectors without a saved path follow Trama's own routing" = "შენახული ტრაექტორიის გარეშე კუთხოვანი და მრუდი შემაერთებლები Trama-ის საკუთარ მარშრუტს მიჰყვება"
+"elbowed and curved connectors without a saved path are routed afresh" = "შენახული ტრაექტორიის გარეშე კუთხოვანი და მრუდი შემაერთებლები Trama-ის საკუთარ მარშრუტს მიჰყვება"
 "entries without a node type were skipped" = "კვანძის ტიპის გარეშე ჩანაწერები გამოტოვებულია"
 "trama:// links from a browser, chat or email open this app and join the session." = "ბრაუზერიდან, ჩატიდან ან ელფოსტიდან trama:// ბმულები ხსნის ამ აპს და უერთდება სესიას."
 "from {server}" = "წყარო: {server}"
@@ -2031,7 +2031,6 @@ status = "draft — reviewed by a native speaker, awaiting a maintainer's approv
 "Select a row, a column or a full grid of three or more layers, outside an auto layout flow" = "მონიშნეთ მწკრივი, სვეტი ან სამი ან მეტი შრის სრული ბადე ავტოგანლაგების ნაკადის გარეთ"
 "Source code and issues on GitHub" = "წყაროს კოდი და საკითხები GitHub-ზე"
 "Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama დაიწყო როგორც FigCraft, ArtCraft Team-ისა და FigCraft-ის კონტრიბუტორების მიერ, იმავე ლიცენზიებით." # rebrand: keep
-"shape with text layers import as frames with their text" = "ტექსტის შრეების მქონე ფორმები ჩარჩოებად შემოდის თავიანთი ტექსტით"
 "sticky layers import as frames with their text" = "სტიკერის შრეები ჩარჩოებად შემოდის თავიანთი ტექსტით"
 "Extra large" = "ძალიან დიდი"
 "Huge" = "უზარმაზარი"

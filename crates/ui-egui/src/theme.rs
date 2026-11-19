@@ -42,6 +42,10 @@ pub struct Tokens {
     pub success: Color32,
     pub warning: Color32,
     pub guide: Color32,
+    /// Auto layout padding grips on the canvas.
+    pub padding_grip: Color32,
+    /// Contrasting edge around padding grips, including their dimmed state.
+    pub padding_grip_border: Color32,
     pub tab_bar: Color32,
     pub tab_active: Color32,
     pub shadow: Color32,
@@ -150,6 +154,8 @@ impl Tokens {
             success: DEV_READY,
             warning: Color32::from_rgb(0xFF, 0xCD, 0x29),
             guide: Color32::from_rgb(0xF2, 0x48, 0x22),
+            padding_grip: Color32::from_rgb(0xF2, 0x48, 0x8C),
+            padding_grip_border: Color32::WHITE,
             tab_bar: c(p.surface_window),
             tab_active: panel,
             shadow: Color32::from_black_alpha(if dark { 90 } else { 40 }),
