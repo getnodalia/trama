@@ -3168,7 +3168,7 @@ dependencies = [
 [[package]]
 name = "nodalia-theme"
 version = "0.1.0-alpha.1"
-source = "git+https://github.com/getnodalia/nodalia-design?rev=07e63775aca14bc13f98e72e3c67be978f2f7fc3#07e63775aca14bc13f98e72e3c67be978f2f7fc3"
+source = "git+https://github.com/getnodalia/nodalia-design?rev=44bfd0a37e6bd2837c473b4e5607b70e8d169e61#44bfd0a37e6bd2837c473b4e5607b70e8d169e61"
 dependencies = [
  "egui",
 ]
@@ -3176,7 +3176,7 @@ dependencies = [
 [[package]]
 name = "nodalia-update"
 version = "0.1.0-alpha.1"
-source = "git+https://github.com/getnodalia/nodalia-design?rev=07e63775aca14bc13f98e72e3c67be978f2f7fc3#07e63775aca14bc13f98e72e3c67be978f2f7fc3"
+source = "git+https://github.com/getnodalia/nodalia-design?rev=114848a2ff1a7c29c9a5432fb12e955fbe0aeef2#114848a2ff1a7c29c9a5432fb12e955fbe0aeef2"
 dependencies = [
  "egui",
  "serde_json",
@@ -5126,7 +5126,7 @@ dependencies = [
 
 [[package]]
 name = "trama"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "arboard",
  "craft-menu",
@@ -5158,7 +5158,7 @@ dependencies = [
 
 [[package]]
 name = "trama-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "clap_complete",
@@ -5176,7 +5176,7 @@ dependencies = [
 
 [[package]]
 name = "trama-collab"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -5194,7 +5194,7 @@ dependencies = [
 
 [[package]]
 name = "trama-collab-net"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.4.3",
@@ -5217,7 +5217,7 @@ dependencies = [
 
 [[package]]
 name = "trama-color"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "kurbo",
  "serde",
@@ -5226,7 +5226,7 @@ dependencies = [
 
 [[package]]
 name = "trama-doc"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "imbl",
  "serde",
@@ -5239,7 +5239,7 @@ dependencies = [
 
 [[package]]
 name = "trama-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "craft-docpath",
@@ -5273,7 +5273,7 @@ dependencies = [
 
 [[package]]
 name = "trama-format"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "craft-fig",
  "craft-figcraft-format",
@@ -5295,7 +5295,7 @@ dependencies = [
 
 [[package]]
 name = "trama-geom"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "kurbo",
  "serde",
@@ -5303,7 +5303,7 @@ dependencies = [
 
 [[package]]
 name = "trama-layout"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "trama-doc",
  "trama-geom",
@@ -5311,7 +5311,7 @@ dependencies = [
 
 [[package]]
 name = "trama-mcp"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "image",
@@ -5327,7 +5327,7 @@ dependencies = [
 
 [[package]]
 name = "trama-pathops"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "linesweeper",
  "trama-doc",
@@ -5336,7 +5336,7 @@ dependencies = [
 
 [[package]]
 name = "trama-pdf"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "flate2",
  "krilla",
@@ -5353,7 +5353,7 @@ dependencies = [
 
 [[package]]
 name = "trama-plugin"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -5366,7 +5366,7 @@ dependencies = [
 
 [[package]]
 name = "trama-render"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "crc32fast",
  "image",
@@ -5385,7 +5385,7 @@ dependencies = [
 
 [[package]]
 name = "trama-server"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "crc32fast",
@@ -5410,7 +5410,7 @@ dependencies = [
 
 [[package]]
 name = "trama-svg"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "craft-xml",
@@ -5427,7 +5427,7 @@ dependencies = [
 
 [[package]]
 name = "trama-text"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "core-text",
  "craft-font-catalog",
@@ -5445,7 +5445,7 @@ dependencies = [
 
 [[package]]
 name = "trama-ui-egui"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -5475,7 +5475,7 @@ dependencies = [
 
 [[package]]
 name = "trama-vectordrawable"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "craft-vectordrawable",
  "roxmltree 0.21.2",
@@ -5490,7 +5490,7 @@ dependencies = [
 
 [[package]]
 name = "trama-web"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "craft-web-api",
@@ -6785,7 +6785,7 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde_json",
  "trama-engine",

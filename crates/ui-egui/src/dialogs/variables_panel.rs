@@ -1185,13 +1185,22 @@ fn details(app: &mut FigApp, ctx: &Context, vars: &Variables, st: &mut Editor) {
     let mut open = true;
     egui::Window::new(tr("Edit variable"))
         .id(Id::unique("variable_details"))
-        .open(&mut open)
         .collapsible(false)
         .resizable(false)
+        // NDL's heading (the title and the round close button) instead of egui's title bar.
+        .title_bar(false)
         .default_width(280.0)
-        .frame(egui::Frame::window(&ctx.global_style()).fill(t.panel).inner_margin(egui::Margin::same(16)))
+        .frame(
+            egui::Frame::window(&ctx.global_style())
+                .fill(t.panel)
+                .corner_radius(egui::CornerRadius::same(crate::theme::ISLAND_RADIUS))
+                .inner_margin(egui::Margin::same(16)),
+        )
         .show(ctx, |ui| {
             ui.set_width(260.0);
+            if crate::dialogs::header(ui, &t, tr("Edit variable")) {
+                open = false;
+            }
             widgets::label(ui, tr("Name"), t.text_secondary);
             if let Some(n) = widgets::text_field(ui, Id::unique(("var_detail_name", &v.id)), &v.name, 260.0, "") {
                 app.run("variable.update", json!({"variable": v.id, "name": n}));
@@ -1285,13 +1294,22 @@ fn bulk_details(app: &mut FigApp, ctx: &Context, vars: &Variables, st: &mut Edit
     let mut open = true;
     egui::Window::new(tr("Edit variables"))
         .id(Id::unique("variables_bulk_details"))
-        .open(&mut open)
         .collapsible(false)
         .resizable(false)
+        // NDL's heading (the title and the round close button) instead of egui's title bar.
+        .title_bar(false)
         .default_width(280.0)
-        .frame(egui::Frame::window(&ctx.global_style()).fill(t.panel).inner_margin(egui::Margin::same(16)))
+        .frame(
+            egui::Frame::window(&ctx.global_style())
+                .fill(t.panel)
+                .corner_radius(egui::CornerRadius::same(crate::theme::ISLAND_RADIUS))
+                .inner_margin(egui::Margin::same(16)),
+        )
         .show(ctx, |ui| {
             ui.set_width(260.0);
+            if crate::dialogs::header(ui, &t, tr("Edit variables")) {
+                open = false;
+            }
             if let Some(i) = widgets::segmented_text(ui, &[tr("Details"), tr("Scope")], st.bulk_tab) {
                 st.bulk_tab = i;
             }

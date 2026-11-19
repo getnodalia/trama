@@ -27,7 +27,7 @@ fn count(doc: &Document, f: impl Fn(&NodeKind) -> bool) -> usize {
 
 #[test]
 fn every_template_builds_a_valid_document_the_same_every_time() {
-    assert_eq!(TEMPLATES.len(), 8);
+    assert_eq!(TEMPLATES.len(), 11);
     for t in TEMPLATES {
         let doc = built(t.id);
         assert_eq!(doc.validate(), Vec::<String>::new(), "{}", t.id);
@@ -86,6 +86,25 @@ fn templates_use_the_features_they_show() {
     assert_eq!(built("social-posts").node(built("social-posts").first_page().unwrap()).unwrap().children.len(), 5);
     assert_eq!(built("slides").node(built("slides").first_page().unwrap()).unwrap().children.len(), 5);
     assert_eq!(built("landing-page").node(built("landing-page").first_page().unwrap()).unwrap().children.len(), 2, "desktop and phone");
+}
+
+#[test]
+fn the_newer_templates_have_their_structure() {
+    let instances = |d: &Document| count(d, |k| matches!(k, NodeKind::Instance { .. }));
+    let components = |d: &Document| count(d, |k| matches!(k, NodeKind::Component { .. }));
+    let onboarding = built("onboarding-flow");
+    assert_eq!(onboarding.node(onboarding.first_page().unwrap()).unwrap().children.len(), 3, "three screens");
+    assert!(components(&onboarding) == 1 && instances(&onboarding) == 3, "one button, used on every screen");
+    assert!(
+        matches!(&onboarding.node(onboarding.first_page().unwrap()).unwrap().kind, NodeKind::Page { flows, .. } if flows.len() == 1),
+        "a prototype flow"
+    );
+    assert_eq!(onboarding.ids().filter(|id| onboarding.node(*id).is_some_and(|n| !n.interactions.is_empty())).count(), 3, "a link from every screen");
+    let pricing = built("pricing-page");
+    assert_eq!(pricing.node(pricing.first_page().unwrap()).unwrap().children.len(), 1);
+    assert!(count(&pricing, |k| matches!(k, NodeKind::Text { .. })) >= 40, "plans, features and questions are all text");
+    let letter = built("newsletter");
+    assert_eq!(letter.node(letter.first_page().unwrap()).unwrap().children.len(), 1);
 }
 
 #[test]

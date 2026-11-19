@@ -393,13 +393,16 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
     if let Some((mut find, mut replace)) = app.ui.find.clone() {
         let mut open = true;
         let mut action = None;
-        egui::Window::new(tr("Find and replace"))
+        let t = Tokens::get(ctx);
+        floating(tr("Find and replace"), ctx)
             .id(egui::Id::unique("Find and replace"))
-            .open(&mut open)
+            .title_bar(false)
             .anchor(Align2::LEFT_TOP, vec2(260.0, 120.0))
-            .resizable(false)
             .show(ctx, |ui| {
                 ui.set_width(280.0);
+                if header(ui, &t, tr("Find and replace")) {
+                    open = false;
+                }
                 let r = ui.add(egui::TextEdit::singleline(&mut find).hint_text(tr("Find")).desired_width(260.0));
                 crate::widgets::select_all_on_focus(ui, &r, &find);
                 let r = ui.add(egui::TextEdit::singleline(&mut replace).hint_text(tr("Replace with")).desired_width(260.0));
