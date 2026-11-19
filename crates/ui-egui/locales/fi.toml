@@ -2037,7 +2037,6 @@ status = "draft — needs native review"
 "Small" = "Pieni"
 "Source code and issues on GitHub" = "Lähdekoodi ja ongelmat GitHubissa"
 "Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama sai alkunsa FigCraftina; sen tekivät ArtCraft Team ja FigCraftin avustajat samoilla lisensseillä." # rebrand: keep
-"shape with text layers import as frames with their text" = "tekstitasoja sisältävät muodot tuodaan kehyksinä tekstineen"
 "sticky layers import as frames with their text" = "tarratasot tuodaan kehyksinä tekstineen"
 
 [commands]

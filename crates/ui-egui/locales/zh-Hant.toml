@@ -2032,7 +2032,6 @@ status = "draft — needs native review"
 "Tab or Ctrl+Space again" = "再按一次 Tab 或 Ctrl+空白鍵"
 "Text direction" = "文字方向"
 "Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama 起初是 FigCraft，由 ArtCraft Team 與 FigCraft 貢獻者開發，採用相同的授權。" # rebrand: keep
-"shape with text layers import as frames with their text" = "含文字圖層的形狀會匯入為含其文字的框架"
 "sticky layers import as frames with their text" = "便利貼圖層會匯入為含其文字的框架"
 "{name}, disconnected from its live session" = "{name}，已與其即時工作階段中斷連線"
 "↵ / ⇧↵" = "↵ / ⇧↵"

@@ -2012,7 +2012,6 @@ status = "draft — needs native review"
 "Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama je započela kao FigCraft, autora ArtCraft Team i saradnika FigCrafta, pod istim licencama." # rebrand: keep
 "Upload from computer" = "Učitaj s računara"
 "Wrap style" = "Stil prelamanja"
-"shape with text layers import as frames with their text" = "oblici sa slojevima teksta uvoze se kao okviri s njihovim tekstom"
 "sticky layers import as frames with their text" = "slojevi samoljepljivih bilješki uvoze se kao okviri s njihovim tekstom"
 "{count} in it now · Changed {date}" = "Sada ih je {count} · Promijenjeno {date}"
 "{insertions} · {detachments}" = "{insertions} · {detachments}"
