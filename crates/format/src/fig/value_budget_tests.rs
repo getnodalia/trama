@@ -161,5 +161,8 @@ fn a_small_canvas_that_unpacks_to_millions_of_values_is_refused() {
     let file = one_list_canvas(&Schema::parse("message Message uint[] xs").unwrap(), n, std::iter::repeat_n(0, n as usize));
     assert!(file.len() < 100_000, "{} bytes", file.len());
     let Err(e) = import(&file, "x") else { panic!("a {} byte canvas holding {n} values opened", file.len()) };
-    assert_eq!(e.to_string(), "not a valid Trama file: .fig file: message: too many values");
+    // The shared format crate words the start of this message with its own product name.
+    let message = e.to_string();
+    assert!(message.starts_with("not a valid "), "{message}");
+    assert!(message.ends_with(" file: .fig file: message: too many values"), "{message}");
 }
