@@ -345,6 +345,6 @@ fn a_png_that_decodes_too_large_is_refused() {
     chunk(&mut png, b"IHDR", &ihdr);
     chunk(&mut png, b"IDAT", &z.finish().unwrap());
     chunk(&mut png, b"IEND", &[]);
-    const { assert!(krilla::NODALIA_UNWIND_SAFE_DROP) };
+    const { assert!(krilla::CRAFT_UNWIND_SAFE_DROP) }; // rebrand: keep (name defined by the vendored krilla patch)
     assert!(krilla::image::Image::from_png(krilla::Data::from(png), true).is_err());
 }
