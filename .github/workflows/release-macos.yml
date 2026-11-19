@@ -2,18 +2,9 @@ name: Release macOS
 
 # Trama's app and DMG on a standard macOS runner, like the other Nodalia apps. An artifact on every
 # run, and the release asset when release-auto.yml calls it with a tag.
+# Runs only when a release calls it (release-auto.yml) or by hand (workflow_dispatch), never on pull
+# requests or pushes: the organization's 5 macOS slots are kept for releases.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    paths:
-      - "apps/**"
-      - "crates/**"
-      - "assets/**"
-      - "packaging/macos/**"
-      - "packaging/env.sh"
-      - "Cargo.lock"
-      - ".github/workflows/release-macos.yml"
   workflow_dispatch:
   # release-auto.yml, once a version with its notes lands on main.
   workflow_call:
