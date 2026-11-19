@@ -6,7 +6,7 @@ exclude = ["plugins"]
 # default-members = ["crates/*", "apps/trama", "apps/trama-cli", "xtask"]
 
 [workspace.package]
-version = "0.1.4"
+version = "0.2.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
