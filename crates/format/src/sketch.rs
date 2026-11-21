@@ -81,7 +81,7 @@ pub fn is_sketch(bytes: &[u8]) -> bool {
     bytes.starts_with(b"SQLite format 3\0")
         || (bytes.starts_with(b"PK")
             && zip::ZipArchive::new(std::io::Cursor::new(bytes)).is_ok_and(|z| {
-                let names: BTreeSet<&str> = z.file_names().collect();
+                let names: BTreeSet<String> = z.file_names().filter_map(Result::ok).map(|name| name.into_owned()).collect();
                 names.contains("document.json") && names.contains("meta.json")
             }))
 }
@@ -218,7 +218,11 @@ impl<'b> Archive<'b> {
                 ));
                 let pages: Vec<Value> = z
                     .file_names()
-                    .filter_map(|n| n.strip_prefix("pages/")?.strip_suffix(".json"))
+                    .filter_map(|entry| {
+                        let name = entry.ok()?;
+                        let id = name.strip_prefix("pages/")?.strip_suffix(".json")?;
+                        Some(id.to_owned())
+                    })
                     .map(|id| json!({"_ref": format!("pages/{id}")}))
                     .collect();
                 json!({"pages": pages})
