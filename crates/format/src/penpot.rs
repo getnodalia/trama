@@ -379,7 +379,7 @@ pub fn import(bytes: &[u8]) -> Result<(Document, Vec<String>), FormatError> {
         // An importer never extracts members to disk, but ambiguous ZIP names can
         // cause one member to be inspected and another member to be read by name.
         // Reject duplicates and traversal instead of guessing which version is real.
-        let name = member.name();
+        let name = member.name().map_err(|e| corrupt(format!("invalid ZIP member name: {e}")))?;
         if !names.insert(name.to_owned()) {
             return Err(corrupt(format!("duplicate ZIP member: {}", name.chars().take(200).collect::<String>())));
         }
@@ -447,11 +447,12 @@ pub fn import(bytes: &[u8]) -> Result<(Document, Vec<String>), FormatError> {
         let prefix = format!("{base}/pages/");
         let page_names: Vec<String> = z
             .file_names()
+            .map(|name| name.expect("ZIP entry names validated before loading"))
             .filter(|name| {
                 name.strip_prefix(&prefix).is_some_and(|part| part.len() == 41 && part.ends_with(".json") && part.get(..36).is_some_and(uuid))
             })
             .take(501)
-            .map(str::to_owned)
+            .map(|name| name.into_owned())
             .collect();
         if page_names.len() > 500 {
             return Err(corrupt("too many pages"));
@@ -508,12 +509,13 @@ pub fn import(bytes: &[u8]) -> Result<(Document, Vec<String>), FormatError> {
             let page_prefix = format!("{prefix}{page_id}/");
             let paths: Vec<String> = z
                 .file_names()
+                .map(|name| name.expect("ZIP entry names validated before loading"))
                 .filter(|name| {
                     name.strip_prefix(&page_prefix)
                         .is_some_and(|part| part.len() == 41 && part.ends_with(".json") && part.get(..36).is_some_and(uuid))
                 })
                 .take(MAX_LAYERS + 1)
-                .map(str::to_owned)
+                .map(|name| name.into_owned())
                 .collect();
             if paths.len() > MAX_LAYERS {
                 return Err(corrupt("too many layers on a page"));
@@ -548,7 +550,7 @@ pub fn import(bytes: &[u8]) -> Result<(Document, Vec<String>), FormatError> {
                 }
             }
             let svg_defs = svg_gradients(&shapes);
-            let roots: Vec<String> = list(root, "shapes").filter_map(Value::as_str).map(str::to_owned).collect();
+            let roots: Vec<String> = list(root, "shapes").filter_map(Value::as_str).map(|name| name.into_owned()).collect();
             let mut seen = BTreeSet::new();
             let mut layers = LayerImport {
                 z: &mut z,
@@ -1442,9 +1444,10 @@ fn import_document_colors(z: &mut ZipArchive<Cursor<&[u8]>>, base: &str, doc: &m
     let prefix = format!("{base}/colors/");
     let paths = z
         .file_names()
+        .map(|name| name.expect("ZIP entry names validated before loading"))
         .filter(|name| name.strip_prefix(&prefix).is_some_and(|part| part.len() == 41 && part.ends_with(".json") && part.get(..36).is_some_and(uuid)))
         .take(2049)
-        .map(str::to_owned)
+        .map(|name| name.into_owned())
         .collect::<Vec<_>>();
     if paths.len() > 2048 {
         warn(warnings, "Penpot color library exceeds 2048 swatches; truncated".into());
@@ -1492,9 +1495,10 @@ fn import_typography_styles(
     let prefix = format!("{base}/typographies/");
     let paths: Vec<String> = z
         .file_names()
+        .map(|name| name.expect("ZIP entry names validated before loading"))
         .filter(|name| name.strip_prefix(&prefix).is_some_and(|part| part.len() == 41 && part.ends_with(".json") && part.get(..36).is_some_and(uuid)))
         .take(2049)
-        .map(str::to_owned)
+        .map(|name| name.into_owned())
         .collect();
     if paths.len() > 2048 {
         warn(warnings, "Penpot typography library exceeds 2048 entries; truncated".into());
@@ -1575,7 +1579,7 @@ fn composite_token_style(token: &Value) -> Option<StyleKind> {
                 if weight.as_str().is_some_and(|s| s.contains('{')) {
                     return None;
                 }
-                fields.insert("fontWeight".into(), Value::String(weight.as_str().map(str::to_owned).unwrap_or_else(|| weight.to_string())));
+                fields.insert("fontWeight".into(), Value::String(weight.as_str().map(|name| name.into_owned()).unwrap_or_else(|| weight.to_string())));
             }
             if let Some(spacing_value) = value.get("letterSpacing") {
                 fields.insert("letterSpacing".into(), serde_json::json!(compound_number(spacing_value)?));
@@ -2507,9 +2511,10 @@ fn component_masters(
     let prefix = format!("{base}/components/");
     let paths = z
         .file_names()
+        .map(|name| name.expect("ZIP entry names validated before loading"))
         .filter(|name| name.strip_prefix(&prefix).is_some_and(|part| part.len() == 41 && part.ends_with(".json") && part.get(..36).is_some_and(uuid)))
         .take(10001)
-        .map(str::to_owned)
+        .map(|name| name.into_owned())
         .collect::<Vec<_>>();
     let mut result = BTreeMap::new();
     let mut variant_names = BTreeMap::new();
@@ -3428,7 +3433,7 @@ impl LayerImport<'_, '_> {
                 }
             }
         }
-        let mut children: Vec<String> = list(v, "shapes").filter_map(Value::as_str).map(str::to_owned).collect();
+        let mut children: Vec<String> = list(v, "shapes").filter_map(Value::as_str).map(|name| name.into_owned()).collect();
         if let Some(layout) =
             self.doc.node_mut(created).and_then(|n| n.layout.as_mut()).filter(|l| matches!(l.mode, LayoutMode::Horizontal | LayoutMode::Vertical))
         {
@@ -3594,7 +3599,7 @@ fn text_style(v: &Value, base: &TextStyle) -> TextStyle {
     let variant_weight: String = variant.chars().take_while(|c| c.is_ascii_digit()).collect();
     let weight = v
         .get("fontWeight")
-        .and_then(|w| w.as_str().map(str::to_owned).or_else(|| w.as_u64().map(|n| n.to_string())))
+        .and_then(|w| w.as_str().map(|name| name.into_owned()).or_else(|| w.as_u64().map(|n| n.to_string())))
         .or_else(|| (!variant_weight.is_empty()).then_some(variant_weight));
     if let Some(weight) = weight {
         style.font_style = match weight.to_ascii_lowercase().as_str() {
@@ -4432,8 +4437,9 @@ mod tests {
         assert!(dense.len() < MAX_JSON as usize);
         for index in 0..source.len() {
             let mut member = source.by_index(index).unwrap();
-            writer.start_file(member.name(), crate::json_options()).unwrap();
-            if member.name().ends_with(&format!("/{id}.json")) {
+            let name = member.name().expect("valid ZIP entry name").into_owned();
+            writer.start_file(name.as_str(), crate::json_options()).unwrap();
+            if name.ends_with(&format!("/{id}.json")) {
                 writer.write_all(dense.as_bytes()).unwrap();
             } else {
                 io::copy(&mut member, &mut writer).unwrap();
@@ -4881,12 +4887,12 @@ mod tests {
             let mut e = z.by_index(i).unwrap();
             let mut content = Vec::new();
             e.read_to_end(&mut content).unwrap();
-            if e.name().ends_with(&format!("/{ROOT_ID}.json")) {
+            if e.name().expect("valid ZIP entry name").ends_with(&format!("/{ROOT_ID}.json")) {
                 let mut v: Value = serde_json::from_slice(&content).unwrap();
                 v["shapes"] = serde_json::json!([one]);
                 content = serde_json::to_vec(&v).unwrap();
             }
-            members.push((e.name().to_string(), content));
+            members.push((e.name().expect("valid ZIP entry name").into_owned(), content));
         }
         drop(z);
         let cursor = Cursor::new(Vec::new());
