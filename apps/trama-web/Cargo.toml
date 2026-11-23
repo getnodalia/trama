@@ -21,8 +21,8 @@ trama-collab-net = { workspace = true }
 trama-text = { workspace = true }
 # The host messages (storytold/craft-libs): one contract and one bridge for the web builds.
 # The page command API (storytold/craft-libs#413): the request plumbing behind window.trama.
-craft-web-api = { git = "https://github.com/getnodalia/foundation", rev = "fd5e2feff6ea25bed371a99cc732b3968d621505", version = "0.1.0" }
-craft-web-host = { git = "https://github.com/getnodalia/foundation", rev = "fd5e2feff6ea25bed371a99cc732b3968d621505", version = "0.1.0" }
+craft-web-api = { git = "https://github.com/getnodalia/foundation", rev = "ea9407b3500488bd8af71eb0f1b950306315bf7e", version = "0.1.0" }
+craft-web-host = { git = "https://github.com/getnodalia/foundation", rev = "ea9407b3500488bd8af71eb0f1b950306315bf7e", version = "0.1.0" }
 base64 = { workspace = true }
 egui = { workspace = true }
 log = { workspace = true }

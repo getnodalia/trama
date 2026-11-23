@@ -16,6 +16,8 @@ trama-format = { workspace = true }
 trama-text = { workspace = true }
 trama-pathops = { workspace = true }
 tiny-skia = { workspace = true }
+craft-image-codecs = { workspace = true }
+craft-gif = { workspace = true }
 image = { workspace = true }
 moxcms = { workspace = true }
 png = { workspace = true }

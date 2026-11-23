@@ -9,6 +9,7 @@ description = "Trama PDF export (krilla): vector shapes, gradients, embedded ima
 workspace = true
 
 [dependencies]
+craft-pdf = { workspace = true, features = ["write"] }
 trama-geom = { workspace = true }
 trama-color = { workspace = true }
 trama-doc = { workspace = true }
