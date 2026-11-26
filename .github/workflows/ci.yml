@@ -37,7 +37,7 @@ jobs:
   # Every git dependency in Cargo.lock comes from getnodalia or nodalia-design.
   git-sources:
     name: git-sources
-    uses: getnodalia/foundation/.github/workflows/git-sources.yml@a5325485b557dca4040002a0120a06d72b10ccb5 # foundation main
+    uses: getnodalia/foundation/.github/workflows/git-sources.yml@4debdfe28cf5820d1748864efbd8d6996922d1ac # foundation main
 
   # Every crate's licence is on Foundation's allowlist (deny.toml).
   licences:
