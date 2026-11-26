@@ -186,7 +186,6 @@ pub(super) fn import(s: &mut Session, p: &Value) -> Result<Value> {
             Ok(out)
         }
         "trama" | "figcraft" | "json" | "fig" | "jam" | "sketch" | "penpot" => {
-
             let resolver = path.as_deref().map(rest_images);
             let images: trama_format::rest::ImageResolver = match &resolver {
                 Some(r) => r,
