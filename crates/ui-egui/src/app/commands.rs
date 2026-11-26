@@ -123,7 +123,6 @@ impl FigApp {
             match r.kind.as_str() {
                 "dialog.about" => {
                     self.ui.about = true;
-                    self.ui.about_tab = dialogs::AboutTab::About;
                 }
                 "dialog.preferences" => self.ui.preferences = true,
                 "dialog.missingFonts" => missing_fonts::request(self),

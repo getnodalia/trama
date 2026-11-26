@@ -129,11 +129,11 @@ nodalia-design (creator suite: `docs/suites/creator.md` there). NDL's round wind
 drawn on Linux only; macOS and Windows keep their native controls. What is still to move is in
 `NODALIA_MIGRATION.md`.
 
-## Contributor credits (About window)
+## About window
 
-- About ▸ Contributors are compiled from `contributors/contributors.json` (commit stats; generated,
-  never hand-edit) and `contributors/people.toml` (names people chose for themselves).
-- Add only your own person's entry to `people.toml`, after asking them. Never guess or copy a name.
+- About is the shared Nodalia page from `nodalia_theme::about`: icon, name, version, links and a
+  line that credits the upstream authors (see `NOTICE`). It has no Contributors or Models tabs,
+  and there are no contributor or model lists compiled into the binary.
 
 ## CI workflows
 

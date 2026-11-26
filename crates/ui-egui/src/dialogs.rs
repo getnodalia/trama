@@ -30,7 +30,6 @@ pub(crate) use export::file_saved;
 pub use menu_input::MenuInput;
 use menu_input::menu_input_dialog;
 pub mod branch_ui;
-pub mod credits;
 pub mod import_report;
 pub mod missing_fonts;
 pub mod plugins_ui;
@@ -118,30 +117,6 @@ pub(crate) fn header(ui: &mut egui::Ui, t: &Tokens, title: &str) -> bool {
     clicked
 }
 
-/// The About window's tabs.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum AboutTab {
-    #[default]
-    About,
-    Contributors,
-    Models,
-}
-
-impl AboutTab {
-    pub const ALL: [AboutTab; 3] = [AboutTab::About, AboutTab::Contributors, AboutTab::Models];
-
-    pub fn label(self) -> &'static str {
-        match self {
-            AboutTab::About => tr("About"),
-            AboutTab::Contributors => tr("Contributors"),
-            AboutTab::Models => tr("Models"),
-        }
-    }
-}
-
-/// The About window's width, the same on every tab (the Contributors table needs the room).
-pub const ABOUT_WIDTH: f32 = 660.0;
-
 /// The About window's tab row, drawn like the Design / Prototype tabs of the right panel.
 /// A row of tabs (the About window's, the shortcuts panel's): the current one highlighted.
 pub(crate) fn tab_strip<T: Copy + PartialEq>(ui: &mut egui::Ui, t: &Tokens, tabs: &[T], label: fn(T) -> &'static str, current: &mut T) {
@@ -164,32 +139,38 @@ pub(crate) fn tab_strip<T: Copy + PartialEq>(ui: &mut egui::Ui, t: &Tokens, tabs
     });
 }
 
-/// About ▸ About: the logo, version, blurb and links.
+/// About Trama: the page every Nodalia app shares (`nodalia_theme::about`), with Trama's mark, name
+/// and version, what it is, the suite it belongs to and its links, then the credit the upstream
+/// project keeps in NOTICE and LICENSE-MIT. There are no Contributors or Models tabs.
 fn about_body(ui: &mut egui::Ui, t: &Tokens) {
-    ui.horizontal(|ui| {
-        let (r, _) = ui.allocate_exact_size(vec2(48.0, 48.0), Sense::hover());
-        crate::theme::paint_app_icon(ui, r);
-        ui.vertical(|ui| {
-            let (wordmark, _) = ui.allocate_exact_size(vec2(130.0, 23.0), Sense::hover());
-            crate::theme::paint_wordmark(ui.painter(), egui::pos2(wordmark.min.x, wordmark.center().y), 18.0, t);
-            ui.label(RichText::new(trf("Version {version}", &[("version", &VERSION)])).color(t.text_secondary));
-        });
-    });
-    ui.add_space(12.0);
-    ui.label(tr("Interface design and prototyping. A free, open-source design tool written in Rust, part of Nodalia."));
-    ui.add_space(8.0);
-    ui.hyperlink_to("getnodalia.com/trama", "https://getnodalia.com/trama");
-    ui.hyperlink_to(tr("Source code and issues on GitHub"), "https://github.com/getnodalia/trama");
-    ui.add_space(8.0);
-    ui.label(
-        RichText::new(tr("Dual-licensed MIT OR Apache-2.0. Made by the Nodalia team and community.")).color(t.text_secondary).font(regular(11.0)),
-    );
+    use nodalia_theme::about as ndl;
+    ui.set_width(ndl::measures::WIDTH);
+    let version = trf("Version {version}", &[("version", &VERSION)]);
+    let links = [
+        ndl::Link { label: "getnodalia.com/trama", url: "https://getnodalia.com/trama" },
+        ndl::Link { label: tr("Source code and issues on GitHub"), url: "https://github.com/getnodalia/trama" },
+    ];
+    let info = ndl::Info {
+        name: "Trama",
+        version: &version,
+        tagline: tr("Interface design and prototyping. A free, open-source design tool written in Rust, part of Nodalia."),
+        suite: "",
+        links: &links,
+        footer: tr("Dual-licensed MIT OR Apache-2.0. Made by the Nodalia team and community."),
+    };
+    let page = ndl::page(ui, &t.creator(), &info, |ui, rect| crate::theme::paint_app_icon(ui, rect));
+    if let Some(link) = page.picked.and_then(|i| links.get(i)) {
+        ui.ctx().open_url(egui::OpenUrl::new_tab(link.url));
+    }
+    ui.add_space(4.0);
     // The upstream project's credit, as NOTICE and LICENSE-MIT keep it.
-    ui.label(
-        RichText::new(tr("Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences."))
-            .color(t.text_secondary)
-            .font(regular(11.0)),
-    );
+    ui.vertical_centered(|ui| {
+        ui.label(
+            RichText::new(tr("Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences."))
+                .color(t.text_secondary)
+                .font(regular(11.0)),
+        );
+    });
 }
 
 /// Escape closes the topmost simple dialog (one without menus of its own), before the canvas's
@@ -249,17 +230,10 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
     if app.ui.about {
         let mut open = true;
         ndl_window(tr("About Trama"), ctx).show(ctx, |ui| {
-            ui.set_width(ABOUT_WIDTH);
             if header(ui, &t, tr("About Trama")) {
                 open = false;
             }
-            tab_strip(ui, &t, &AboutTab::ALL, AboutTab::label, &mut app.ui.about_tab);
-            ui.add_space(12.0);
-            match app.ui.about_tab {
-                AboutTab::About => about_body(ui, &t),
-                AboutTab::Contributors => crate::credits::contributors_ui(ui),
-                AboutTab::Models => crate::credits::models_ui(ui),
-            }
+            about_body(ui, &t);
         });
         if !open {
             app.ui.about = false;
