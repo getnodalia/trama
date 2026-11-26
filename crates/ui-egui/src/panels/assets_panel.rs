@@ -1237,7 +1237,6 @@ fn enabled_libraries(app: &mut FigApp, ui: &mut Ui, w: f32, doc: &Document) {
     }
     if add && !crate::menus::dev_mode_refuses(app, ADD) {
         app.pick_open(tr("Add library"), &["trama", "figcraft"], |app, p| {
-            // rebrand: keep (files saved before the rename)
             if let Some(r) = app.run(ADD, json!({"path": p.to_string_lossy()})) {
                 added(app, &r);
             }

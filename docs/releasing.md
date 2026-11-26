@@ -136,8 +136,7 @@ shared-mime-info file for `.trama`) and builds every format from it: `.tar.gz`; 
 a `.zsync`, whose `AppRun` registers the desktop entry and icons on launch so Wayland docks show
 the right icon (`TRAMA_NO_DESKTOP_INTEGRATION=1` opts out; covered by `apprun-test.sh`) and runs
 the bundled `trama-cli` for `Trama.AppImage cli <args>`. Binaries are built on Ubuntu 22.04 and
-need glibc ≥ 2.35. `packaging/linux/flatpak/` keeps the manifests for a future Flathub
-submission; they are not built in CI.
+need glibc ≥ 2.35.
 
 ### FreeBSD
 
@@ -166,7 +165,7 @@ with `web-release`. The desktop builds keep `release`.
 - `.github/workflows/ci.yml` (pull requests and `main`): Foundation's Rust gate (fmt, clippy
   `-D warnings`, tests, layering, asset attribution, wasm32 and the example plugins), the
   licence allowlist (`cargo deny check licenses` against `deny.toml`), git dependencies only
-  from getnodalia, and no upstream names (`python3 scripts/rebrand.py check`).
+  from getnodalia.
 - `.github/workflows/packaging-lint.yml` (changes to `packaging/` or workflows): shellcheck, the
   AppRun test, a PowerShell parse, the FreeBSD dry run, xmllint, `desktop-file-validate` and
   `appstreamcli validate`.

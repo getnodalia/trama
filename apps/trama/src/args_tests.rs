@@ -58,7 +58,7 @@ fn invite_links_join_instead_of_opening() {
     assert_eq!(a.files, args(&["design.trama"]));
     assert_eq!(a.join.as_deref(), Some("TRAMA://join/?host=h:1&file=f&token=t"));
     assert!(is_invite("trama:join") && !is_invite("trama.svg") && !is_invite("fig") && !is_invite("ü€trama:"));
-    assert!(is_invite("FigCraft://join?host=h:1&file=f&token=t"), "links made before the rename still join"); // rebrand: keep
+    assert!(is_invite("FigCraft://join?host=h:1&file=f&token=t"), "links made before the rename still join");
 }
 
 #[test]

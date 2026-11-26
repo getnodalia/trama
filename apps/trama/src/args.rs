@@ -25,8 +25,8 @@ pub struct Args {
 
 /// An invite link rather than a file (`trama:` links, in any case).
 pub fn is_invite(arg: &str) -> bool {
-    // Invite links made before the rename still say `figcraft:`. // rebrand: keep
-    arg.get(..6).is_some_and(|s| s.eq_ignore_ascii_case("trama:")) || arg.get(..9).is_some_and(|s| s.eq_ignore_ascii_case("figcraft:")) // rebrand: keep
+    // Invite links made before the rename still say `figcraft:`.
+    arg.get(..6).is_some_and(|s| s.eq_ignore_ascii_case("trama:")) || arg.get(..9).is_some_and(|s| s.eq_ignore_ascii_case("figcraft:"))
 }
 
 /// The path a local `file://` URL names (`%XX` escapes decoded); `None` for anything else.

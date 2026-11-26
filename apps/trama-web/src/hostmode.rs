@@ -9,7 +9,7 @@ pub const DEFAULT_OPEN_NAME: &str = "Untitled.trama";
 /// `file.saveAs` write (`file.open` opens both as native documents). A `.fig` file is an export
 /// copy instead, and so is everything else the app hands over (rendered images, SVG, PDF,
 /// variables).
-const DOC_EXTS: &[&str] = &["trama", "figcraft", "json"]; // rebrand: keep (files saved before the rename)
+const DOC_EXTS: &[&str] = &["trama", "figcraft", "json"];
 
 /// The suffix `variable.export`'s downloads carry: a `.json` that is a variables sidecar, not a
 /// document, so its extension alone can't tell the `saveAs` decision.

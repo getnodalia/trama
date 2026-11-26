@@ -119,7 +119,6 @@ pub fn write_doc(doc: &Document, page: NodeId, out: &str) -> CliResult<()> {
     let e = ext(out);
     let bytes = match e.as_str() {
         "trama" | "figcraft" => {
-            // rebrand: keep (files saved before the rename)
             let thumb = trama_engine::cmd::file::thumbnail(doc);
             trama_format::save_bytes(doc, thumb.as_deref()).map_err(|e| CliError::Failed(e.to_string()))?
         }

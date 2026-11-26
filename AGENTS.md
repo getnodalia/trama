@@ -104,12 +104,11 @@ crates you touched (`cargo test -p trama-engine`).
 ### Compatibility
 
 - Files saved before the rename keep working: the native file's signature stays
-  `"format": "figcraft"`, `.figcraft` files open and save like `.trama` ones <!-- rebrand: keep -->
-  (`trama_format::OLDER_EXTENSIONS`), plugins keep their ABI (module `figcraft`, `figcraft_run`) <!-- rebrand: keep -->
-  and folders with the old manifest name still import. `.github/rebrand.toml` keeps these spans;
-  a line that must name the old product on purpose says `rebrand: keep`.
-- Upstream's changes arrive renamed through the weekly sync (`docs/upstream.md`).
-  `python3 scripts/rebrand.py check` fails when an old name comes back.
+  `"format": "figcraft"`, `.figcraft` files open and save like `.trama` ones
+  (`trama_format::OLDER_EXTENSIONS`), plugins keep their ABI (module `figcraft`, `figcraft_run`)
+  and folders with the old manifest name still import.
+- There is no upstream sync and no rename tooling: Trama is its own app, and the origin of its
+  code base is credited in `NOTICE` and About.
 
 ### Working here
 

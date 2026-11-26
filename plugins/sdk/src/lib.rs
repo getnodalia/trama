@@ -243,7 +243,7 @@ macro_rules! entry {
     };
 }
 
-/// The host functions Trama provides (module `figcraft`, the plugin ABI's name from before the rename). // rebrand: keep
+/// The host functions Trama provides (module `figcraft`, the plugin ABI's name from before the rename).
 #[cfg(target_arch = "wasm32")]
 #[allow(unsafe_code)]
 mod host {

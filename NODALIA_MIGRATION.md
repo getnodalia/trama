@@ -12,7 +12,7 @@ getnodalia/foundation (craft-libs, egui and winit forks, craft-fonts) and getnod
 (`nodalia-theme`, `nodalia-update`). CI calls Foundation's reusable workflows pinned by commit, on
 standard GitHub-hosted runners only; releases use Foundation's `release-tag` and
 `release-publish` with Trama's own `release-linux.yml`, `release-macos.yml` (unsigned DMG) and
-`release-windows.yml`. The weekly upstream sync renames FigCraft to Trama (`docs/upstream.md`).
+`release-windows.yml`. There is no upstream sync.
 
 ## Desired state
 
