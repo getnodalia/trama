@@ -154,7 +154,7 @@ fn saving_refuses_bad_version_ids() {
 #[test]
 fn documents_saved_under_the_old_extension_are_native_files() {
     for ext in ["trama", "TRAMA", "figcraft", "FigCraft"] {
-        // rebrand: keep
+
         assert!(is_native_extension(ext), "{ext}");
     }
     for ext in ["fig", "json", "", "tramas"] {

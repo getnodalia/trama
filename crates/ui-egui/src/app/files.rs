@@ -84,7 +84,7 @@ impl FigApp {
         let exts: &[&str] = if place {
             &["png", "jpg", "jpeg", "webp", "gif", "tif", "tiff"]
         } else {
-            &["penpot", "svg", "png", "jpg", "jpeg", "webp", "gif", "tif", "tiff", "trama", "figcraft", "fig", "jam", "sketch"] // rebrand: keep (files saved before the rename)
+            &["penpot", "svg", "png", "jpg", "jpeg", "webp", "gif", "tif", "tiff", "trama", "figcraft", "fig", "jam", "sketch"]
         };
         let title = if place { i18n::tr("Place image") } else { i18n::tr("Import") };
         self.pick_file(title, exts, true, |app, file| {

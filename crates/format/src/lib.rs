@@ -52,7 +52,7 @@ pub use nodalia_trama_format::{
 pub const EXTENSION: &str = "trama";
 /// Extensions Trama's own documents were saved under before the app had its name: they open, and
 /// save, like `.trama` files (the contents are the same format).
-pub const OLDER_EXTENSIONS: &[&str] = &["figcraft"]; // rebrand: keep
+pub const OLDER_EXTENSIONS: &[&str] = &["figcraft"];
 
 /// Whether `ext` (any case, no dot) names Trama's own document format: `.trama`, or an
 /// [`OLDER_EXTENSIONS`] one.

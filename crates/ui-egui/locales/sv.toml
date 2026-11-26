@@ -2037,7 +2037,7 @@ name = "Svenska"
 "Interface design and prototyping. A free, open-source design tool written in Rust, part of Nodalia." = "Gränssnittsdesign och prototyper. Ett gratis designverktyg med öppen källkod skrivet i Rust, en del av Nodalia."
 "Quit Trama" = "Avsluta Trama"
 "Source code and issues on GitHub" = "Källkod och ärenden på GitHub"
-"Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama började som FigCraft, av ArtCraft Team och FigCraft-bidragsgivarna, under samma licenser." # rebrand: keep
+"Trama began as FigCraft, by the ArtCraft Team and the FigCraft contributors, under the same licences." = "Trama började som FigCraft, av ArtCraft Team och FigCraft-bidragsgivarna, under samma licenser."
 "Preferences…" = "Inställningar…"
 
 [commands]
