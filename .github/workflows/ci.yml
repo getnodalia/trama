@@ -52,4 +52,3 @@ jobs:
         with:
           tool: cargo-deny@0.18.9
       - run: cargo deny --locked check licenses
-
