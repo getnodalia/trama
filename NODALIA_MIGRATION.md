@@ -8,7 +8,7 @@ pull request that adds this file.
 
 Pure-Rust interface design and prototyping app (egui), MIT OR Apache-2.0. Its code base began as
 FigCraft (credited in `NOTICE`, `LICENSE-MIT` and About). Cargo git dependencies come from
-getnodalia/foundation (craft-libs, egui and winit forks, craft-fonts) and getnodalia/nodalia-design
+getnodalia/foundation (shared libraries, egui and winit, fonts) and getnodalia/nodalia-design
 (`nodalia-theme`, `nodalia-update`). CI calls Foundation's reusable workflows pinned by commit, on
 standard GitHub-hosted runners only; releases use Foundation's `release-tag` and
 `release-publish` with Trama's own `release-linux.yml`, `release-macos.yml` (unsigned DMG) and
@@ -16,7 +16,7 @@ standard GitHub-hosted runners only; releases use Foundation's `release-tag` and
 
 ## Desired state
 
-No workflow, dependency or document depends on storytold or on an ArtCraft service; the interface
+No workflow, dependency or document depends on a repository or service outside Nodalia; the interface
 follows Foundation's [NDL standard](https://github.com/getnodalia/foundation/blob/main/standards/ndl.md)
 and the Creator suite's shared parts (`nodalia_theme::creator`, nodalia-design's
 `docs/suites/creator.md`), as Lienzo and Pluma do.
@@ -60,7 +60,7 @@ and the Creator suite's shared parts (`nodalia_theme::creator`, nodalia-design's
 
 ## NDL still to do
 
-1. **Fonts.** The UI and the wordmark move to NDL's faces from craft-fonts.
+1. **Fonts.** The UI and the wordmark move to NDL's faces from nodalia-fonts.
 2. **Home on `creator::home`.** Home keeps Trama's own layout (online and local-network sections)
    on its island; moving it onto the shared creator Home needs those sections there first.
 3. **The other dialogs** (Export, confirmations) on the creator frame with its buttons.

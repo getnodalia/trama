@@ -4,7 +4,7 @@ Trama without a window: inspect, export, convert and render documents, run comma
 commands, serve MCP, publish plugins and code connect mappings, and measure performance. Build it with
 `cargo build --release -p trama-cli` (binary `target/release/trama-cli`).
 
-The CLI follows [RFC-0012](https://github.com/storytold/craft-contrib/blob/main/rfcs/0012-cli-conventions.md),
+The CLI follows RFC-0012,
 the command-line conventions the Craft apps share, in how it parses its arguments (with clap). The
 rules it doesn't follow yet are listed below. `trama-cli --help` is the source of truth for
 the flags; this page explains what they do.
@@ -58,7 +58,7 @@ The directory contains completions for five shells:
 It also contains `trama-cli.1` and one man page per subcommand, including nested commands such
 as `trama-cli-plugin-publish.1`. For example, `man target/cli-docs/trama-cli-export.1` shows
 the export subcommand's options. Generating these files doesn't install them; package installation
-is still outstanding in [#1396](https://github.com/storytold/figcraft/issues/1396).
+is still outstanding in #1396.
 
 ## Fonts
 

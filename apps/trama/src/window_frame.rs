@@ -13,7 +13,7 @@
 //! reads each style and writes only when it differs, so it costs next to nothing.
 //!
 //! The same fix is in Pliego (#2139) and Lienzo (#2401). The long-term fix is in winit
-//! (storytold/winit#17); this module goes when the pinned winit has it.
+//! (#17); this module goes when the pinned winit has it.
 //!
 //! The Windows calls go through safe `winsafe` wrappers (the workspace forbids `unsafe`). Which
 //! windows are ours is found by enumerating this process's top-level windows of winit's window
