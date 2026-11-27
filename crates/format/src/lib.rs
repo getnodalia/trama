@@ -566,6 +566,20 @@ pub fn load_bytes(bytes: &[u8]) -> Result<(Document, Vec<String>), FormatError> 
     load_bytes_with_versions(bytes).map(|l| (l.doc, l.issues))
 }
 
+/// The members of a zip archive whose names are valid.
+///
+/// zip 9 reports a member name it can't decode as an error. An importer never reads such a member by
+/// name, so it is left out of the listing; `by_index` still reaches it and refuses it there.
+pub(crate) trait ValidNames {
+    fn valid_names(&self) -> std::vec::IntoIter<String>;
+}
+
+impl<R: Read + Seek> ValidNames for zip::ZipArchive<R> {
+    fn valid_names(&self) -> std::vec::IntoIter<String> {
+        self.file_names().filter_map(|name| name.ok().map(|name| name.into_owned())).collect::<Vec<_>>().into_iter()
+    }
+}
+
 /// Read a member from a foreign ZIP archive, refusing entries larger than `limit`.
 pub(crate) fn read_member<R: Read + std::io::Seek>(z: &mut zip::ZipArchive<R>, name: &str, limit: u64) -> Result<Vec<u8>, FormatError> {
     let f = z.by_name(name).map_err(|e| FormatError::Corrupt(format!("{name}: {e}")))?;

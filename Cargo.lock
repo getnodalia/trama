@@ -229,15 +229,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "arbitrary"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bc62ac97cc33321f50863d514c3bc38a453947a8f9e781137e47c7401020aed"
-dependencies = [
- "derive_arbitrary",
-]
-
-[[package]]
 name = "arboard"
 version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1133,17 +1124,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71958f69fb2de856c5dd51ac9377e986ca1aa5919f931bf5395a807277f889a0"
 dependencies = [
  "thiserror 2.0.21",
-]
-
-[[package]]
-name = "derive_arbitrary"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b034bd7d5f032402a2479444dcc6f74e36a03f31854d41680fb240ef682a1ac"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 3.0.9",
 ]
 
 [[package]]
@@ -3065,7 +3045,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "zip 9.7.0",
+ "zip",
 ]
 
 [[package]]
@@ -3151,7 +3131,7 @@ source = "git+https://github.com/getnodalia/foundation?rev=0bc9b26d35a15861d39c7
 dependencies = [
  "flate2",
  "thiserror 2.0.21",
- "zip 9.7.0",
+ "zip",
 ]
 
 [[package]]
@@ -3161,7 +3141,7 @@ source = "git+https://github.com/getnodalia/foundation?rev=2d08be2e78b9806c9bb5b
 dependencies = [
  "flate2",
  "thiserror 2.0.21",
- "zip 9.7.0",
+ "zip",
 ]
 
 [[package]]
@@ -3171,7 +3151,7 @@ source = "git+https://github.com/getnodalia/foundation?rev=9edb99ff59b9bb98ff6c3
 dependencies = [
  "flate2",
  "thiserror 2.0.21",
- "zip 9.7.0",
+ "zip",
 ]
 
 [[package]]
@@ -3181,7 +3161,7 @@ source = "git+https://github.com/getnodalia/foundation?rev=e95b73f30445ed91816f8
 dependencies = [
  "flate2",
  "thiserror 2.0.21",
- "zip 9.7.0",
+ "zip",
 ]
 
 [[package]]
@@ -5268,7 +5248,7 @@ dependencies = [
  "trama-vectordrawable",
  "wat",
  "web-time",
- "zip 2.6.1",
+ "zip",
 ]
 
 [[package]]
@@ -5290,7 +5270,7 @@ dependencies = [
  "trama-doc",
  "trama-layout",
  "trama-pathops",
- "zip 2.6.1",
+ "zip",
 ]
 
 [[package]]
@@ -5405,7 +5385,7 @@ dependencies = [
  "trama-plugin",
  "tungstenite",
  "wat",
- "zip 2.6.1",
+ "zip",
 ]
 
 [[package]]
@@ -7031,21 +7011,6 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "2.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1dcb24d0152526ae49b9b96c1dcf71850ca1e0b882e4e28ed898a93c41334744"
-dependencies = [
- "arbitrary",
- "crc32fast",
- "crossbeam-utils",
- "flate2",
- "indexmap",
- "memchr",
- "zopfli",
-]
-
-[[package]]
-name = "zip"
 version = "9.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08687262e7c0f1284b259686f322805a8adaa8ef4d7210e76448950b3f083bf7"
@@ -7061,6 +7026,7 @@ dependencies = [
  "typed-path",
  "windows-sys 0.61.2",
  "zeroize",
+ "zopfli",
 ]
 
 [[package]]
