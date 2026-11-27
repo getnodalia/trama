@@ -1,16 +1,16 @@
 //! Embedded font detection without decoding or retaining unsupported binaries.
 
 use super::{BudgetReader, InflateBudget, MAX_ENTRIES, warn};
+use crate::ValidNames;
 use std::io::{Cursor, Read};
 use zip::ZipArchive;
 
 /// Identify unsupported fonts from signatures without decoding their payloads.
 pub(super) fn report(z: &mut ZipArchive<Cursor<&[u8]>>, warnings: &mut Vec<String>, budget: &mut InflateBudget) {
     let names: Vec<String> = z
-        .file_names()
+        .valid_names()
         .filter(|n| n.starts_with("objects/") || n.starts_with("fonts/") || n.starts_with("assets/fonts/"))
         .take(MAX_ENTRIES)
-        .map(str::to_owned)
         .collect();
     let mut count = 0;
     for name in names {
