@@ -1,4 +1,4 @@
-//! `window.trama`: the page command API (`nodalia-web-api`, storytold/craft-libs#413) plus Trama's
+//! `window.trama`: the page command API (`nodalia-web-api`, #413) plus Trama's
 //! own file functions.
 //!
 //! The crate installs `request`, `execute`, `commands`, `docInspect`, `uiInspect` and `screenshot`

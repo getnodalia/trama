@@ -479,4 +479,4 @@ app. It is opt-in: the page installs `window.trama` only when its URL has a `con
 Errors reject with an `Error` carrying the method's message. Requests run on the UI's next frame, so a
 hidden tab (whose frames the browser pauses) answers when it is shown again.
 
-`request`, `execute`, `commands`, `docInspect`, `uiInspect` and `screenshot` come from [`nodalia-web-api`](https://github.com/getnodalia/foundation/tree/main/crates/web-api) (storytold/craft-libs#413), the same shape in every Craft app. A call the app does not answer within 30 seconds rejects, and the app drops it unrun if it had not started it. `openFile`, `captureDownloads`, `files`, `readFile` and `inspect` are Trama's own.
+`request`, `execute`, `commands`, `docInspect`, `uiInspect` and `screenshot` come from [`nodalia-web-api`](https://github.com/getnodalia/foundation/tree/main/crates/web-api) (#413), the same shape in every Craft app. A call the app does not answer within 30 seconds rejects, and the app drops it unrun if it had not started it. `openFile`, `captureDownloads`, `files`, `readFile` and `inspect` are Trama's own.
