@@ -338,7 +338,6 @@ pub use canvas::render_worker;
 use canvas::selection_spacing;
 pub use canvas::widget_bar;
 pub use dialogs::branch_ui;
-pub use dialogs::credits;
 pub use dialogs::import_report;
 pub use dialogs::missing_fonts;
 pub use dialogs::plugins_ui;
@@ -476,8 +475,6 @@ pub struct UiState {
     /// The Variables editor, when open.
     pub variables: Option<variables_panel::Editor>,
     pub about: bool,
-    /// The tab the About window shows.
-    pub about_tab: dialogs::AboutTab,
     pub preferences: bool,
     /// A menu command that needs a value before the engine can run it.
     pub menu_input: Option<dialogs::MenuInput>,
@@ -690,7 +687,6 @@ impl Default for UiState {
             actions_rect: None,
             variables: None,
             about: false,
-            about_tab: dialogs::AboutTab::About,
             preferences: false,
             menu_input: None,
             rename_file: false,

@@ -31,7 +31,6 @@ egui_extras = { workspace = true }
 web-time = "1.1.0"
 
 [build-dependencies]
-serde_json = { workspace = true }
 toml = "1"
 
 [dev-dependencies]
